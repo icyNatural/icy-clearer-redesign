@@ -113,19 +113,148 @@ const ctaFor: Record<string, string> = {
 const today = new Date();
 const dayLabel = today.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }).toUpperCase();
 const buildStamp = today.toISOString().slice(0, 10);
+
+// ── Derived views of the registry ───────────────────────────────────
+// Everything below reads from src/data/projects.ts or from the concept
+// sources themselves. No section keeps its own inventory.
+
+const observatories = atlasApps.filter(a => a.group === 'observatory');
+const workingTools  = atlasApps.filter(a => a.group === 'instruments');
+const reachable = (a: { id: string }) => !HIDDEN_IDS.has(a.id);
+const featuredInstruments = artifacts.filter(a => a.featured);
+
+// ICY CLEAR's written layer — read from the pages, never listed by hand.
+const conceptModules = import.meta.glob('../pages/{models,modes,system,doctrines}/*.md', { eager: true });
+const conceptDirOrder = ['models', 'modes', 'system', 'doctrines'];
+const conceptRows = Object.entries(conceptModules)
+  .map(([path, mod]) => {
+    const parts = path.split('/');
+    const dir = parts[parts.length - 2];
+    const slug = parts[parts.length - 1].replace(/\.md$/, '');
+    const fm = ((mod as { frontmatter?: Record<string, string> }).frontmatter ?? {});
+    return {
+      dir,
+      kind: dir.charAt(0).toUpperCase() + dir.slice(1),
+      group: dir.charAt(0).toUpperCase() + dir.slice(1) + 's',
+      title: fm.title ?? slug,
+      note: fm.description ?? '',
+      status: fm.status ?? '',
+      href: `/${dir}/${slug}.html`,
+      order: conceptDirOrder.indexOf(dir),
+    };
+  })
+  .sort((a, b) => a.order - b.order || a.title.localeCompare(b.title));
+
+// Orientation: what kinds of thing exist here, before any of them appear.
+const orientations = [
+  {
+    id: 'observatories',
+    label: 'Observatories',
+    count: observatories.length,
+    unit: observatories.length === 1 ? 'field of study' : 'fields of study',
+    line: 'Places to look until something shows itself.',
+    body: 'Each observatory is a different lens on reality — time, rhythm, perception, meaning, nature. Pick one and stay with it.',
+    sample: observatories.filter(reachable).slice(0, 5).map(a => a.title),
+    href: '#atlas',
+    cta: 'Find them on the Atlas',
+  },
+  {
+    id: 'instruments',
+    label: 'Instruments',
+    count: workingTools.length,
+    unit: 'working tools',
+    line: 'Things you use, not just read.',
+    body: 'Archives, scanners, engines, simulations. Each one does a single job, and several are still being built.',
+    sample: workingTools.filter(reachable).slice(0, 5).map(a => a.title),
+    href: '#instruments',
+    cta: 'Open the instruments',
+  },
+  {
+    id: 'collections',
+    label: 'Collections',
+    count: collections.length,
+    unit: 'curated groupings',
+    line: 'The catalog, cut a second way.',
+    body: 'Grouped by what a thing is for rather than what it is. Members overlap on purpose: one thing can be an instrument and an experiment.',
+    sample: collections.map(c => c.title),
+    href: '#index',
+    cta: 'Read the full index',
+  },
+  {
+    id: 'concepts',
+    label: 'Concepts',
+    count: conceptRows.length,
+    unit: 'written pieces',
+    line: 'The operating system beneath the Atlas.',
+    body: 'Models, modes, systems, and doctrines — ICY CLEAR, written down and returned to when it gets noisy.',
+    sample: ['Models', 'Modes', 'Systems', 'Doctrines'],
+    href: '/clear.html',
+    cta: 'Enter ICY CLEAR',
+  },
+];
+
+// Full index: one destination per row, metadata only, no prose.
+const destOf = (href: string) => {
+  if (!href || href === '#') return 'not yet placed';
+  if (/^https?:\/\//.test(href)) {
+    try { return new URL(href).host; } catch { return href; }
+  }
+  return href;
+};
+
+type IndexRow = { title: string; kind: string; status: string; href: string; external: boolean };
+
+const indexGroups: { id: string; label: string; note: string; rows: IndexRow[] }[] = [
+  {
+    id: 'observatories',
+    label: 'Observatories',
+    note: 'Fields of study. One lens each.',
+    rows: observatories.map(a => ({
+      title: a.title,
+      kind: 'Observatory',
+      status: statusLabel[a.status] ?? a.status,
+      href: a.url,
+      external: a.url.startsWith('http'),
+    })),
+  },
+  {
+    id: 'instruments',
+    label: 'Instruments',
+    note: 'Working tools of the institute.',
+    rows: workingTools.map(a => ({
+      title: a.title,
+      kind: 'Instrument',
+      status: statusLabel[a.status] ?? a.status,
+      href: a.url,
+      external: a.url.startsWith('http'),
+    })),
+  },
+  {
+    id: 'concepts',
+    label: 'ICY CLEAR — Concepts',
+    note: 'Models, modes, systems, doctrines. The written layer.',
+    rows: conceptRows.map(c => ({
+      title: c.title,
+      kind: c.kind,
+      status: c.status,
+      href: c.href,
+      external: false,
+    })),
+  },
+];
 ---
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Icy Natural — See clearly. Become slowly.</title>
+  <title>Icy Clearer — See clearly. Become slowly.</title>
   <meta name="description" content="An observatory of systems, language, energy, and becoming." />
   <meta name="theme-color" content="#06090f" />
-  <meta property="og:title" content="Icy Natural — See clearly. Become slowly." />
+  <meta property="og:title" content="Icy Clearer — See clearly. Become slowly." />
   <meta property="og:description" content="An observatory of systems, language, energy, and becoming." />
   <meta property="og:type" content="website" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Icy Natural — See clearly. Become slowly." />
+  <meta name="twitter:title" content="Icy Clearer — See clearly. Become slowly." />
   <meta name="twitter:description" content="An observatory of systems, language, energy, and becoming." />
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <link rel="alternate icon" href="/favicon.ico" />
@@ -154,19 +283,21 @@ const buildStamp = today.toISOString().slice(0, 10);
     </span>
   </a>
   <nav class="nav" aria-label="Primary">
-    <a href="#atlas">Map</a>
-    <a href="#objects">Tools</a>
-    <a class="entry" href="#atlas">Enter →</a>
+    <a href="#atlas">Atlas</a>
+    <a href="#instruments">Instruments</a>
+    <a href="#index">Index</a>
+    <a class="entry" href="/clear.html">ICY CLEAR →</a>
   </nav>
 </header>
 
 <main id="main" class="institute" tabindex="-1">
 
-  <!-- ╔══ HALL OF ENTRY — opening plate ══════════════════════════════ -->
-  <section id="hall" class="hall">
+  <!-- ╔══ ENTRY ════════════════════════════════════════════════════ -->
+  <section id="entry" class="hall" aria-labelledby="entry-title">
     <p class="kicker"><span class="pulse"></span> <span id="live-date" data-live-date>{dayLabel}</span></p>
 
-    <h1 class="hall-title">
+    <h1 class="hall-title" id="entry-title">
+      <span class="hall-name">Icy Clearer</span>
       <span class="line">See clearly.</span>
       <span class="line"><em>Become slowly.</em></span>
     </h1>
@@ -177,14 +308,44 @@ const buildStamp = today.toISOString().slice(0, 10);
     <div class="hall-rule" aria-hidden="true"></div>
   </section>
 
+  <!-- ╔══ ORIENTATION — what kind of thing lives here ═══════════════ -->
+  <section id="orientation" class="plate orientation" aria-labelledby="orientation-title">
+    <header class="plate-head">
+      <span class="plate-no">Orientation</span>
+      <h2 class="plate-title" id="orientation-title">What kind of thing is this?</h2>
+      <p class="plate-rule">Four layers, each with one job. Read this before you open the map.</p>
+    </header>
+
+    <ol class="orient-list">
+      {orientations.map((o, i) => (
+        <li class="orient">
+          <div class="orient-head">
+            <span class="orient-no" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+            <h3 class="orient-title">{o.label}</h3>
+            <span class="orient-count">
+              <span class="orient-count-n">{o.count}</span>
+              <span class="orient-unit">{o.unit}</span>
+            </span>
+          </div>
+          <p class="orient-line">{o.line}</p>
+          <p class="orient-body">{o.body}</p>
+          <ul class="orient-sample">
+            {o.sample.map(s => <li>{s}</li>)}
+          </ul>
+          <a class="orient-cta" href={o.href}>{o.cta} <span aria-hidden="true">→</span></a>
+        </li>
+      ))}
+    </ol>
+  </section>
+
   <!-- ╔══ ATLAS — celestial chart, mostly anonymous ═════════════════ -->
 
-  <section id="atlas" class="plate atlas-plate">
+  <section id="atlas" class="plate atlas-plate" aria-labelledby="atlas-title">
     <header class="plate-head">
       <span class="plate-no">Plate I</span>
-      <h2 class="plate-title">The Atlas</h2>
-      <p class="plate-rule">A collection of interactive applications exploring systems, language, observation, and becoming.</p>
-      <p class="plate-instruction">Choose an application below.</p>
+      <h2 class="plate-title" id="atlas-title">The Atlas</h2>
+      <p class="plate-rule">{nodes.length} bodies in one sky — every visible part of the ecosystem, placed once.</p>
+      <p class="plate-instruction">Hover, tap, or tab a star to read it.</p>
     </header>
 
     {/* mobile: selected application sits in normal flow, above the map */}
@@ -658,36 +819,6 @@ const buildStamp = today.toISOString().slice(0, 10);
 
   </section>
 
-  <!-- ╔══ PLATE II — Icy Clear OS threshold ══════════════════════ -->
-  <section id="clear-os" class="plate plate-clear">
-    <header class="plate-head">
-      <span class="plate-no">Plate II</span>
-      <h2 class="plate-title">Icy Clear OS</h2>
-      <p class="plate-rule">The operating system beneath the Atlas — doctrines, models, and modes for seeing clearly before deciding.</p>
-      <p class="plate-instruction">A separate climate. Enter when ready.</p>
-    </header>
-
-    <a class="clear-portal" href="/clear.html" aria-label="Enter Icy Clear OS">
-      <div class="clear-portal-inner">
-        <span class="clear-glyph" aria-hidden="true">
-          <svg viewBox="0 0 80 80" fill="none" stroke="#bfe4ff" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="40" y1="10" x2="40" y2="70"/>
-            <line x1="14" y1="40" x2="66" y2="40"/>
-            <line x1="22" y1="22" x2="58" y2="58"/>
-            <line x1="58" y1="22" x2="22" y2="58"/>
-            <circle cx="40" cy="40" r="6" fill="rgba(191,228,255,.18)"/>
-          </svg>
-        </span>
-        <div class="clear-text">
-          <span class="clear-eyebrow">Snow · Ice · Clarity</span>
-          <span class="clear-title">See clearly, then decide.</span>
-          <span class="clear-body">A quiet room of principles you return to when the situation gets noisy. Doctrines, models, modes.</span>
-        </div>
-        <span class="clear-enter">Enter →</span>
-      </div>
-    </a>
-  </section>
-
   <style>
     .plate-clear { margin-top: 8px; }
     .clear-portal { display: block; margin-top: 22px; text-decoration: none; color: inherit;
@@ -735,16 +866,17 @@ const buildStamp = today.toISOString().slice(0, 10);
 
 
 
-  <!-- ╔══ OBJECTS — each one shaped as its own thing, no card grid ═ -->
-  <section id="objects" class="plate">
+  <!-- ╔══ SELECTED INSTRUMENTS — depth, four at a time ═════════════ -->
+  <section id="instruments" class="plate" aria-labelledby="instruments-title">
     <header class="plate-head">
-      <span class="plate-no">Plate III</span>
-      <h2 class="plate-title">Working Tools</h2>
-      <p class="plate-rule">Small applications for thinking, observing, and recovering your own rhythm. Each one does a specific job.</p>
+      <span class="plate-no">Plate II</span>
+      <h2 class="plate-title" id="instruments-title">Selected Instruments</h2>
+      <p class="plate-rule">Four instruments taken to depth. The Atlas shows where they sit; this shows what it is like to hold one.</p>
+      <p class="plate-instruction">{featuredInstruments.length} of {artifacts.length} catalogued · read the index for the rest</p>
     </header>
 
     <div class="objects">
-      {artifacts.filter(a => !HIDDEN_IDS.has(a.id)).map((a) => {
+      {featuredInstruments.map((a) => {
         const kind = objectKind[a.id] ?? 'evid';
         const tag = (
           <div class="obj-tag">
@@ -1073,19 +1205,105 @@ const buildStamp = today.toISOString().slice(0, 10);
     </div>
   </section>
 
+  <!-- ╔══ PLATE III — ICY CLEAR threshold ═══════════════════════ -->
+  <section id="clear-os" class="plate plate-clear" aria-labelledby="clear-title">
+    <header class="plate-head">
+      <span class="plate-no">Plate III</span>
+      <h2 class="plate-title" id="clear-title">ICY CLEAR</h2>
+      <p class="plate-rule">See clearly before you explain. The operating system beneath the Atlas — principles, models, modes, systems, doctrines.</p>
+      <p class="plate-instruction">A separate climate. Enter when ready.</p>
+    </header>
 
-  <!-- ╔══ COLOPHON ═════════════════════════════════════════════ -->
-  <footer class="colophon">
+    <a class="clear-portal" href="/clear.html" aria-label="Enter ICY CLEAR">
+      <div class="clear-portal-inner">
+        <span class="clear-glyph" aria-hidden="true">
+          <svg viewBox="0 0 80 80" fill="none" stroke="#bfe4ff" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="40" y1="10" x2="40" y2="70"/>
+            <line x1="14" y1="40" x2="66" y2="40"/>
+            <line x1="22" y1="22" x2="58" y2="58"/>
+            <line x1="58" y1="22" x2="22" y2="58"/>
+            <circle cx="40" cy="40" r="6" fill="rgba(191,228,255,.18)"/>
+          </svg>
+        </span>
+        <div class="clear-text">
+          <span class="clear-eyebrow">Snow · Ice · Clarity</span>
+          <span class="clear-title">See clearly, then decide.</span>
+          <span class="clear-body">A quiet room of principles you return to when the situation gets noisy. {conceptRows.length} written pieces, one intent-based route at a time.</span>
+        </div>
+        <span class="clear-enter">Enter →</span>
+      </div>
+    </a>
+  </section>
+
+  <!-- ╔══ PLATE IV — Full Index ═════════════════════════════════ -->
+  <section id="index" class="plate plate-index" aria-labelledby="index-title">
+    <header class="plate-head">
+      <span class="plate-no">Plate IV</span>
+      <h2 class="plate-title" id="index-title">Full Index</h2>
+      <p class="plate-rule">Every destination in the ecosystem in one list: what it is, what state it is in, and where it actually lives.</p>
+      <p class="plate-instruction">{indexGroups.reduce((n, g) => n + g.rows.length, 0)} entries · nothing curated away</p>
+    </header>
+
+    <div class="index-groups">
+      {indexGroups.map((g) => (
+        <section class="index-group" aria-labelledby={`ig-${g.id}`}>
+          <h3 class="index-group-title" id={`ig-${g.id}`}>
+            <span class="index-group-name">{g.label}</span>
+            <span class="index-group-count">{g.rows.length}</span>
+          </h3>
+          <p class="index-group-note">{g.note}</p>
+          <ul class="index-list">
+            {g.rows.map((r) => (
+              <li class="index-row">
+                {r.href === '#'
+                  ? <span class="index-name">{r.title}</span>
+                  : <a
+                      class="index-name"
+                      href={r.href}
+                      target={r.external ? '_blank' : undefined}
+                      rel={r.external ? 'noopener' : undefined}
+                    >{r.title}</a>}
+                <span class="index-kind">{r.kind}</span>
+                <span class="index-status">{r.status}</span>
+                <span class="index-dest">{destOf(r.href)}</span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))}
+    </div>
+  </section>
+
+  <!-- ╔══ ECOSYSTEM FOOTER ══════════════════════════════════════ -->
+  <footer class="colophon" aria-label="Colophon">
     <div class="col-left">
-      <p class="col-name">Icy Natural</p>
+      <p class="col-name">Icy Clearer</p>
       <p class="col-line">An observatory of systems, language, energy, and becoming.</p>
+      <p class="col-creed">See clearly. Become slowly.</p>
     </div>
-    <div class="col-right">
-      <a href="https://phases.icynatural.now">Energy Engine</a>
-      <a href="https://language.icynatural.now">Semantic Archaeology</a>
-      <a href="https://vision.icynatural.now">IcyVision Scanner</a>
-      <a href="https://reality.icynatural.now">Reality Capture</a>
-    </div>
+    <nav class="col-nav" aria-label="Ecosystem">
+      <div class="col-set">
+        <span class="col-head">Layers</span>
+        <a href="#orientation">Orientation</a>
+        <a href="#atlas">The Atlas</a>
+        <a href="#instruments">Selected Instruments</a>
+        <a href="#index">Full Index</a>
+      </div>
+      <div class="col-set">
+        <span class="col-head">Environments</span>
+        <a href="/clear.html">ICY CLEAR</a>
+        <a href="/natural.html">Icy Natural</a>
+        <a href="/worlds.html">Two Worlds</a>
+      </div>
+      <div class="col-set">
+        <span class="col-head">Registers</span>
+        <a href="/categories/doctrines.html">Doctrines</a>
+        <a href="/categories/perception.html">Perception</a>
+        <a href="/categories/state-management.html">State Management</a>
+        <a href="/categories/systems-thinking.html">Systems Thinking</a>
+      </div>
+    </nav>
+    <p class="col-meta">Field record {dayLabel} · build {buildStamp} · static build, no trackers</p>
   </footer>
 </main>
 
@@ -1161,7 +1379,8 @@ const buildStamp = today.toISOString().slice(0, 10);
   .nav a { text-decoration: none; color: rgba(232,228,216,.6); }
   .nav a:hover { color: #f3eedb; }
   .nav .entry { color: #cfe7ff; border-bottom: 1px solid rgba(127,203,255,.4); padding-bottom: 2px; }
-  @media (max-width: 900px) { .nav a:not(.entry) { display: none; } .seal-sub { display: none; } }
+  @media (max-width: 900px) { .nav { gap: 14px; font-size: .62rem; letter-spacing: .1em; } .seal-sub { display: none; } }
+  @media (max-width: 560px) { .nav a:not(.entry) { display: none; } }
 
   /* ── layout & plates ──────────────────────────────────────── */
   .institute { width: min(1180px, 100%); margin: 0 auto; padding: 56px 26px 100px; }
@@ -1192,6 +1411,9 @@ const buildStamp = today.toISOString().slice(0, 10);
   .hall-title { margin: 14px 0 22px; font-family: "IM FELL English", "EB Garamond", serif;
     font-size: clamp(3rem, 9vw, 6rem); line-height: .95; letter-spacing: -.02em; font-weight: 400; color: #f6f1de; }
   .hall-title .line { display: block; }
+  .hall-name { display: block; font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-size: clamp(.66rem, 1.5vw, .8rem); font-weight: 400; letter-spacing: .42em;
+    text-transform: uppercase; color: rgba(207,231,255,.75); margin-bottom: 20px; line-height: 1.4; }
   .hall-title em { font-style: italic; background: linear-gradient(120deg, #cfe7ff, #7fcbff 50%, #b88aff);
     -webkit-background-clip: text; background-clip: text; color: transparent; }
   .hall-lead { margin: 0 0 22px; font-size: 1.18rem; line-height: 1.62; color: rgba(243,238,219,.78); max-width: 56ch; }
@@ -1200,6 +1422,72 @@ const buildStamp = today.toISOString().slice(0, 10);
   /* Compress space between hall and first plate */
   .hall + .plate { margin-top: 24px; }
   .hall + .plate .plate-head { margin-bottom: 24px; }
+
+  /* ── ORIENTATION ──────────────────────────────────────────── */
+  .orient-list { list-style: none; margin: 0; padding: 0;
+    display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1px;
+    background: rgba(207,231,255,.12); border: 1px solid rgba(207,231,255,.12); }
+  .orient { display: flex; flex-direction: column; gap: 10px; padding: 24px 22px 22px;
+    background: linear-gradient(180deg, rgba(11,17,28,.92), rgba(7,11,19,.94));
+    position: relative; }
+  .orient::after { content: ""; position: absolute; left: 22px; right: 22px; bottom: 0; height: 2px;
+    background: linear-gradient(90deg, rgba(127,203,255,.55), transparent); opacity: .5; }
+  .orient-head { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+  .orient-no { font-family: "JetBrains Mono", monospace; font-size: .62rem; letter-spacing: .2em;
+    color: rgba(127,203,255,.6); }
+  .orient-title { margin: 0; font-family: "IM FELL English", "EB Garamond", serif; font-weight: 400;
+    font-size: 1.42rem; line-height: 1.1; color: #f3eedb; }
+  .orient-count { margin-left: auto; font-family: "JetBrains Mono", monospace; font-size: .6rem;
+    letter-spacing: .14em; text-transform: uppercase; color: rgba(207,231,255,.5);
+    display: inline-flex; align-items: baseline; gap: 5px; white-space: nowrap; }
+  .orient-count-n { font-size: .95rem; letter-spacing: 0; color: #cfe7ff; font-variant-numeric: tabular-nums; }
+  .orient-line { margin: 2px 0 0; font-style: italic; font-size: 1.02rem; color: rgba(243,238,219,.9); line-height: 1.4; }
+  .orient-body { margin: 0; font-size: .93rem; line-height: 1.55; color: rgba(232,228,216,.62); }
+  .orient-sample { list-style: none; margin: 2px 0 0; padding: 10px 0 0; display: flex; flex-wrap: wrap; gap: 6px;
+    border-top: 1px solid rgba(207,231,255,.1); }
+  .orient-sample li { font-family: "JetBrains Mono", monospace; font-size: .6rem; letter-spacing: .1em;
+    text-transform: uppercase; color: rgba(207,231,255,.66); border: 1px solid rgba(207,231,255,.16);
+    border-radius: 999px; padding: 4px 9px; }
+  .orient-cta { margin-top: auto; padding-top: 14px; font-family: "JetBrains Mono", monospace; font-size: .66rem;
+    letter-spacing: .2em; text-transform: uppercase; text-decoration: none; color: #cfe7ff;
+    display: inline-flex; align-items: center; gap: 8px; min-height: 24px; }
+  .orient-cta:hover { color: #fff; }
+  @media (max-width: 1040px) { .orient-list { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 600px) {
+    .orient-list { grid-template-columns: 1fr; }
+    .orient { padding: 20px 18px; }
+    .orient-count { margin-left: 0; width: 100%; }
+  }
+
+  /* ── FULL INDEX ───────────────────────────────────────────── */
+  .index-groups { display: grid; gap: 44px; }
+  .index-group-title { display: flex; align-items: baseline; gap: 12px; margin: 0 0 4px;
+    font-family: "JetBrains Mono", monospace; font-size: .7rem; font-weight: 400; letter-spacing: .26em;
+    text-transform: uppercase; color: rgba(207,231,255,.8); }
+  .index-group-count { font-size: .62rem; letter-spacing: .1em; color: rgba(207,231,255,.45);
+    border: 1px solid rgba(207,231,255,.2); border-radius: 999px; padding: 2px 8px;
+    font-variant-numeric: tabular-nums; }
+  .index-group-note { margin: 0 0 16px; font-style: italic; color: rgba(232,228,216,.55); font-size: .95rem; }
+  .index-list { list-style: none; margin: 0; padding: 0;
+    border-top: 1px solid rgba(207,231,255,.14); }
+  .index-row { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, .9fr) minmax(0, .7fr) minmax(0, 1fr);
+    gap: 4px 20px; align-items: baseline; padding: 11px 4px;
+    border-bottom: 1px solid rgba(207,231,255,.08); }
+  .index-row:nth-child(even) { background: rgba(207,231,255,.025); }
+  .index-name { font-family: "EB Garamond", serif; font-size: 1.08rem; color: #f3eedb; text-decoration: none; }
+  a.index-name:hover { color: #cfe7ff; text-decoration: underline; text-underline-offset: 3px; }
+  span.index-name { color: rgba(243,238,219,.6); }
+  .index-kind, .index-status, .index-dest { font-family: "JetBrains Mono", monospace; font-size: .64rem;
+    letter-spacing: .12em; text-transform: uppercase; color: rgba(207,231,255,.55); }
+  .index-status { color: rgba(155,184,138,.85); }
+  .index-dest { color: rgba(232,228,216,.42); text-align: right; overflow-wrap: anywhere; }
+  @media (max-width: 860px) {
+    .index-row { grid-template-columns: minmax(0, 1fr) auto; gap: 4px 14px; padding: 13px 4px; }
+    .index-name { grid-column: 1; grid-row: 1; }
+    .index-status { grid-column: 2; grid-row: 1; text-align: right; }
+    .index-kind { grid-column: 1; grid-row: 2; }
+    .index-dest { grid-column: 1 / -1; grid-row: 3; text-align: left; }
+  }
 
 
 
@@ -1776,17 +2064,35 @@ const buildStamp = today.toISOString().slice(0, 10);
   .note-body { margin: 0; font-size: 1rem; line-height: 1.55; color: #3a3022; }
   .note-sig { display: block; margin-top: 14px; font-family: "Caveat", cursive; font-size: 1.05rem; color: #6b4a26; text-align: right; }
 
-  /* ── COLOPHON ────────────────────────────────────────────── */
-  .colophon { margin-top: 80px; padding: 30px 0 0;
+  /* ── ECOSYSTEM FOOTER ─────────────────────────────────────── */
+  .colophon { margin-top: 80px; padding: 34px 0 0;
     border-top: 1px solid rgba(207,231,255,.18);
-    display: flex; justify-content: space-between; align-items: flex-start; gap: 30px; flex-wrap: wrap;
+    display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr);
+    gap: 30px 40px; align-items: start;
   }
-  .col-name { margin: 0; font-family: "IM FELL English", serif; font-size: 1.2rem; color: #f3eedb; }
-  .col-line { margin: 4px 0 6px; color: rgba(232,228,216,.6); font-style: italic; font-size: .95rem; }
-  .col-fine { margin: 0; font-family: "JetBrains Mono", monospace; font-size: .6rem; letter-spacing: .18em; color: rgba(232,228,216,.4); text-transform: uppercase; }
-  .col-right { display: flex; flex-direction: column; gap: 6px; font-family: "JetBrains Mono", monospace; font-size: .72rem; letter-spacing: .14em; text-transform: uppercase; text-align: right; }
-  .col-right a { text-decoration: none; color: rgba(207,231,255,.7); }
-  .col-right a:hover { color: #cfe7ff; }
+  .col-name { margin: 0; font-family: "IM FELL English", serif; font-size: 1.3rem; color: #f3eedb; }
+  .col-line { margin: 6px 0 8px; color: rgba(232,228,216,.6); font-style: italic; font-size: .95rem; max-width: 34ch; }
+  .col-creed { margin: 0; font-family: "JetBrains Mono", monospace; font-size: .6rem; letter-spacing: .24em;
+    text-transform: uppercase; color: rgba(127,203,255,.65); }
+  .col-nav { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 22px 26px; }
+  .col-set { display: flex; flex-direction: column; gap: 7px; }
+  .col-head { font-family: "JetBrains Mono", monospace; font-size: .58rem; letter-spacing: .26em;
+    text-transform: uppercase; color: rgba(232,228,216,.38); margin-bottom: 3px; }
+  .col-set a { font-family: "JetBrains Mono", monospace; font-size: .68rem; letter-spacing: .1em;
+    text-transform: uppercase; text-decoration: none; color: rgba(207,231,255,.7); min-height: 20px; }
+  .col-set a:hover { color: #cfe7ff; }
+  .col-meta { grid-column: 1 / -1; margin: 8px 0 0; padding-top: 18px;
+    border-top: 1px solid rgba(207,231,255,.08);
+    font-family: "JetBrains Mono", monospace; font-size: .58rem; letter-spacing: .2em;
+    text-transform: uppercase; color: rgba(232,228,216,.35); }
+  @media (max-width: 900px) {
+    .colophon { grid-template-columns: 1fr; }
+    .col-nav { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (max-width: 520px) {
+    .col-nav { grid-template-columns: 1fr; }
+    .col-set a { min-height: 34px; display: flex; align-items: center; }
+  }
 </style>
 
 <script is:inline>

@@ -20,6 +20,8 @@ export interface Entity {
   number?: string;
   subtitle?: string;
   accent?: string;
+  // shown in the homepage depth section (Selected Instruments)
+  featured?: boolean;
 }
 
 // ── WORLDS ──────────────────────────────────────────────────────────────
@@ -40,6 +42,7 @@ export const artifacts: Entity[] = [
     glyph: '◉',
     blurb: 'Energy Engine models rhythm, recovery, baseline shifts, and daily direction in one feedback loop. It is a physiological instrument for observing energy, recovery, and autonomic lead over time.',
     connections: ['inquiry-engine', 'reality-capture'],
+    featured: true,
   },
   {
     id: 'inquiry-engine',
@@ -66,6 +69,7 @@ export const artifacts: Entity[] = [
     glyph: '☰',
     blurb: 'Semantic Archaeology explores words through their histories, roots, semantic changes, contexts, and uses across fields.',
     connections: ['inquiry-engine', 'reality-capture'],
+    featured: true,
   },
   {
     id: 'pokedex-scanner',
@@ -94,6 +98,7 @@ export const artifacts: Entity[] = [
     glyph: '◬',
     blurb: 'A document capture and observation archive for saving evidence, notes, and real-world material before interpretation.',
     connections: ['potent-library', 'pokedex-scanner'],
+    featured: true,
   },
   {
     id: 'playground',
@@ -147,6 +152,7 @@ export const artifacts: Entity[] = [
     glyph: '◉',
     blurb: 'A lens that teaches you how to capture. Photogression walks you through the different types of seeing — framing, light, distance, stillness, attention — so the photograph becomes a practice of looking rather than a reflex.',
     connections: ['reality-capture'],
+    featured: true,
   },
 ];
 
