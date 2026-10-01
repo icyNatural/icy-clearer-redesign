@@ -1,4 +1,5 @@
 ---
+import "../styles/foundation.css";
 import "../styles/icy-os.css";
 import "../styles/concept.css";
 
@@ -69,12 +70,14 @@ const hereKind = kind === "doctrine" ? "principle" : kind === "system" ? "tool" 
 
 <body class="icy">
 
+<a class="skip-link" href="#main">Skip to content</a>
+
 <header class="cx-head">
-  <a class="label" href="/clear.html">← Icy Clear</a>
+  <a class="label" href="/clear.html">✦ Icy Clear</a>
   <span class="idx">{[idx, kindLabel.toUpperCase()].filter(Boolean).join(" · ")}</span>
 </header>
 
-<main class="cx">
+<main id="main" class="cx" tabindex="-1">
 
   <!-- ConceptEntry -->
   <section class="entry" aria-labelledby="concept-title">

@@ -1,4 +1,5 @@
 ---
+import "../styles/foundation.css";
 import { worlds, artifacts, collections, signals, allEntities, lenses } from '../data/projects';
 
 // ── Hidden applications (kept in data, hidden from UI) ─────────────────
@@ -134,6 +135,8 @@ const buildStamp = today.toISOString().slice(0, 10);
 </head>
 <body>
 
+<a class="skip-link" href="#main">Skip to content</a>
+
 <!-- celestial wash -->
 <div class="sky" aria-hidden="true">
   <div class="nebula a"></div>
@@ -144,20 +147,20 @@ const buildStamp = today.toISOString().slice(0, 10);
 </div>
 
 <header class="bar">
-  <a href="#" class="seal" aria-label="Icy Natural">
+  <a href="/" class="seal" aria-label="Icy Clearer — home">
     <span class="seal-mark">✦</span>
     <span class="seal-words">
-      <span class="seal-name">Icy Natural</span>
+      <span class="seal-name">Icy Clearer</span>
     </span>
   </a>
-  <nav class="nav">
+  <nav class="nav" aria-label="Primary">
     <a href="#atlas">Map</a>
     <a href="#objects">Tools</a>
     <a class="entry" href="#atlas">Enter →</a>
   </nav>
 </header>
 
-<main class="institute">
+<main id="main" class="institute" tabindex="-1">
 
   <!-- ╔══ HALL OF ENTRY — opening plate ══════════════════════════════ -->
   <section id="hall" class="hall">
@@ -395,6 +398,8 @@ const buildStamp = today.toISOString().slice(0, 10);
       (function(){
         var fig = document.getElementById('atlas-figure');
         if (!fig) return;
+        var reduceMotion = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+        var scrollMode = function(){ return reduceMotion ? 'auto' : 'smooth'; };
         var nodes = fig.querySelectorAll('.node');
         var rels  = fig.querySelectorAll('.rel');
         var cards = fig.querySelectorAll('.field-card');
@@ -465,7 +470,7 @@ const buildStamp = today.toISOString().slice(0, 10);
           var safeTop = 72, safeBottom = window.innerHeight - 110;
           if (r.top < safeTop || r.bottom > safeBottom) {
             var target = window.scrollY + r.top - safeTop;
-            window.scrollTo({ top: Math.max(0, target), behavior: 'smooth' });
+            window.scrollTo({ top: Math.max(0, target), behavior: scrollMode() });
           }
         }
         flowMQ.addEventListener('change', function(){ renderFlowPanel(fig.getAttribute('data-active') || ''); });
@@ -603,7 +608,7 @@ const buildStamp = today.toISOString().slice(0, 10);
             if (!id) return;
             locked = id; armed = id; setActive(id);
             // scroll the chart into view so the user sees the highlight
-            if (!isFlowLayout()) fig.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            if (!isFlowLayout()) fig.scrollIntoView({ behavior: scrollMode(), block: 'center' });
             // mark active chip
             chips.forEach(function(c){ c.classList.toggle('is-active', c === chip); });
           });
