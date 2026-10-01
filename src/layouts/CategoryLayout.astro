@@ -7,10 +7,10 @@ const { frontmatter } = Astro.props;
 
 // Pull all model/mode/system frontmatter via import.meta.glob (no content
 // collection required).
-const modules = import.meta.glob('../pages/{models,modes,system}/*.md', { eager: true });
+const modules = import.meta.glob('../pages/{models,modes,system,doctrines}/*.md', { eager: true });
 const allModels = Object.entries(modules).map(([path, mod]) => {
   const slug = path.split('/').pop().replace(/\.md$/, '');
-  const dir = path.split('/').slice(-2, -1)[0]; // models | modes | system
+  const dir = path.split('/').slice(-2, -1)[0]; // models | modes | system | doctrines
   return { slug, dir, data: mod.frontmatter ?? {} };
 });
 
@@ -39,7 +39,7 @@ const pageHref = (href) => {
 <body>
 <a class="skip-link" href="#main">Skip to content</a>
 <main id="main" class="framework-explorer" tabindex="-1">
-    <a href="/" class="back-button">← Back to Dashboard</a>
+    <a href="/" class="back-button">← Observatory</a>
 
     <header class="hero-section">
       <p class="hero-eyebrow">Category</p>
@@ -50,7 +50,7 @@ const pageHref = (href) => {
 
     {categoryModels.length > 0 && (
       <section id="models" class="section card section--related">
-        <h2>Models in this Category</h2>
+        <h2>Also in this Category</h2>
         <div class="related-grid">
           {categoryModels.map(model => (
             <a href={pageHref(`/${model.dir}/${model.slug}`)} class="related-card">

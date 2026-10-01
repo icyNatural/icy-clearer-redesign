@@ -1,6 +1,9 @@
 ---
-layout: "../../layouts/CategoryLayout.astro"
-title: "Doctrines"
+import CategoryLayout from "../../layouts/CategoryLayout.astro";
+const frontmatter = { title: "Doctrines" };
 ---
 
+<CategoryLayout frontmatter={frontmatter}>
+
 <p>Core principles that anchor the Icy Clear operating system — short, durable statements you return to when the situation gets noisy.</p>
+</CategoryLayout>

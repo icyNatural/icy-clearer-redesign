@@ -1,6 +1,9 @@
 ---
-layout: "../../layouts/CategoryLayout.astro"
-title: "Perception"
+import CategoryLayout from "../../layouts/CategoryLayout.astro";
+const frontmatter = { title: "Perception" };
 ---
 
+<CategoryLayout frontmatter={frontmatter}>
+
 <p>Models for seeing what is actually happening before naming or explaining it — the read layer of the operating system.</p>
+</CategoryLayout>

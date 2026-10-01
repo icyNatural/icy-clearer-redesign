@@ -1,6 +1,9 @@
 ---
-layout: "../../layouts/CategoryLayout.astro"
-title: "Systems Thinking"
+import CategoryLayout from "../../layouts/CategoryLayout.astro";
+const frontmatter = { title: "Systems Thinking" };
 ---
 
+<CategoryLayout frontmatter={frontmatter}>
+
 <p>Models that shift attention from individual events to the underlying patterns, structures, and conditions that produce them.</p>
+</CategoryLayout>
