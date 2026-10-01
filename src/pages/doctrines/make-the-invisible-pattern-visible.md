@@ -11,6 +11,4 @@ relatedModels:
     description: "Reality first. Language last."
 ---
 
-# Make the Invisible Pattern Visible
-
 This is a placeholder for the doctrine "Make the Invisible Pattern Visible."

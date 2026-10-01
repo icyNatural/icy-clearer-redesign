@@ -11,6 +11,4 @@ relatedModels:
     description: "Reality first. Language last."
 ---
 
-# Words Become Environments
-
 This is a placeholder for the doctrine "Words Become Environments."

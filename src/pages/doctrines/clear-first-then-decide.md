@@ -11,6 +11,4 @@ relatedModels:
     description: "You do not stay clear. You get clear again."
 ---
 
-# Clear First, Then Decide
-
 This doctrine page is forming. It exists so the related link resolves instead of showing Not Found.

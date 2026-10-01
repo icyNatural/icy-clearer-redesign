@@ -79,6 +79,8 @@ import "../styles/foundation.css";
     --nat-stroke: rgba(120, 160, 110, 0.3);
   }
   html, body { margin: 0; padding: 0; }
+  /* the shell is 100% wide plus its own gutter — size the box, not its contents */
+  *, *::before, *::after { box-sizing: border-box; }
   body {
     color: var(--nat-ink);
     background:

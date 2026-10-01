@@ -11,6 +11,4 @@ relatedModels:
     description: "Create space and reset when perception is distorted."
 ---
 
-# Clarity Returns When Pressure Drops
-
 This doctrine page is forming. It exists so the related link resolves instead of showing Not Found.

@@ -13,7 +13,10 @@ import "../styles/foundation.css";
   <meta property="og:image" content="/clearnatural.png" />
   <link rel="preload" as="image" href="/clearnatural.png" />
 </head>
-<body data-side="none">
+<body data-side="none" id="main" tabindex="-1">
+
+<a class="skip-link" href="#main">Skip to content</a>
+<h1 class="vh">Icy — Two Worlds</h1>
 
 <!-- ============ DESKTOP / TABLET (single split image) ============ -->
 <div class="desktop-stage" aria-hidden="false">
@@ -124,6 +127,12 @@ import "../styles/foundation.css";
 
 <style is:global>
   * { box-sizing: border-box; }
+  /* the page has no visible heading of its own — keep one for assistive tech */
+  .vh {
+    position: absolute; width: 1px; height: 1px;
+    margin: -1px; padding: 0; border: 0;
+    overflow: hidden; clip-path: inset(50%); white-space: nowrap;
+  }
   html, body {
     margin: 0; padding: 0; width: 100%;
     background: #07101c; color: #f4f7fb;

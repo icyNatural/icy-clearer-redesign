@@ -11,6 +11,4 @@ relatedModels:
     description: "Reality first. Language last."
 ---
 
-# Questions Are Seeking Devices
-
 This is a placeholder for the doctrine "Questions Are Seeking Devices."
