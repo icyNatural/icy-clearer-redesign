@@ -32,75 +32,59 @@ const principles = [
   },
 ];
 
-const models = [
-  {
-    idx: "M-01",
-    field: "Perception",
-    title: "Seeing Before Naming",
-    structure: "event → perception → interpretation",
-    read: "Widen the interval between what happened and what you called it.",
-    href: "/models/seeing-before-naming.html",
-  },
-  {
-    idx: "M-02",
-    field: "Structure",
-    title: "Replace Stories with Systems",
-    structure: "actors ⇄ incentives ⇄ feedback",
-    read: "Ask what the arrangement rewards, not who the villain is.",
-    href: "/models/replace-stories-with-systems.html",
-  },
-  {
-    idx: "M-03",
-    field: "Time",
-    title: "Reaction to Pattern",
-    structure: "frame · frame · frame → trajectory",
-    read: "A single frame is noise. Direction is the signal.",
-    href: "/models/from-reaction-to-pattern.html",
-  },
-  {
-    idx: "M-04",
-    field: "State",
-    title: "Coherence vs Entropy",
-    structure: "organization ⇄ drift",
-    read: "Is the system holding its shape, or spending itself?",
-    href: "/models/coherence-vs-entropy.html",
-  },
-];
+// The written layer is read from the pages themselves — never listed by hand.
+const pieceModules = import.meta.glob("../pages/{models,modes,system,doctrines}/*.md", {
+  eager: true,
+});
 
-const tools = [
-  {
-    kind: "Instrument",
-    title: "Energy Engine",
-    read: "Baseline, deviation, recovery, phase. The body read as a moving system, not a score.",
-    href: "https://phases.icynatural.now",
-    external: true,
-    live: true,
-  },
-  {
-    kind: "Experiment",
-    title: "State modes",
-    read: "Parasympathetic and sympathetic lead — two operating climates.",
-    href: "/modes/parasympathetic-lead-mode.html",
-  },
-  {
-    kind: "System",
-    title: "Return, not scroll",
-    read: "A structure shaped like a habit instead of a feed.",
-    href: "/system/return-not-scroll.html",
-  },
-  {
-    kind: "System",
-    title: "Mind → system",
-    read: "Moving an internal process into external structure.",
-    href: "/system/from-mind-to-system.html",
-  },
-  {
-    kind: "Index",
-    title: "Doctrines",
-    read: "Six durable statements to return to when it gets noisy.",
-    href: "/categories/doctrines.html",
-  },
-];
+type Piece = {
+  dir: string;
+  n: string;
+  label: string;
+  title: string;
+  chain: string;
+  read: string;
+  href: string;
+};
+
+const pieceDirs = ["models", "modes", "system", "doctrines"];
+
+const pieces = Object.entries(pieceModules)
+  .map(([path, mod]) => {
+    const parts = path.split("/");
+    const dir = parts[parts.length - 2];
+    const slug = parts[parts.length - 1].replace(/\.md$/, "");
+    const fm = ((mod as { frontmatter?: Record<string, string> }).frontmatter ?? {});
+    const isModel = dir === "models";
+    return {
+      dir,
+      rank: pieceDirs.indexOf(dir),
+      key: fm.idx ?? (isModel ? "M-99" : (fm.title ?? slug)),
+      n: fm.idx ?? "",
+      label: fm.domain ?? fm.category ?? "",
+      title: fm.title ?? slug,
+      chain: (isModel ? fm.chain : fm.purpose) ?? "",
+      read: (isModel ? (fm.changes ?? fm.description) : fm.description) ?? "",
+      href: `/${dir}/${slug}.html`,
+    };
+  })
+  .sort((a, b) => a.rank - b.rank || a.key.localeCompare(b.key));
+
+const numbered = (list: typeof pieces): Piece[] =>
+  list.map((p, i) => ({
+    dir: p.dir,
+    n: p.n || String(i + 1).padStart(2, "0"),
+    label: p.label,
+    title: p.title,
+    chain: p.chain,
+    read: p.read,
+    href: p.href,
+  }));
+
+const models   = numbered(pieces.filter((p) => p.dir === "models"));
+const modes    = numbered(pieces.filter((p) => p.dir === "modes"));
+const systems  = numbered(pieces.filter((p) => p.dir === "system"));
+const doctrines = numbered(pieces.filter((p) => p.dir === "doctrines"));
 
 const paths = [
   {
@@ -148,7 +132,7 @@ const paths = [
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Icy Clear — See clearly before you explain.</title>
-  <meta name="description" content="A quiet perception system: three operating principles, four models, a small set of tools, and routes by intent." />
+  <meta name="description" content="A quiet perception system: three operating principles, then the written layer — models, modes, systems, doctrines — and routes by intent." />
   <meta name="theme-color" content="#f2f6f9" />
   <meta property="og:title" content="Icy Clear" />
   <meta property="og:description" content="See clearly before you explain." />
@@ -210,11 +194,11 @@ const paths = [
       {models.map((m) => (
         <li class="row-item">
           <a class="row row--link" href={m.href}>
-            <span class="row__n idx">{m.idx}</span>
+            <span class="row__n idx">{m.n}</span>
             <span class="row__body">
-              <span class="label">{m.field}</span>
+              <span class="label">{m.label}</span>
               <span class="d-md row__head">{m.title}</span>
-              <span class="chain">{m.structure}</span>
+              {m.chain && <span class="chain">{m.chain}</span>}
               <span class="read row__read">{m.read}</span>
             </span>
           </a>
@@ -223,26 +207,68 @@ const paths = [
     </ul>
   </section>
 
-  <section id="tools" class="band" data-sec="tools">
+  <section id="modes" class="band" data-sec="modes">
     <div class="band__head">
       <span class="idx">03</span>
-      <h2 class="d-md">Tools</h2>
+      <h2 class="d-md">Modes</h2>
     </div>
 
     <ul class="rows rows--tight">
-      {tools.map((t) => (
+      {modes.map((m) => (
         <li class="row-item">
-          <a
-            class="row row--link"
-            href={t.href}
-            target={t.external ? "_blank" : undefined}
-            rel={t.external ? "noopener" : undefined}
-          >
-            <span class="row__n label">{t.kind}</span>
+          <a class="row row--link" href={m.href}>
+            <span class="row__n idx">{m.n}</span>
             <span class="row__body">
-              <span class="d-md row__head">{t.title}</span>
-              <span class="read row__read">{t.read}</span>
-              {t.live && <span class="state"><span class="state__dot"></span><span>live</span></span>}
+              <span class="label">{m.label}</span>
+              <span class="d-md row__head">{m.title}</span>
+              {m.chain && <span class="chain">{m.chain}</span>}
+              <span class="read row__read">{m.read}</span>
+            </span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <section id="systems" class="band" data-sec="systems">
+    <div class="band__head">
+      <span class="idx">04</span>
+      <h2 class="d-md">Systems</h2>
+    </div>
+
+    <ul class="rows rows--tight">
+      {systems.map((s) => (
+        <li class="row-item">
+          <a class="row row--link" href={s.href}>
+            <span class="row__n idx">{s.n}</span>
+            <span class="row__body">
+              <span class="label">{s.label}</span>
+              <span class="d-md row__head">{s.title}</span>
+              {s.chain && <span class="chain">{s.chain}</span>}
+              <span class="read row__read">{s.read}</span>
+            </span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <section id="doctrines" class="band" data-sec="doctrines">
+    <div class="band__head">
+      <span class="idx">05</span>
+      <h2 class="d-md">Doctrines</h2>
+    </div>
+
+    <ul class="rows rows--tight">
+      {doctrines.map((d) => (
+        <li class="row-item">
+          <a class="row row--link" href={d.href}>
+            <span class="row__n idx">{d.n}</span>
+            <span class="row__body">
+              <span class="label">{d.label}</span>
+              <span class="d-md row__head">{d.title}</span>
+              {d.chain && <span class="chain">{d.chain}</span>}
+              <span class="read row__read">{d.read}</span>
             </span>
           </a>
         </li>
@@ -252,7 +278,7 @@ const paths = [
 
   <section id="paths" class="band" data-sec="paths">
     <div class="band__head">
-      <span class="idx">04</span>
+      <span class="idx">06</span>
       <h2 class="d-md">Paths</h2>
     </div>
 
@@ -284,7 +310,9 @@ const paths = [
   <a href="#home" data-sec="home" class="nav__key is-active">Home</a>
   <a href="#principles" data-sec="principles" class="nav__key">Principles</a>
   <a href="#models" data-sec="models" class="nav__key">Models</a>
-  <a href="#tools" data-sec="tools" class="nav__key">Tools</a>
+  <a href="#modes" data-sec="modes" class="nav__key">Modes</a>
+  <a href="#systems" data-sec="systems" class="nav__key">Systems</a>
+  <a href="#doctrines" data-sec="doctrines" class="nav__key">Doctrines</a>
   <a href="#paths" data-sec="paths" class="nav__key">Paths</a>
 </nav>
 
@@ -436,8 +464,16 @@ const paths = [
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     border-top: 1px solid var(--hair);
+    /* seven sections do not fit on a phone — let the strip scroll instead of clipping */
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    overscroll-behavior-x: contain;
   }
+  .nav::-webkit-scrollbar { display: none; }
   .nav__key {
+    flex: 0 0 auto;
+    white-space: nowrap;
     font-family: var(--face-data); font-size: var(--t-label);
     letter-spacing: 0.1em; text-transform: uppercase;
     color: var(--ink-faint); text-decoration: none;
@@ -445,6 +481,10 @@ const paths = [
     transition: color .25s ease;
   }
   .nav__key.is-active { color: var(--ink); }
+  .nav__key:focus-visible { outline: 1px solid var(--sig-soft); outline-offset: 3px; }
+  @media (min-width: 720px) {
+    .nav { justify-content: center; gap: var(--s5); }
+  }
 
   @media (min-width: 720px) {
     .row { grid-template-columns: 88px 1fr; gap: var(--s4); }
