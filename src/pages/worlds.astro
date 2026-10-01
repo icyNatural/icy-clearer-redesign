@@ -1,0 +1,417 @@
+---
+---
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Icy — Two Worlds</title>
+  <meta name="description" content="Two climates. One observatory." />
+  <meta name="theme-color" content="#07101c" />
+  <meta property="og:title" content="Icy — Two Worlds" />
+  <meta property="og:description" content="Cold clarity. Organic becoming." />
+  <meta property="og:image" content="/clearnatural.png" />
+  <link rel="preload" as="image" href="/clearnatural.png" />
+</head>
+<body data-side="none">
+
+<!-- ============ DESKTOP / TABLET (single split image) ============ -->
+<div class="desktop-stage" aria-hidden="false">
+  <picture class="bg" aria-hidden="true">
+    <img src="/clearnatural.png" alt="" />
+  </picture>
+
+  <div class="veil veil-left" aria-hidden="true"></div>
+  <div class="veil veil-right" aria-hidden="true"></div>
+
+  <button class="d-half d-half-left" data-side="clear" data-href="/clear.html" type="button" aria-label="Enter Icy Clear OS">
+    <span class="half-inner">
+      <span class="eyebrow">Icy Clear OS</span>
+      <span class="tag">Snow · Ice · Clarity</span>
+      <span class="enter">Enter →</span>
+    </span>
+  </button>
+
+  <button class="d-half d-half-right" data-side="natural" data-href="https://icynatural.now" type="button" aria-label="Enter Icy Natural">
+    <span class="half-inner">
+      <span class="eyebrow">Icy Natural</span>
+      <span class="tag">Forest · Becoming</span>
+      <span class="enter">Enter →</span>
+    </span>
+  </button>
+
+  <div class="portal" aria-hidden="true">
+    <span class="ring"></span>
+    <span class="ring ring-2"></span>
+    <span class="glyph">
+      <svg viewBox="0 0 80 80" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <g class="g-clear" stroke="#bfe4ff" stroke-width="1.3">
+          <line x1="40" y1="8" x2="40" y2="28"/>
+          <line x1="18" y1="16" x2="40" y2="26"/>
+          <line x1="62" y1="16" x2="40" y2="26"/>
+          <polyline points="34,10 40,16 46,10"/>
+          <polyline points="18,12 22,20 14,24"/>
+          <polyline points="62,12 58,20 66,24"/>
+        </g>
+        <text x="40" y="42" text-anchor="middle" class="emblem-amp">&#38;</text>
+        <g class="g-nat" stroke="#c7e3b1" stroke-width="1.3">
+          <path d="M16 72 C 22 54, 40 46, 64 48 C 62 64, 48 74, 20 74 Z"/>
+          <path d="M16 72 C 28 64, 44 56, 60 48"/>
+          <path d="M26 68 L 36 62"/>
+        </g>
+      </svg>
+    </span>
+  </div>
+</div>
+
+<!-- ============ MOBILE (stacked vertical) ============ -->
+<div class="mobile-stage" aria-hidden="false">
+  <header class="m-nav">
+    <a class="brand" href="/">✦ Icy Natural</a>
+    <span class="nav-title">Two Worlds</span>
+  </header>
+
+  <a class="m-world m-world-top" href="/clear.html" aria-label="Enter Icy Clear OS">
+    <div class="m-art m-art-clear" aria-hidden="true">
+      <img src="/clearnatural.png" alt="" />
+    </div>
+    <div class="m-veil"></div>
+    <div class="m-content">
+      <span class="eyebrow">Icy Clear OS</span>
+      <span class="tag">Snow · Ice · Clarity</span>
+      <span class="enter-btn">Enter →</span>
+    </div>
+  </a>
+
+  <button class="m-threshold" type="button" aria-label="Choose a climate" id="mThreshold">
+    <span class="m-ring" aria-hidden="true"></span>
+    <span class="m-ring m-ring-2" aria-hidden="true"></span>
+    <span class="m-halo m-halo-clear" aria-hidden="true"></span>
+    <span class="m-halo m-halo-nat" aria-hidden="true"></span>
+    <span class="m-glyph" aria-hidden="true">
+      <svg viewBox="0 0 80 80" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <g class="g-clear" stroke="#bfe4ff" stroke-width="1.3">
+          <line x1="40" y1="8" x2="40" y2="28"/>
+          <line x1="18" y1="16" x2="40" y2="26"/>
+          <line x1="62" y1="16" x2="40" y2="26"/>
+          <polyline points="34,10 40,16 46,10"/>
+          <polyline points="18,12 22,20 14,24"/>
+          <polyline points="62,12 58,20 66,24"/>
+        </g>
+        <text x="40" y="42" text-anchor="middle" class="emblem-amp">&#38;</text>
+        <g class="g-nat" stroke="#c7e3b1" stroke-width="1.3">
+          <path d="M16 72 C 22 54, 40 46, 64 48 C 62 64, 48 74, 20 74 Z"/>
+          <path d="M16 72 C 28 64, 44 56, 60 48"/>
+          <path d="M26 68 L 36 62"/>
+        </g>
+      </svg>
+    </span>
+    <span class="m-hint">Choose a climate</span>
+  </button>
+
+  <a class="m-world m-world-bot" href="https://icynatural.now" aria-label="Enter Icy Natural">
+    <div class="m-art m-art-nat" aria-hidden="true">
+      <img src="/clearnatural.png" alt="" />
+    </div>
+    <div class="m-veil"></div>
+    <div class="m-content">
+      <span class="eyebrow nat">Icy Natural</span>
+      <span class="tag">Forest · Becoming</span>
+      <span class="enter-btn nat">Enter →</span>
+    </div>
+  </a>
+</div>
+
+<style is:global>
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0; width: 100%;
+    background: #07101c; color: #f4f7fb;
+    font-family: -apple-system, "Inter", system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Toggle stages */
+  .desktop-stage { display: block; height: 100vh; height: 100dvh; overflow: hidden; position: relative; }
+  .mobile-stage  { display: none; }
+
+  @media (max-width: 760px) {
+    html, body { overflow-x: hidden; }
+    .desktop-stage { display: none !important; }
+    .mobile-stage  { display: flex; flex-direction: column; min-height: 100vh; min-height: 100dvh; }
+  }
+
+  /* ============ DESKTOP ============ */
+  .bg { position: absolute; inset: 0; z-index: 0; display: block; }
+  .bg img { width: 100%; height: 100%; object-fit: cover; object-position: center; }
+
+  .veil { position: absolute; top: 0; bottom: 0; width: 50%; z-index: 1; pointer-events: none;
+          background: rgba(4,9,18,.32); transition: background 1s ease; }
+  .veil-left  { left: 0; }
+  .veil-right { right: 0; }
+  body[data-side="clear"]   .veil-left  { background: rgba(4,9,18,.05); }
+  body[data-side="clear"]   .veil-right { background: rgba(4,9,18,.72); }
+  body[data-side="natural"] .veil-right { background: rgba(4,9,18,.05); }
+  body[data-side="natural"] .veil-left  { background: rgba(4,9,18,.72); }
+
+  .d-half {
+    position: absolute; top: 0; bottom: 0; width: 50%;
+    appearance: none; background: transparent; border: 0; padding: 0; margin: 0;
+    cursor: pointer; z-index: 5; color: #f4f7fb;
+    display: flex; align-items: flex-end; justify-content: center;
+    padding-bottom: 14vh;
+    text-shadow: 0 2px 18px rgba(0,0,0,.7);
+  }
+  .d-half-left  { left: 0; }
+  .d-half-right { right: 0; }
+
+  .half-inner {
+    display: flex; flex-direction: column; align-items: center; gap: 14px;
+    opacity: .82; transition: opacity .7s ease, transform .7s cubic-bezier(.22,1,.36,1);
+  }
+  .eyebrow {
+    font-family: "Cormorant Garamond", "EB Garamond", Georgia, serif;
+    font-style: italic; font-weight: 400;
+    font-size: clamp(20px, 2.4vw, 30px);
+    color: #eaf6ff;
+  }
+  .eyebrow.nat { color: #eef7e3; }
+  .tag {
+    font-size: 11px; letter-spacing: .26em; text-transform: uppercase;
+    color: rgba(255,255,255,.7);
+  }
+  .enter {
+    margin-top: 6px;
+    font-size: 10.5px; letter-spacing: .32em; text-transform: uppercase;
+    padding: 10px 24px; border: 1px solid rgba(255,255,255,.4); border-radius: 999px;
+    color: rgba(255,255,255,.95);
+    transition: border-color .5s ease, background .5s ease, color .5s ease;
+  }
+  .d-half:hover .half-inner,
+  .d-half:focus-visible .half-inner { opacity: 1; transform: translateY(-3px); }
+  .d-half-left:hover  .enter { border-color: #bfe4ff; color: #eaf6ff; background: rgba(159,217,255,.10); }
+  .d-half-right:hover .enter { border-color: #c7e3b1; color: #f0f8e7; background: rgba(189,217,164,.12); }
+
+  .portal {
+    position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+    width: clamp(160px, 22vw, 280px); height: clamp(160px, 22vw, 280px);
+    z-index: 6; pointer-events: none;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .ring {
+    position: absolute; inset: 0; border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,255,255,.16) 0%, transparent 62%);
+    transition: background 1s ease;
+  }
+  .ring-2 {
+    inset: -12%; background: none;
+    border: 1px dashed rgba(255,255,255,.18);
+    animation: spin 60s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .glyph {
+    position: relative; width: 70%; height: 70%;
+    animation: rotate-slow 80s linear infinite;
+    filter: drop-shadow(0 0 18px rgba(170,210,255,.35)) drop-shadow(0 0 22px rgba(190,220,170,.28));
+    transition: transform 1s cubic-bezier(.22,1,.36,1), filter .9s ease;
+  }
+  .glyph svg { width: 100%; height: 100%; display: block; }
+  @keyframes rotate-slow { to { transform: rotate(360deg); } }
+  body[data-side="clear"]   .ring  { background: radial-gradient(circle, rgba(159,217,255,.32) 0%, transparent 64%); }
+  body[data-side="natural"] .ring  { background: radial-gradient(circle, rgba(189,217,164,.32) 0%, transparent 64%); }
+  body[data-side="clear"]   .glyph { filter: drop-shadow(-10px 0 26px rgba(159,217,255,.6)); transform: translateX(-6px); }
+  body[data-side="natural"] .glyph { filter: drop-shadow(10px 0 26px rgba(189,217,164,.6));  transform: translateX(6px); }
+  body[data-side="clear"]   .g-nat   { opacity: .35; transition: opacity .8s ease; }
+  body[data-side="natural"] .g-clear { opacity: .35; transition: opacity .8s ease; }
+  .g-clear, .g-nat { transition: opacity .8s ease; }
+  .emblem-amp {
+    font-family: "Cormorant Garamond", "EB Garamond", Georgia, serif;
+    font-style: italic;
+    font-size: 18px;
+    fill: rgba(255,255,255,.88);
+    filter: drop-shadow(0 0 4px rgba(255,255,255,.35));
+  }
+
+  /* ============ MOBILE ============ */
+  .m-nav {
+    position: sticky; top: 0; z-index: 20;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 18px;
+    background: linear-gradient(180deg, rgba(7,16,28,.85), rgba(7,16,28,0));
+    text-shadow: 0 1px 14px rgba(0,0,0,.6);
+  }
+  .m-nav .brand, .m-nav .nav-title {
+    font-size: 10.5px; letter-spacing: .2em; text-transform: uppercase;
+    color: rgba(255,255,255,.82); text-decoration: none;
+  }
+  .m-nav .brand { font-weight: 600; }
+  .m-nav .nav-title { opacity: .7; }
+
+  .m-world {
+    position: relative; width: 100%;
+    flex: 1 1 0;
+    min-height: 0;
+    overflow: hidden; text-decoration: none; color: #f4f7fb;
+    isolation: isolate;
+  }
+  .m-art { position: absolute; inset: 0; z-index: 0; }
+  .m-art img {
+    width: 200%; height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .m-art-clear img { object-position: 0% center; transform: translateX(0); }
+  .m-art-nat img   { object-position: 100% center; transform: translateX(-50%); }
+
+  .m-veil {
+    position: absolute; inset: 0; z-index: 1; pointer-events: none;
+    background:
+      linear-gradient(180deg, rgba(7,16,28,.25) 0%, rgba(7,16,28,0) 28%, rgba(7,16,28,0) 55%, rgba(7,16,28,.82) 100%);
+  }
+  .m-world-top .m-veil {
+    background:
+      linear-gradient(180deg, rgba(7,16,28,.2) 0%, rgba(7,16,28,0) 35%, rgba(7,16,28,.55) 100%);
+  }
+
+  .m-content {
+    position: absolute; left: 0; right: 0; bottom: 0; z-index: 2;
+    padding: 18px 20px 22px;
+    display: flex; flex-direction: column; align-items: flex-start; gap: 8px;
+    text-shadow: 0 2px 16px rgba(0,0,0,.75);
+    max-width: 100%;
+  }
+  .m-content .eyebrow {
+    font-size: clamp(20px, 6vw, 26px); line-height: 1.05;
+    max-width: calc(100vw - 40px);
+  }
+  .m-content .tag {
+    font-size: 10px; letter-spacing: .24em; color: rgba(255,255,255,.78);
+  }
+
+  .enter-btn {
+    margin-top: 8px;
+    display: inline-flex; align-items: center; justify-content: center;
+    min-height: 46px; padding: 12px 22px;
+    font-size: 11.5px; letter-spacing: .28em; text-transform: uppercase; font-weight: 600;
+    color: #eaf6ff;
+    border: 1px solid rgba(191,228,255,.55);
+    background: rgba(159,217,255,.10);
+    border-radius: 999px;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+  }
+  .enter-btn.nat {
+    color: #f0f8e7;
+    border-color: rgba(199,227,177,.6);
+    background: rgba(189,217,164,.12);
+  }
+  .m-world:active .enter-btn { transform: scale(.98); }
+
+  /* ===== Ceremonial threshold ===== */
+  .m-threshold {
+    position: relative;
+    display: flex; align-items: center; justify-content: center;
+    width: 100%;
+    appearance: none; border: 0; cursor: pointer;
+    padding: 18px 0 20px;
+    background:
+      radial-gradient(ellipse at center, rgba(20,40,64,.95) 0%, rgba(7,16,28,1) 70%),
+      #07101c;
+    overflow: hidden;
+  }
+  .m-threshold::before {
+    content: ""; position: absolute; left: 0; right: 0; top: 0; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(191,228,255,.35), transparent);
+  }
+  .m-threshold::after {
+    content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(199,227,177,.35), transparent);
+  }
+  .m-halo {
+    position: absolute; left: 50%; top: 50%;
+    width: 220px; height: 220px;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    pointer-events: none;
+    filter: blur(8px);
+    opacity: .85;
+  }
+  .m-halo-clear { background: radial-gradient(circle, rgba(159,217,255,.32) 0%, transparent 60%); animation: drift-l 9s ease-in-out infinite; }
+  .m-halo-nat   { background: radial-gradient(circle, rgba(189,217,164,.30) 0%, transparent 60%); animation: drift-r 9s ease-in-out infinite; }
+  @keyframes drift-l { 0%,100% { transform: translate(-58%, -50%); } 50% { transform: translate(-42%, -50%); } }
+  @keyframes drift-r { 0%,100% { transform: translate(-42%, -50%); } 50% { transform: translate(-58%, -50%); } }
+
+  .m-ring {
+    position: absolute; left: 50%; top: 50%;
+    width: 132px; height: 132px;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,.22);
+    box-shadow: 0 0 36px rgba(170,210,255,.18) inset, 0 0 28px rgba(190,220,170,.16);
+    animation: ring-breathe 5s ease-in-out infinite;
+  }
+  .m-ring-2 {
+    width: 158px; height: 158px;
+    border: 1px dashed rgba(255,255,255,.16);
+    box-shadow: none;
+    animation: spin 90s linear infinite;
+  }
+  @keyframes ring-breathe {
+    0%,100% { box-shadow: 0 0 32px rgba(170,210,255,.16) inset, 0 0 22px rgba(190,220,170,.14); }
+    50%     { box-shadow: 0 0 48px rgba(170,210,255,.28) inset, 0 0 38px rgba(190,220,170,.24); }
+  }
+
+  .m-glyph {
+    position: relative;
+    width: 96px; height: 96px; display: flex; align-items: center; justify-content: center;
+    filter: drop-shadow(0 0 14px rgba(170,210,255,.4)) drop-shadow(0 0 14px rgba(190,220,170,.34));
+    animation: breathe 6s ease-in-out infinite;
+  }
+  .m-glyph svg { width: 100%; height: 100%; display: block; }
+  @keyframes breathe {
+    0%,100% { opacity: .88; transform: scale(1); }
+    50%     { opacity: 1;   transform: scale(1.04); }
+  }
+  .m-hint {
+    position: absolute; left: 50%; bottom: 8px;
+    transform: translateX(-50%);
+    font-size: 9.5px; letter-spacing: .32em; text-transform: uppercase;
+    color: rgba(255,255,255,.55);
+    opacity: 0; transition: opacity .5s ease;
+    white-space: nowrap;
+  }
+  .m-threshold.is-active .m-hint,
+  .m-threshold:focus-visible .m-hint { opacity: 1; }
+  .m-threshold.is-active .m-ring { box-shadow: 0 0 56px rgba(170,210,255,.34) inset, 0 0 42px rgba(190,220,170,.3); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .glyph, .ring-2, .m-glyph, .m-ring, .m-ring-2, .m-halo { animation: none !important; }
+    * { transition: none !important; }
+  }
+</style>
+
+<script is:inline>
+  (function () {
+    const body = document.body;
+    const halves = document.querySelectorAll('.d-half');
+    function setSide(s) { body.dataset.side = s || 'none'; }
+    halves.forEach((h) => {
+      const side = h.dataset.side;
+      const href = h.dataset.href;
+      h.addEventListener('mouseenter', () => setSide(side));
+      h.addEventListener('mouseleave', () => setSide('none'));
+      h.addEventListener('focus',  () => setSide(side));
+      h.addEventListener('blur',   () => setSide('none'));
+      h.addEventListener('click',  () => { window.location.href = href; });
+    });
+    const thr = document.getElementById('mThreshold');
+    if (thr) {
+      thr.addEventListener('click', (e) => {
+        e.preventDefault();
+        thr.classList.toggle('is-active');
+      });
+    }
+  })();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,11 @@
+---
+// <Callout type="failure-mode" | "practice" | "questions" | "core-idea" | "why-it-matters" | "process" eyebrow="..." title="...">
+const { type = "note", eyebrow, title, id } = Astro.props;
+---
+<aside class={`callout callout--${type}`} id={id}>
+  {eyebrow && <p class="callout__eyebrow">{eyebrow}</p>}
+  {title && <h2 class="callout__title">{title}</h2>}
+  <div class="callout__body">
+    <slot />
+  </div>
+</aside>

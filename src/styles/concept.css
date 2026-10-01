@@ -1,0 +1,248 @@
+/* ============================================================
+   ICY CLEAR — concept system
+   Shared primitives for Principle / Model / Tool / Path / System pages.
+   Depends on tokens in icy-os.css.
+   ============================================================ */
+
+.cx {
+  width: min(720px, 100%);
+  margin: 0 auto;
+  padding: 0 max(20px, env(safe-area-inset-left)) calc(96px + env(safe-area-inset-bottom));
+}
+
+.cx section { padding: var(--s5) 0; }
+.cx section + section { border-top: 1px solid var(--hair); }
+
+.cx-head {
+  position: sticky; top: 0; z-index: 60;
+  display: flex; align-items: center; justify-content: space-between; gap: var(--s3);
+  padding: 12px max(18px, env(safe-area-inset-left));
+  background: color-mix(in oklab, var(--srf-1) 84%, transparent);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+.cx-head a { text-decoration: none; color: var(--ink-mute); }
+.cx-head a:hover { color: var(--ink); }
+
+/* ---------- ConceptEntry ---------- */
+
+.entry { padding-top: var(--s5) !important; }
+.entry__meta { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--s3); }
+.entry__title { margin: var(--s4) 0 0; max-width: 24ch; }
+.entry__consequence {
+  margin: var(--s4) 0 0;
+  font-family: var(--face-display);
+  font-size: clamp(1.0625rem, 3.4vw, 1.3rem);
+  line-height: 1.35;
+  color: var(--ink-2);
+  max-width: 34ch;
+}
+.entry__consequence::before { content: "\00AB"; color: var(--ink-faint); }
+.entry__consequence::after { content: "\00BB"; color: var(--ink-faint); }
+.entry__what {
+  margin: var(--s5) 0 0;
+  display: grid; gap: 6px;
+}
+
+/* ---------- ConceptFlow ---------- */
+
+.flow { margin: var(--s5) 0 0; display: grid; gap: 0; }
+.flow__stage {
+  appearance: none; -webkit-appearance: none;
+  background: none; border: 0; border-top: 1px solid var(--hair);
+  padding: var(--s3) 0; text-align: left; cursor: pointer;
+  display: grid; grid-template-columns: 22px 1fr auto; align-items: baseline; gap: var(--s3);
+  color: var(--ink-faint);
+  transition: color .3s ease, opacity .4s ease, transform .4s ease;
+  opacity: 0.42;
+}
+.flow__stage:first-child { border-top: 0; }
+.flow__stage.is-lit { opacity: 1; }
+.flow__stage.is-open { color: var(--ink); }
+.flow__stage-name {
+  font-family: var(--face-data); font-size: var(--t-meta);
+  letter-spacing: 0.16em; text-transform: uppercase;
+  color: inherit;
+}
+.flow__stage.is-open .flow__stage-name { color: var(--sig); }
+.flow__stage-n { font-family: var(--face-data); font-size: var(--t-label); color: var(--ink-faint); }
+.flow__stage-cue { font-family: var(--face-data); font-size: var(--t-label); color: var(--ink-faint); }
+.flow__note {
+  grid-column: 2 / -1;
+  margin: 0; max-width: 48ch;
+  color: var(--ink-2); font-size: var(--t-body);
+  display: none;
+}
+.flow__stage.is-open .flow__note { display: block; padding-top: var(--s2); }
+
+.flow--lateral { display: flex; flex-wrap: wrap; gap: var(--s2) var(--s3); }
+.flow--lateral .flow__stage {
+  border: 0; border-bottom: 1px solid var(--hair); padding: 4px 0;
+  grid-template-columns: 1fr;
+}
+
+/* ---------- frames / trajectory ---------- */
+
+.frames { display: flex; align-items: flex-end; gap: var(--s2); margin: var(--s5) 0 0; }
+.frames__f {
+  flex: 1; height: 34px; border: 1px solid var(--hair-strong);
+  position: relative; opacity: 0.55;
+  transition: opacity .5s ease;
+}
+.frames__f.is-lit { opacity: 1; }
+.frames__f::after {
+  content: ""; position: absolute; left: 50%; top: 50%;
+  width: 4px; height: 4px; margin: -2px 0 0 -2px; border-radius: 50%;
+  background: var(--sig-soft);
+}
+.frames__arrow { font-family: var(--face-data); font-size: var(--t-label); color: var(--ink-faint); }
+
+/* ---------- EvidenceLayer tags ---------- */
+
+.ev {
+  display: inline-block; justify-self: start;
+  font-family: var(--face-data); font-size: var(--t-label);
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--ink-faint);
+  border-bottom: 1px solid var(--hair-strong);
+  padding-bottom: 1px; white-space: nowrap;
+}
+.ev--observed { color: var(--live); border-color: color-mix(in oklab, var(--live) 45%, transparent); }
+.ev--inferred { color: var(--sig); border-color: var(--sig-soft); }
+.ev--hypothesis { color: var(--ink-mute); border-style: dashed; }
+.ev--unknown { color: var(--ink-faint); border-style: dotted; }
+
+.claims { list-style: none; margin: var(--s4) 0 0; padding: 0; display: grid; gap: var(--s3); }
+.claims li { display: grid; gap: 4px; justify-items: start; }
+.claims p { margin: 0; color: var(--ink-2); max-width: 52ch; }
+
+/* ---------- DistinctionView ---------- */
+
+.dist { margin: var(--s4) 0 0; display: grid; gap: 0; }
+.dist__row {
+  display: grid; grid-template-columns: 1fr 1fr; gap: var(--s4);
+  padding: var(--s3) 0; border-top: 1px solid var(--hair);
+}
+.dist__row:first-child { border-top: 0; }
+.dist__cell { display: grid; gap: 4px; }
+.dist__cell p { margin: 0; color: var(--ink-2); font-size: var(--t-body); }
+.dist__cell--b .label { color: var(--sig); }
+
+/* ---------- ConceptLens ---------- */
+
+.lenses { list-style: none; margin: var(--s4) 0 0; padding: 0; }
+.lens { border-top: 1px solid var(--hair); }
+.lens:first-child { border-top: 0; }
+.lens__btn {
+  width: 100%; appearance: none; background: none; border: 0; cursor: pointer;
+  padding: var(--s3) 0; text-align: left;
+  display: grid; grid-template-columns: 1fr auto; align-items: baseline; gap: var(--s3);
+}
+.lens__name { font-family: var(--face-data); font-size: var(--t-meta); letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink-mute); }
+.lens.is-open .lens__name { color: var(--sig); }
+.lens__sign { font-family: var(--face-data); font-size: var(--t-label); color: var(--ink-faint); }
+.lens__body { display: none; padding: 0 0 var(--s3); }
+.lens.is-open .lens__body { display: grid; gap: 6px; }
+.lens__prompt { margin: 0; font-family: var(--face-display); font-size: var(--t-read); color: var(--ink); }
+.lens__read { margin: 0; color: var(--ink-2); max-width: 52ch; }
+
+/* ---------- ThoughtExperiment ---------- */
+
+.exp { margin: var(--s4) 0 0; display: grid; gap: var(--s3); }
+.exp__situation {
+  margin: 0; font-family: var(--face-display); font-size: var(--t-read);
+  color: var(--ink); max-width: 46ch;
+  border-left: 1px solid var(--hair-strong); padding-left: var(--s3);
+}
+.exp__ask { margin: 0; color: var(--ink-2); }
+.exp__reveal-btn {
+  justify-self: start; appearance: none; background: none; cursor: pointer;
+  border: 0; border-bottom: 1px solid var(--hair-strong); padding: 0 0 4px;
+  font-family: var(--face-data); font-size: var(--t-meta);
+  letter-spacing: 0.12em; text-transform: uppercase; color: var(--sig);
+}
+.exp__reveal { display: none; }
+.exp.is-revealed .exp__reveal { display: grid; gap: 6px; }
+.exp.is-revealed .exp__reveal-btn { display: none; }
+
+/* ---------- QuickView / DeepView ---------- */
+
+.depth {
+  display: flex; align-items: center; gap: var(--s3);
+  padding: var(--s4) 0 0;
+}
+.depth__btn {
+  appearance: none; background: none; border: 0; cursor: pointer;
+  border-bottom: 1px solid var(--hair-strong); padding: 0 0 4px;
+  font-family: var(--face-data); font-size: var(--t-meta);
+  letter-spacing: 0.12em; text-transform: uppercase; color: var(--sig);
+}
+.deep { display: none; }
+.deep.is-open { display: block; }
+.deep__inner > * { max-width: 58ch; }
+.deep__inner h2 {
+  font-family: var(--face-data); font-size: var(--t-label);
+  letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--ink-mute); font-weight: 400;
+  margin: var(--s5) 0 var(--s2);
+}
+.deep__inner .card { border: 0; background: none; padding: 0; margin: 0; }
+.deep__inner p, .deep__inner li { color: var(--ink-2); }
+.deep__inner ul, .deep__inner ol { padding-left: 1.1rem; }
+.deep__inner li { margin: 0 0 4px; }
+.deep__inner strong { font-weight: 500; color: var(--ink); }
+
+/* ---------- ConceptConnection (graph) ---------- */
+
+.graph { list-style: none; margin: var(--s4) 0 0; padding: 0; }
+.graph > li { display: grid; gap: 4px; padding: var(--s3) 0; border-top: 1px solid var(--hair); }
+.graph > li:first-child { border-top: 0; }
+.graph__links { display: flex; flex-wrap: wrap; gap: var(--s2) var(--s3); }
+.graph__links a, .graph__links span {
+  font-family: var(--face-display); font-size: var(--t-read); color: var(--ink);
+  text-decoration: none; border-bottom: 1px solid var(--hair);
+}
+.graph__links a:hover { color: var(--sig); border-color: var(--sig-soft); }
+
+/* ---------- ConceptExit ---------- */
+
+.exits { list-style: none; margin: var(--s4) 0 0; padding: 0; }
+.exits li + li { border-top: 1px solid var(--hair); }
+.exit { display: grid; gap: 4px; padding: var(--s3) 0; text-decoration: none; }
+.exit__if { font-family: var(--face-data); font-size: var(--t-label); letter-spacing: 0.08em; color: var(--ink-faint); }
+.exit__go { font-family: var(--face-display); font-size: var(--t-read); color: var(--ink); transition: color .25s ease; }
+.exit:hover .exit__go { color: var(--sig); }
+
+/* ---------- ConceptCompass ---------- */
+
+.compass {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 70;
+  display: flex; align-items: center; justify-content: center; gap: var(--s3);
+  padding: 10px max(16px, env(safe-area-inset-left)) calc(10px + env(safe-area-inset-bottom));
+  background: color-mix(in oklab, var(--srf-1) 88%, transparent);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-top: 1px solid var(--hair);
+}
+.compass__step {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: var(--face-data); font-size: var(--t-label);
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--ink-faint); text-decoration: none;
+}
+.compass__step.is-here { color: var(--ink); }
+.compass__dot {
+  width: 5px; height: 5px; border-radius: 50%;
+  border: 1px solid var(--ink-faint);
+}
+.compass__step.is-here .compass__dot { background: var(--sig); border-color: var(--sig); }
+.compass__sep { font-family: var(--face-data); font-size: var(--t-label); color: var(--ink-faint); }
+
+@media (max-width: 420px) {
+  .compass__step span:not(.compass__dot) { display: none; }
+  .compass__step.is-here span:not(.compass__dot) { display: inline; }
+}
+
+@media (min-width: 720px) {
+  .flow__stage { grid-template-columns: 28px 1fr auto; }
+}

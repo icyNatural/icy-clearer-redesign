@@ -1,0 +1,329 @@
+/* cards.css — base card + role-based variants for framework pages.
+   Variants are keyed off the id="..." set in each markdown card. */
+
+.card {
+  background: rgba(255, 255, 255, 0.78);
+  border: 1px solid rgba(118, 166, 210, 0.22);
+  border-radius: 22px;
+  padding: 26px;
+  margin-bottom: 0;
+  box-shadow:
+    0 18px 42px rgba(45, 91, 130, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(18px) saturate(135%);
+  -webkit-backdrop-filter: blur(18px) saturate(135%);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.card h2 {
+  font-size: 1.15rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  margin: 0 0 0.85rem;
+  color: #102a3a;
+}
+
+.card p,
+.card li {
+  color: #36506a;
+  line-height: 1.6;
+}
+
+.card ul,
+.card ol {
+  padding-left: 1.1rem;
+  margin: 0.4rem 0 0;
+}
+
+.card li + li {
+  margin-top: 0.4rem;
+}
+
+/* ---------- Core Idea: oversized lede card ---------- */
+.framework-grid #core-idea {
+  grid-column: 1 / -1;
+  padding: 34px;
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at 0% 0%, rgba(158, 232, 255, 0.35), transparent 55%),
+    radial-gradient(circle at 100% 100%, rgba(179, 244, 221, 0.32), transparent 55%),
+    rgba(255, 255, 255, 0.84);
+  border: 1px solid rgba(126, 195, 255, 0.34);
+}
+
+#core-idea h2 {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: #2f7aaa;
+  margin-bottom: 14px;
+}
+
+#core-idea p {
+  font-size: 1.18rem;
+  line-height: 1.55;
+  color: #102a3a;
+  font-weight: 500;
+}
+
+/* ---------- Process: numbered step rail ---------- */
+#the-process ol,
+#the-shift ol {
+  list-style: none;
+  padding: 0;
+  margin-top: 0.6rem;
+  position: relative;
+}
+
+#the-process ol::before,
+#the-shift ol::before {
+  content: "";
+  position: absolute;
+  left: 13px;
+  top: 6px;
+  bottom: 6px;
+  width: 2px;
+  background: linear-gradient(180deg, #9ee8ff, #b3f4dd);
+  border-radius: 2px;
+  opacity: 0.6;
+}
+
+#the-process li,
+#the-shift li {
+  position: relative;
+  padding-left: 42px;
+  margin: 0 0 0.9rem;
+  counter-increment: step;
+}
+
+#the-process li::before,
+#the-shift li::before {
+  content: counter(step);
+  position: absolute;
+  left: 0;
+  top: -2px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #9ee8ff, #b3f4dd);
+  color: #102a3a;
+  font-weight: 800;
+  font-size: 0.78rem;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 4px 12px rgba(126, 195, 255, 0.4);
+}
+
+#the-process ol,
+#the-shift ol { counter-reset: step; }
+
+/* ---------- Why It Matters: emphasized contrast ---------- */
+#why-it-matters {
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.92), rgba(217, 240, 255, 0.6));
+  border-left: 4px solid #7ec3ff;
+}
+
+/* ---------- Failure Mode: warning callout ---------- */
+#failure-mode {
+  background:
+    linear-gradient(145deg, rgba(255, 247, 235, 0.95), rgba(255, 233, 213, 0.6));
+  border: 1px solid rgba(232, 158, 78, 0.35);
+}
+
+#failure-mode h2 {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: #b8651a;
+  margin-bottom: 8px;
+}
+
+#failure-mode strong:first-of-type {
+  display: block;
+  font-size: 1.1rem;
+  color: #6b3a0c;
+  margin-bottom: 10px;
+  font-weight: 800;
+}
+
+/* ---------- Questions: quoted chips ---------- */
+#questions-to-ask ul {
+  list-style: none;
+  padding: 0;
+  margin: 0.8rem 0 0;
+  display: grid;
+  gap: 10px;
+}
+
+#questions-to-ask li {
+  position: relative;
+  padding: 14px 16px 14px 36px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(118, 166, 210, 0.2);
+  font-style: italic;
+  color: #1f3a52;
+  font-size: 1rem;
+}
+
+#questions-to-ask li::before {
+  content: "“";
+  position: absolute;
+  left: 12px;
+  top: 4px;
+  font-size: 1.6rem;
+  color: #7ec3ff;
+  font-style: normal;
+  font-family: Georgia, serif;
+  line-height: 1;
+}
+
+#questions-to-ask strong {
+  display: block;
+  font-style: normal;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: #2f7aaa;
+  margin-bottom: 4px;
+}
+
+/* ---------- Practice: checklist ---------- */
+#practice {
+  background:
+    linear-gradient(145deg, rgba(240, 255, 248, 0.92), rgba(220, 245, 235, 0.55));
+  border: 1px solid rgba(108, 199, 167, 0.35);
+}
+
+#practice h2 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+#practice h2::before {
+  content: "Try this";
+  font-size: 0.65rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #1f7a5c;
+  background: rgba(172, 238, 216, 0.6);
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-weight: 800;
+}
+
+#practice ul {
+  list-style: none;
+  padding: 0;
+  margin-top: 0.8rem;
+  display: grid;
+  gap: 8px;
+}
+
+#practice li {
+  position: relative;
+  padding-left: 30px;
+}
+
+#practice li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 4px;
+  width: 18px;
+  height: 18px;
+  border-radius: 5px;
+  border: 2px solid #6cc7a7;
+  background: rgba(255, 255, 255, 0.7);
+}
+
+/* ---------- Drift card ---------- */
+#the-drift {
+  border-left: 4px solid #b3a4ff;
+}
+
+/* ---------- Callout component ---------- */
+.callout {
+  border-radius: 18px;
+  padding: 20px 22px;
+  border: 1px solid rgba(118, 166, 210, 0.22);
+  background: rgba(255, 255, 255, 0.78);
+}
+
+.callout__eyebrow {
+  margin: 0 0 6px;
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #2f7aaa;
+  font-weight: 800;
+}
+
+.callout__title {
+  margin: 0 0 10px;
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #102a3a;
+}
+
+/* ---------- Flow Diagram ---------- */
+.flow-diagram {
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(118, 166, 210, 0.22);
+  border-radius: 20px;
+  padding: 22px;
+}
+
+.flow-diagram__title {
+  margin: 0 0 14px;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: #2f7aaa;
+  font-weight: 800;
+}
+
+.flow-diagram__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 14px;
+}
+
+.flow-diagram__step {
+  display: grid;
+  grid-template-columns: 36px 1fr;
+  gap: 14px;
+  align-items: start;
+}
+
+.flow-diagram__dot {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #9ee8ff, #b3f4dd);
+  color: #102a3a;
+  font-weight: 800;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 6px 14px rgba(126, 195, 255, 0.35);
+}
+
+.flow-diagram__label {
+  margin: 4px 0 0;
+  font-weight: 800;
+  color: #102a3a;
+}
+
+.flow-diagram__note {
+  margin: 4px 0 0;
+  color: #5b7890;
+  font-size: 0.92rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card { transition: none; }
+}

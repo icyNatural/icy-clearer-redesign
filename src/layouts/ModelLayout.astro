@@ -1,0 +1,6 @@
+---
+import ConceptLayout from "./ConceptLayout.astro";
+const { frontmatter } = Astro.props;
+---
+
+<ConceptLayout frontmatter={frontmatter}><slot /></ConceptLayout>

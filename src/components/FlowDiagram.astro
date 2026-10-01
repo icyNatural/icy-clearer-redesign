@@ -1,0 +1,18 @@
+---
+// <FlowDiagram steps={[{label:"Contact", note:"..."}, ...]} />
+const { steps = [], title } = Astro.props;
+---
+<div class="flow-diagram">
+  {title && <p class="flow-diagram__title">{title}</p>}
+  <ol class="flow-diagram__list">
+    {steps.map((step, i) => (
+      <li class="flow-diagram__step">
+        <span class="flow-diagram__dot">{i + 1}</span>
+        <div class="flow-diagram__content">
+          <p class="flow-diagram__label">{step.label}</p>
+          {step.note && <p class="flow-diagram__note">{step.note}</p>}
+        </div>
+      </li>
+    ))}
+  </ol>
+</div>

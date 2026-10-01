@@ -1,0 +1,64 @@
+---
+import '../styles/model-page.css';
+import '../styles/cards.css';
+
+const { frontmatter } = Astro.props;
+
+// Pull all model/mode/system frontmatter via import.meta.glob (no content
+// collection required).
+const modules = import.meta.glob('../pages/{models,modes,system}/*.md', { eager: true });
+const allModels = Object.entries(modules).map(([path, mod]) => {
+  const slug = path.split('/').pop().replace(/\.md$/, '');
+  const dir = path.split('/').slice(-2, -1)[0]; // models | modes | system
+  return { slug, dir, data: mod.frontmatter ?? {} };
+});
+
+const categoryModels = allModels.filter(m => m.data.category === frontmatter.title);
+const pageHref = (href) => {
+  if (!href || typeof href !== 'string') return href;
+  if (href === '/' || href.startsWith('#') || /^(https?:|mailto:|tel:)/.test(href)) return href;
+
+  const [pathAndQuery, hash] = href.split('#');
+  const [path, query] = pathAndQuery.split('?');
+  const lastSegment = path.split('/').pop() ?? '';
+  const hasFileExtension = /\.[a-z0-9]+$/i.test(lastSegment);
+  const htmlPath = hasFileExtension || path.endsWith('/') ? path : `${path}.html`;
+
+  return `${htmlPath}${query ? `?${query}` : ''}${hash ? `#${hash}` : ''}`;
+};
+---
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{frontmatter.title} | Icy Clear</title>
+    <meta name="description" content={`Models in the ${frontmatter.title} category.`} />
+</head>
+<body>
+<main class="framework-explorer">
+    <a href="/" class="back-button">← Back to Dashboard</a>
+
+    <header class="hero-section">
+      <p class="hero-eyebrow">Category</p>
+      <h1>{frontmatter.title}</h1>
+    </header>
+
+    <slot />
+
+    {categoryModels.length > 0 && (
+      <section id="models" class="section card section--related">
+        <h2>Models in this Category</h2>
+        <div class="related-grid">
+          {categoryModels.map(model => (
+            <a href={pageHref(`/${model.dir}/${model.slug}`)} class="related-card">
+              <h3>{model.data.title}</h3>
+              <p>{model.data.description}</p>
+            </a>
+          ))}
+        </div>
+      </section>
+    )}
+</main>
+</body>
+</html>

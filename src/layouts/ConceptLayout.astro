@@ -1,0 +1,315 @@
+---
+import "../styles/icy-os.css";
+import "../styles/concept.css";
+
+const { frontmatter } = Astro.props;
+const fm = frontmatter ?? {};
+
+const pageHref = (href) => {
+  if (!href || typeof href !== "string") return href;
+  if (href === "/" || href.startsWith("#") || /^(https?:|mailto:|tel:)/.test(href)) return href;
+  const [pathAndQuery, hash] = href.split("#");
+  const [path, query] = pathAndQuery.split("?");
+  const last = path.split("/").pop() ?? "";
+  const htmlPath = /\.[a-z0-9]+$/i.test(last) || path.endsWith("/") ? path : `${path}.html`;
+  return `${htmlPath}${query ? `?${query}` : ""}${hash ? `#${hash}` : ""}`;
+};
+
+const kind = (fm.kind ?? "model").toLowerCase();
+const kindLabel = { principle: "Principle", model: "Model", tool: "Tool", path: "Path", system: "System", doctrine: "Principle" }[kind] ?? "Model";
+
+const idx = fm.idx ?? "";
+const domain = fm.domain ?? fm.category ?? "";
+const chain = fm.chain ?? "";
+const consequence = fm.consequence ?? fm.description ?? "";
+const changes = fm.changes ?? fm.purpose ?? "";
+
+const flow = Array.isArray(fm.flow) ? fm.flow : [];
+const flowMode = fm.flowMode === "lateral" ? "lateral" : "vertical";
+const frames = fm.frames ?? null; // { count, trajectory }
+const claims = Array.isArray(fm.claims) ? fm.claims : [];
+const distinctions = Array.isArray(fm.distinctions) ? fm.distinctions : [];
+const lenses = Array.isArray(fm.lenses) ? fm.lenses : [];
+const experiment = fm.experiment ?? null;
+
+const graphRows = [
+  ["Builds on", fm.buildsOn],
+  ["Connects to", fm.connectsTo ?? fm.relatedModels],
+  ["Challenges", fm.challenges],
+  ["Leads to", fm.leadsTo],
+].filter(([, v]) => Array.isArray(v) && v.length);
+
+const exits = Array.isArray(fm.exits) ? fm.exits : [];
+
+const compass = Array.isArray(fm.compass) && fm.compass.length
+  ? fm.compass
+  : [
+      { label: "Principle", kind: "principle" },
+      { label: "Model", kind: "model" },
+      { label: "Tool", kind: "tool" },
+      { label: "Practice", kind: "practice" },
+    ];
+const hereKind = kind === "doctrine" ? "principle" : kind === "system" ? "tool" : kind === "path" ? "practice" : kind;
+---
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>{fm.title} — Icy Clear</title>
+  <meta name="description" content={fm.description} />
+  <meta name="theme-color" content="#f2f6f9" />
+  <meta property="og:title" content={`${fm.title} — Icy Clear`} />
+  <meta property="og:description" content={fm.description} />
+  <meta property="og:type" content="article" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400&family=IBM+Plex+Mono:wght@400&family=IBM+Plex+Sans:wght@400;500&display=swap" />
+</head>
+
+<body class="icy">
+
+<header class="cx-head">
+  <a class="label" href="/clear.html">← Icy Clear</a>
+  <span class="idx">{[idx, kindLabel.toUpperCase()].filter(Boolean).join(" · ")}</span>
+</header>
+
+<main class="cx">
+
+  <!-- ConceptEntry -->
+  <section class="entry" aria-labelledby="concept-title">
+    <div class="entry__meta">
+      {idx && <span class="idx">{idx}</span>}
+      {domain && <span class="label">{domain}</span>}
+      {fm.status && <span class="idx">{fm.status}</span>}
+    </div>
+
+    <h1 id="concept-title" class="d-xl entry__title">{fm.title}</h1>
+    {chain && <p class="chain idx" style="margin:12px 0 0;letter-spacing:0.08em;">{chain}</p>}
+    {consequence && <p class="entry__consequence">{consequence}</p>}
+
+    {changes && (
+      <div class="entry__what">
+        <span class="label">What this changes</span>
+        <p class="read" style="margin:0;max-width:52ch;">{changes}</p>
+      </div>
+    )}
+
+    <!-- ConceptFlow: the shape of the idea, before the words -->
+    {flow.length > 0 && (
+      <div class={`flow ${flowMode === "lateral" ? "flow--lateral" : ""}`} data-flow>
+        {flow.map((s, i) => (
+          <button class="flow__stage" type="button" data-stage>
+            <span class="flow__stage-n">{String(i + 1).padStart(2, "0")}</span>
+            <span class="flow__stage-name">{s.label}</span>
+            <span class="flow__stage-cue" aria-hidden="true">{s.note ? "+" : ""}</span>
+            {s.note && <p class="flow__note">{s.note}</p>}
+          </button>
+        ))}
+      </div>
+    )}
+
+    {frames && (
+      <div data-frames>
+        <div class="frames">
+          {Array.from({ length: frames.count ?? 4 }).map(() => <span class="frames__f" data-frame></span>)}
+        </div>
+        <p class="idx" style="margin:10px 0 0;">
+          <span class="frames__arrow">↓&nbsp;</span>{frames.trajectory ?? "trajectory"}
+        </p>
+      </div>
+    )}
+
+    <div class="depth">
+      <button class="depth__btn" type="button" data-depth>Open deep view</button>
+      <span class="idx" data-depth-hint>Quick view · ~20s</span>
+    </div>
+  </section>
+
+  <!-- Claims: observed / inferred / hypothesis / unknown -->
+  {claims.length > 0 && (
+    <section aria-label="Standing of each claim">
+      <span class="label">Standing</span>
+      <ul class="claims">
+        {claims.map((c) => (
+          <li>
+            <span class={`ev ev--${(c.tag ?? "inferred").toLowerCase()}`}>{c.tag ?? "Inferred"}</span>
+            <p>{c.text}</p>
+          </li>
+        ))}
+      </ul>
+    </section>
+  )}
+
+  <!-- DistinctionView -->
+  {distinctions.length > 0 && (
+    <section aria-label="Distinctions">
+      <span class="label">Usually confused</span>
+      <div class="dist">
+        {distinctions.map((d) => (
+          <div class="dist__row">
+            <div class="dist__cell">
+              <span class="label">{d.a}</span>
+              <p>{d.aNote}</p>
+            </div>
+            <div class="dist__cell dist__cell--b">
+              <span class="label">{d.b}</span>
+              <p>{d.bNote}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  )}
+
+  <!-- ConceptLens -->
+  {lenses.length > 0 && (
+    <section aria-label="Lenses">
+      <span class="label">Lenses</span>
+      <ul class="lenses" data-lenses>
+        {lenses.map((l) => (
+          <li class="lens">
+            <button class="lens__btn" type="button">
+              <span class="lens__name">{l.name}</span>
+              <span class="lens__sign" aria-hidden="true">+</span>
+            </button>
+            <div class="lens__body">
+              {l.prompt && <p class="lens__prompt">{l.prompt}</p>}
+              {l.body && <p class="lens__read">{l.body}</p>}
+            </div>
+          </li>
+        ))}
+      </ul>
+    </section>
+  )}
+
+  <!-- ThoughtExperiment -->
+  {experiment && (
+    <section aria-label="Experiment">
+      <span class="label">Experiment</span>
+      <div class="exp" data-exp>
+        {experiment.situation && <p class="exp__situation">{experiment.situation}</p>}
+        {experiment.ask && <p class="exp__ask">{experiment.ask}</p>}
+        <button class="exp__reveal-btn" type="button">Reveal the distinction</button>
+        <div class="exp__reveal">
+          {(experiment.reveal ?? []).map((r) => <p class="read" style="margin:0;max-width:52ch;">{r}</p>)}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- DeepView: the long form, folded away by default -->
+  <section class="deep" data-deep aria-label="Deep view">
+    <span class="label">Deep view</span>
+    <div class="deep__inner"><slot /></div>
+  </section>
+
+  <!-- ConceptConnection -->
+  {graphRows.length > 0 && (
+    <section aria-label="Relations">
+      <span class="label">Position in the system</span>
+      <ul class="graph">
+        {graphRows.map(([rowLabel, items]) => (
+          <li>
+            <span class="idx">{rowLabel}</span>
+            <div class="graph__links">
+              {items.map((it) =>
+                it.href ? <a href={pageHref(it.href)}>{it.title}</a> : <span>{it.title}</span>
+              )}
+            </div>
+          </li>
+        ))}
+      </ul>
+    </section>
+  )}
+
+  <!-- ConceptExit -->
+  {exits.length > 0 && (
+    <section aria-label="Continue the thread">
+      <span class="label">Continue the thread</span>
+      <ul class="exits">
+        {exits.map((e) => (
+          <li>
+            <a class="exit" href={pageHref(e.href)}>
+              <span class="exit__if">{e.if}</span>
+              <span class="exit__go">{e.explore} →</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </section>
+  )}
+
+</main>
+
+<nav class="compass" aria-label="Where you are">
+  {compass.map((step, i) => (
+    <>
+      {i > 0 && <span class="compass__sep" aria-hidden="true">→</span>}
+      <span class={`compass__step ${step.kind === hereKind ? "is-here" : ""}`}>
+        <span class="compass__dot" aria-hidden="true"></span><span>{step.label}</span>
+      </span>
+    </>
+  ))}
+</nav>
+
+<script>
+  // ConceptFlow — stages light up as the flow enters view, and expand on tap.
+  document.querySelectorAll("[data-flow]").forEach((flow) => {
+    const stages = Array.from(flow.querySelectorAll("[data-stage]"));
+    const light = () => stages.forEach((s, i) => setTimeout(() => s.classList.add("is-lit"), i * 160));
+    if (!("IntersectionObserver" in window)) { light(); return; }
+    const io = new IntersectionObserver((entries, obs) => {
+      entries.forEach((e) => { if (e.isIntersecting) { light(); obs.disconnect(); } });
+    }, { threshold: 0.35 });
+    io.observe(flow);
+
+    stages.forEach((s) => {
+      s.addEventListener("click", () => {
+        const open = s.classList.contains("is-open");
+        stages.forEach((o) => o.classList.remove("is-open"));
+        if (!open) s.classList.add("is-open");
+      });
+    });
+  });
+
+  // Frames — snapshots resolve into a trajectory.
+  document.querySelectorAll("[data-frames]").forEach((wrap) => {
+    const fs = Array.from(wrap.querySelectorAll("[data-frame]"));
+    const run = () => fs.forEach((f, i) => setTimeout(() => f.classList.add("is-lit"), i * 220));
+    if (!("IntersectionObserver" in window)) { run(); return; }
+    const io = new IntersectionObserver((entries, obs) => {
+      entries.forEach((e) => { if (e.isIntersecting) { run(); obs.disconnect(); } });
+    }, { threshold: 0.5 });
+    io.observe(wrap);
+  });
+
+  // Lenses
+  document.querySelectorAll("[data-lenses] .lens").forEach((lens) => {
+    const btn = lens.querySelector(".lens__btn");
+    btn?.addEventListener("click", () => {
+      const open = lens.classList.toggle("is-open");
+      const sign = lens.querySelector(".lens__sign");
+      if (sign) sign.textContent = open ? "−" : "+";
+    });
+  });
+
+  // Experiment reveal
+  document.querySelectorAll("[data-exp]").forEach((exp) => {
+    exp.querySelector(".exp__reveal-btn")?.addEventListener("click", () => exp.classList.add("is-revealed"));
+  });
+
+  // Quick view / deep view
+  const deep = document.querySelector("[data-deep]");
+  const depthBtn = document.querySelector("[data-depth]");
+  const depthHint = document.querySelector("[data-depth-hint]");
+  depthBtn?.addEventListener("click", () => {
+    const open = deep?.classList.toggle("is-open");
+    if (depthBtn) depthBtn.textContent = open ? "Close deep view" : "Open deep view";
+    if (depthHint) depthHint.textContent = open ? "Deep view" : "Quick view · ~20s";
+    if (open) deep?.scrollIntoView({ behavior: "smooth", block: "start" });
+  });
+</script>
+
+</body>
+</html>
