@@ -1,2271 +1,334 @@
 ---
 import "../styles/foundation.css";
-import { worlds, artifacts, collections, signals, allEntities, lenses } from '../data/projects';
+import "../styles/home-world.css";
+import { artifacts, lenses, signals } from "../data/projects";
 
-// ── Hidden applications (kept in data, hidden from UI) ─────────────────
 const HIDDEN_IDS = new Set([
-  'hoop-focus',
-  'sample', 'beat', 'timeline', 'icy-natural', 'language', 'martial',
-  'phases', 'motion', 'symbol', 'livingcycles',
-  'reality', 'formation', 'humanity', 'woah', 'scenario-states', 'inquiry-engine',
+  "hoop-focus",
+  "sample", "beat", "timeline", "icy-natural", "language", "martial",
+  "phases", "motion", "symbol", "livingcycles", "reality", "formation",
+  "humanity", "woah", "scenario-states", "inquiry-engine",
 ]);
 
-// ── Museum accession numbers ─────────────────────────────────────────
-const catalog: Record<string, string> = {};
-worlds.forEach((w, i)   => catalog[w.id] = `IN·W${String(i+1).padStart(2,'0')}`);
-artifacts.forEach((a, i)=> catalog[a.id] = `IN·A${String(i+1).padStart(2,'0')}`);
-
 const statusLabel: Record<string, string> = {
-  live: 'Observable', forming: 'Forming', lab: 'In the Lab', soon: 'Awaited', archived: 'Archived', signal: 'Signal',
+  live: "Live", forming: "Forming", lab: "In the lab", soon: "Awaited",
+  archived: "Archived", signal: "Signal",
 };
 
-// ── ATLAS — every application in the ecosystem, as one star chart ────
-// Node source: the lens registry (the whole ecosystem) + Icy Natural itself.
-type AtlasApp = {
-  id: string; title: string; philosophy: string; field: string;
-  url: string; status: string; accent: string; glyph: string; group: string;
+type WorldNode = {
+  id: string; title: string; philosophy: string; field: string; route: string;
+  status: string; accent: string; glyph: string; group: string; atmosphere: string;
+  x: number; y: number; external: boolean;
 };
 
-const atlasApps: AtlasApp[] = [
-  { id: 'icy-natural', title: 'Icy Natural', philosophy: 'Becoming · Formation · Curation',
-    field: 'A living archive of interests, experiences, and personal formation. A place for becoming slowly and collecting what matters.',
-    url: '/natural.html', status: 'live', accent: '#8fc98a', glyph: '❦', group: 'instruments' },
-  ...lenses.map(l => ({
-    id: l.id, title: l.title, philosophy: l.philosophy, field: l.field,
-    url: l.url, status: l.status as string, accent: l.accent, glyph: l.glyph, group: l.group as string,
-  })),
+const positions = [
+  [18, 22], [43, 17], [72, 25], [84, 52], [66, 72],
+  [37, 76], [14, 61], [50, 46], [28, 43], [76, 43],
 ];
 
-// deterministic jittered grid that always fills the plate, however many
-// applications are visible (hidden ones must not leave dead space)
-type Node = AtlasApp & { x: number; y: number; external: boolean; route: string; type: string };
+const atmosphereById = new Map(artifacts.map((item) => [item.id, item.atmosphere]));
+const atmosphereByRoute = new Map(artifacts.map((item) => [item.route, item.atmosphere]));
+const externalById = new Map(artifacts.map((item) => [item.id, item.external]));
+const externalByRoute = new Map(artifacts.map((item) => [item.route, item.external]));
 
-const groupRank: Record<string, number> = { observatory: 0, instruments: 1 };
-const visibleApps = atlasApps
-  .filter(a => !HIDDEN_IDS.has(a.id))
-  .sort((a, b) => (groupRank[a.group] ?? 9) - (groupRank[b.group] ?? 9));
-const COLS = visibleApps.length <= 6 ? 3 : visibleApps.length <= 12 ? 4 : 5;
-const ROWS = Math.max(1, Math.ceil(visibleApps.length / COLS));
-
-const atlasPos = (i: number, total: number) => {
-  const c = i % COLS, r = Math.floor(i / COLS);
-  // items on the final row are centred so the chart never looks lopsided
-  const inRow = Math.min(COLS, total - r * COLS);
-  const stepX = 88 / COLS;
-  const stepY = ROWS === 1 ? 0 : 78 / (ROWS - 1);
-  const rowOffset = (COLS - inRow) * stepX / 2;
-  const jx = ((i * 37) % 9) - 4;   // -4..4
-  const jy = ((i * 53) % 7) - 3;   // -3..3
-  return {
-    x: Math.min(93, Math.max(7, 6 + rowOffset + stepX * (c + 0.5) + jx)),
-    y: Math.min(92, Math.max(8, 11 + r * stepY + jy)),
-  };
-};
-
-const nodes: Node[] = visibleApps
-  .map((a, i) => ({
-    ...a, ...atlasPos(i, visibleApps.length),
-    route: a.url,
-    external: a.url.startsWith('http'),
-    type: 'artifact',
+const nodes: WorldNode[] = lenses
+  .filter((lens) => !HIDDEN_IDS.has(lens.id))
+  .map((lens, index) => ({
+    id: lens.id,
+    title: lens.title,
+    philosophy: lens.philosophy,
+    field: lens.field,
+    route: lens.url,
+    status: lens.status,
+    accent: lens.accent,
+    glyph: lens.glyph,
+    group: lens.group,
+    atmosphere: atmosphereById.get(lens.id) ?? atmosphereByRoute.get(lens.url) ?? "void",
+    x: positions[index % positions.length][0],
+    y: positions[index % positions.length][1],
+    external: externalById.get(lens.id) ?? externalByRoute.get(lens.url) ?? lens.url.startsWith("http"),
   }));
 
-const nodeById: Record<string, Node> = Object.fromEntries(nodes.map(n => [n.id, n]));
-const nodeByRoute: Record<string, Node> = Object.fromEntries(nodes.map(n => [n.route, n]));
-
-// ── Relation lines — only edges the registry actually records ──────
-// The same project can sit under two registry ids (its artifact entry and
-// its lens entry). Resolve an id by its real destination so a recorded
-// link survives an id mismatch, and no link is ever drawn where the
-// registry has none.
-const resolveNode = (id: string): Node | null => {
-  if (nodeById[id]) return nodeById[id];
-  const src = artifacts.find(a => a.id === id);
-  if (src && nodeByRoute[src.route]) return nodeByRoute[src.route];
-  return null;
+const nodeById = new Map(nodes.map((node) => [node.id, node]));
+const nodeByRoute = new Map(nodes.map((node) => [node.route, node]));
+const resolveNode = (id: string) => {
+  if (nodeById.has(id)) return nodeById.get(id);
+  const artifact = artifacts.find((item) => item.id === id);
+  return artifact ? nodeByRoute.get(artifact.route) : undefined;
 };
 
-const edges: { a: Node; b: Node }[] = [];
-const edgeSeen = new Set<string>();
-artifacts.forEach((art) => {
-  (art.connections ?? []).forEach((otherId) => {
-    const a = resolveNode(art.id);
-    const b = resolveNode(otherId);
+const edges: { a: WorldNode; b: WorldNode }[] = [];
+const seenEdges = new Set<string>();
+artifacts.forEach((artifact) => {
+  artifact.connections?.forEach((connection) => {
+    const a = resolveNode(artifact.id);
+    const b = resolveNode(connection);
     if (!a || !b || a.id === b.id) return;
-    const key = [a.id, b.id].sort().join('|');
-    if (edgeSeen.has(key)) return;
-    edgeSeen.add(key);
+    const key = [a.id, b.id].sort().join("|");
+    if (seenEdges.has(key)) return;
+    seenEdges.add(key);
     edges.push({ a, b });
   });
 });
 
-const linksOf = (id: string) =>
-  edges
-    .filter((e) => e.a.id === id || e.b.id === id)
-    .map((e) => (e.a.id === id ? e.b : e.a).title);
+const relatedIds = (id: string) => edges
+  .filter(({ a, b }) => a.id === id || b.id === id)
+  .map(({ a, b }) => a.id === id ? b.id : a.id);
 
-const layerOf = (n: { group: string }) =>
-  n.group === 'observatory' ? 'Observatories' : 'Instruments';
-
-// Lane guides sit above each family band; derived from the same
-// deterministic positions the stars use.
-const laneLabels = (['observatory', 'instruments'] as const)
-  .map((g) => {
-    const fam = nodes.filter((n) => n.group === g);
-    if (!fam.length) return null;
-    const minY = Math.min(...fam.map((n) => n.y));
-    return { id: g, label: layerOf({ group: g }), top: Math.max(1.5, minY - 8.5) };
-  })
-  .filter((x): x is NonNullable<typeof x> => x !== null);
-
-const linkOf     = (n: { route: string }) => n.route;
-const isInactive = (n: { route: string }) => n.route === '#';
-
-// ── Per-artifact "object identity" — each one is its own thing ───────
-const objectKind: Record<string, string> = {
-  'energy-engine':   'instr',
-  'potent-library':  'shelf',
-  'inquiry-engine':  'board',
-  'pokedex-scanner': 'field',
-  'reality-capture': 'evid',
-  'playground':      'sandbox',
-  'scenario-states': 'states',
-  'hoop-focus':      'court',
-  'photogression':   'series',
-};
-
-const ctaFor: Record<string, string> = {
-  'pokedex-scanner': 'Open IcyVision →',
-  'reality-capture': 'Open Reality Capture →',
-  'energy-engine':   'Open Energy Engine →',
-  'potent-library':  'Open Semantic Archaeology →',
-  'inquiry-engine':  'Open Inquiry Engine →',
-  'playground':      'Open Playground →',
-  'scenario-states': 'Open Scenario States →',
-  'hoop-focus':      'Open Hoop Focus →',
-  'photogression':   'Open Photogression →',
-};
-
-
-// ── Field-journal entries (signals presented as inked notes) ─────────
-const today = new Date();
-const dayLabel = today.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }).toUpperCase();
-const buildStamp = today.toISOString().slice(0, 10);
-
-// ── Derived views of the registry ───────────────────────────────────
-// Everything below reads from src/data/projects.ts or from the concept
-// sources themselves. No section keeps its own inventory.
-
-const observatories = atlasApps.filter(a => a.group === 'observatory');
-const workingTools  = atlasApps.filter(a => a.group === 'instruments');
-const reachable = (a: { id: string }) => !HIDDEN_IDS.has(a.id);
-const featuredInstruments = artifacts.filter(a => a.featured);
-
-// ICY CLEAR's written layer — read from the pages, never listed by hand.
-const conceptModules = import.meta.glob('../pages/{models,modes,system,doctrines}/*.md', { eager: true });
-const conceptDirOrder = ['models', 'modes', 'system', 'doctrines'];
+const featuredInstruments = artifacts.filter((artifact) => artifact.featured);
+const conceptModules = import.meta.glob("../pages/{models,modes,system,doctrines}/*.md", { eager: true });
 const conceptRows = Object.entries(conceptModules)
   .map(([path, mod]) => {
-    const parts = path.split('/');
+    const parts = path.split("/");
     const dir = parts[parts.length - 2];
-    const slug = parts[parts.length - 1].replace(/\.md$/, '');
+    const slug = parts[parts.length - 1].replace(/\.md$/, "");
     const fm = ((mod as { frontmatter?: Record<string, string> }).frontmatter ?? {});
-    return {
-      dir,
-      kind: dir.charAt(0).toUpperCase() + dir.slice(1),
-      group: dir.charAt(0).toUpperCase() + dir.slice(1) + 's',
-      title: fm.title ?? slug,
-      note: fm.description ?? '',
-      status: fm.status ?? '',
-      href: `/${dir}/${slug}.html`,
-      order: conceptDirOrder.indexOf(dir),
-    };
+    const kind = dir === "system" ? "System" : dir === "doctrines" ? "Doctrine" : dir === "modes" ? "Mode" : "Model";
+    return { title: fm.title ?? slug, kind, status: fm.status ?? "", href: `/${dir}/${slug}.html` };
   })
-  .sort((a, b) => a.order - b.order || a.title.localeCompare(b.title));
+  .sort((a, b) => a.kind.localeCompare(b.kind) || a.title.localeCompare(b.title));
 
-// Orientation: what kinds of thing exist here, before any of them appear.
-const orientations = [
-  {
-    id: 'observatories',
-    label: 'Observatories',
-    count: observatories.length,
-    unit: observatories.length === 1 ? 'field of study' : 'fields of study',
-    line: 'Places to look until something shows itself.',
-    body: 'Each observatory is a different lens on reality — time, rhythm, perception, meaning, nature. Pick one and stay with it.',
-    sample: observatories.filter(reachable).slice(0, 5).map(a => a.title),
-    href: '#atlas',
-    cta: 'Find them on the Atlas',
-  },
-  {
-    id: 'instruments',
-    label: 'Instruments',
-    count: workingTools.length,
-    unit: 'working tools',
-    line: 'Things you use, not just read.',
-    body: 'Archives, scanners, engines, simulations. Each one does a single job, and several are still being built.',
-    sample: workingTools.filter(reachable).slice(0, 5).map(a => a.title),
-    href: '#instruments',
-    cta: 'Open the instruments',
-  },
-  {
-    id: 'collections',
-    label: 'Collections',
-    count: collections.length,
-    unit: 'curated groupings',
-    line: 'The catalog, cut a second way.',
-    body: 'Grouped by what a thing is for rather than what it is. Members overlap on purpose: one thing can be an instrument and an experiment.',
-    sample: collections.map(c => c.title),
-    href: '#index',
-    cta: 'Read the full index',
-  },
-  {
-    id: 'concepts',
-    label: 'Concepts',
-    count: conceptRows.length,
-    unit: 'written pieces',
-    line: 'The operating system beneath the Atlas.',
-    body: 'Models, modes, systems, and doctrines — ICY CLEAR, written down and returned to when it gets noisy.',
-    sample: ['Models', 'Modes', 'Systems', 'Doctrines'],
-    href: '/clear.html',
-    cta: 'Enter ICY CLEAR',
-  },
-];
+const instrumentRows = lenses
+  .filter((lens) => lens.group === "instruments")
+  .map((lens) => ({
+    title: lens.title, kind: "Instrument", status: statusLabel[lens.status] ?? lens.status,
+    href: lens.url, external: externalById.get(lens.id) ?? externalByRoute.get(lens.url) ?? lens.url.startsWith("http"),
+  }));
 
-// Full index: one destination per row, metadata only, no prose.
-const destOf = (href: string) => {
-  if (!href || href === '#') return 'not yet placed';
-  if (/^https?:\/\//.test(href)) {
-    try { return new URL(href).host; } catch { return href; }
-  }
-  return href;
-};
-
-type IndexRow = { title: string; kind: string; status: string; href: string; external: boolean };
-
-const indexGroups: { id: string; label: string; note: string; rows: IndexRow[] }[] = [
-  {
-    id: 'observatories',
-    label: 'Observatories',
-    note: 'Fields of study. One lens each.',
-    rows: observatories.map(a => ({
-      title: a.title,
-      kind: 'Observatory',
-      status: statusLabel[a.status] ?? a.status,
-      href: a.url,
-      external: a.url.startsWith('http'),
-    })),
-  },
-  {
-    id: 'instruments',
-    label: 'Instruments',
-    note: 'Working tools of the institute.',
-    rows: workingTools.map(a => ({
-      title: a.title,
-      kind: 'Instrument',
-      status: statusLabel[a.status] ?? a.status,
-      href: a.url,
-      external: a.url.startsWith('http'),
-    })),
-  },
-  {
-    id: 'concepts',
-    label: 'ICY CLEAR — Concepts',
-    note: 'Models, modes, systems, doctrines. The written layer.',
-    rows: conceptRows.map(c => ({
-      title: c.title,
-      kind: c.kind,
-      status: c.status,
-      href: c.href,
-      external: false,
-    })),
-  },
-];
+const defaultNode = nodes.find((node) => node.id === "photogression") ?? nodes[0];
+const today = new Date();
+const dayLabel = today.toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric" }).toUpperCase();
 ---
-<html lang="en">
+
+<html lang="en" data-mode="world" data-atmosphere={defaultNode?.atmosphere ?? "void"}>
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Icy Clearer — See clearly. Become slowly.</title>
-  <meta name="description" content="An observatory of systems, language, energy, and becoming." />
+  <meta name="description" content="Systems, technical work, visual experiments, and living creative projects by Icy." />
   <meta name="theme-color" content="#06090f" />
   <meta property="og:title" content="Icy Clearer — See clearly. Become slowly." />
-  <meta property="og:description" content="An observatory of systems, language, energy, and becoming." />
+  <meta property="og:description" content="A living world of systems, technical work, visual experiments, and creative projects." />
   <meta property="og:type" content="website" />
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Icy Clearer — See clearly. Become slowly." />
-  <meta name="twitter:description" content="An observatory of systems, language, energy, and becoming." />
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <link rel="alternate icon" href="/favicon.ico" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=IM+FELL+English:ital@0;1&family=JetBrains+Mono:wght@300;400;500&family=Caveat:wght@400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=IM+FELL+English:ital@0;1&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet" />
+  <script is:inline>document.documentElement.classList.add('js');</script>
 </head>
 <body>
-
 <a class="skip-link" href="#main">Skip to content</a>
 
-<!-- celestial wash -->
-<div class="sky" aria-hidden="true">
-  <div class="nebula a"></div>
-  <div class="nebula b"></div>
-  <div class="starfield"></div>
-  <div class="paper"></div>
-  <div class="grain"></div>
+<div class="environment" aria-hidden="true">
+  <div class="environment__light environment__light--a"></div>
+  <div class="environment__light environment__light--b"></div>
+  <div class="environment__horizon"></div>
+  <div class="environment__grid"></div>
+  <div class="environment__grain"></div>
 </div>
 
-<header class="bar">
-  <a href="/" class="seal" aria-label="Icy Clearer — home">
-    <span class="seal-mark">✦</span>
-    <span class="seal-words">
-      <span class="seal-name">Icy Clearer</span>
-    </span>
+<header class="world-head">
+  <a class="identity" href="/" aria-label="Icy Clearer home">
+    <span class="identity__mark" aria-hidden="true">✦</span>
+    <span><strong>Icy Clearer</strong><small>Personal operating environment</small></span>
   </a>
-  <nav class="nav" aria-label="Primary">
-    <a href="#atlas">Atlas</a>
-    <a href="#instruments">Instruments</a>
-    <a href="#index">Index</a>
-    <a class="nav-clear" href="/clear.html">ICY CLEAR →</a>
-  </nav>
+  <div class="world-state" aria-label="Current state">
+    <span class="world-state__pulse" aria-hidden="true"></span>
+    <span>Field build {dayLabel}</span><span class="world-state__mode">World online</span>
+  </div>
 </header>
 
-<main id="main" class="institute" tabindex="-1">
+<main id="main" class="world" tabindex="-1">
+  <section class="territory territory--world is-active" id="world" data-territory="world" aria-labelledby="world-title" tabindex="-1">
+    <div class="world-intro">
+      <p class="eyebrow">Systems · images · games · sound · experiments</p>
+      <h1 id="world-title"><span>See clearly.</span> <em>Become slowly.</em></h1>
+      <p class="world-intro__line">A living presentation of what I build, study, photograph, model, and make.</p>
+      <p class="world-intro__instruction"><span aria-hidden="true">◎</span> Focus an object. The world will move around it.</p>
+    </div>
 
-  <!-- ╔══ ENTRY ════════════════════════════════════════════════════ -->
-  <section id="entry" class="hall" aria-labelledby="entry-title">
-    <p class="kicker"><span class="pulse"></span> <span id="live-date" data-live-date>{dayLabel}</span></p>
-
-    <h1 class="hall-title" id="entry-title">
-      <span class="hall-name">Icy Clearer</span>
-      <span class="line">See clearly.</span>
-      <span class="line"><em>Become slowly.</em></span>
-    </h1>
-
-    <p class="hall-lead">
-      An observatory of systems, language, energy, and becoming.
-    </p>
-    <div class="hall-rule" aria-hidden="true"></div>
-  </section>
-
-  <!-- ╔══ ORIENTATION — what kind of thing lives here ═══════════════ -->
-  <section id="orientation" class="plate orientation" aria-labelledby="orientation-title">
-    <header class="plate-head">
-      <span class="plate-no">Orientation</span>
-      <h2 class="plate-title" id="orientation-title">What kind of thing is this?</h2>
-      <p class="plate-rule">Four layers, each with one job. Read this before you open the map.</p>
-    </header>
-
-    <ol class="orient-list">
-      {orientations.map((o, i) => (
-        <li class="orient">
-          <div class="orient-head">
-            <span class="orient-no" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
-            <h3 class="orient-title">{o.label}</h3>
-            <span class="orient-count">
-              <span class="orient-count-n">{o.count}</span>
-              <span class="orient-unit">{o.unit}</span>
-            </span>
-          </div>
-          <p class="orient-line">{o.line}</p>
-          <p class="orient-body">{o.body}</p>
-          <ul class="orient-sample">
-            {o.sample.map(s => <li>{s}</li>)}
-          </ul>
-          <a class="orient-cta" href={o.href}>{o.cta} <span aria-hidden="true">→</span></a>
-        </li>
-      ))}
-    </ol>
-  </section>
-
-  <!-- ╔══ ATLAS — celestial chart, mostly anonymous ═════════════════ -->
-
-  <section id="atlas" class="plate atlas-plate" aria-labelledby="atlas-title">
-    <header class="plate-head">
-      <span class="plate-no">Plate I</span>
-      <h2 class="plate-title" id="atlas-title">The Atlas</h2>
-      <p class="plate-rule">{nodes.length} bodies in one sky — every visible part of the ecosystem, placed once. Lines are drawn only where the registry records a link.</p>
-      <p class="plate-instruction">Read the sky, or read the list.</p>
-    </header>
-
-    {/* mobile: selected application sits in normal flow, above the map */}
-    <div class="atlas-selected" id="atlas-selected" aria-live="polite"></div>
-
-
-
-
-    <figure class="atlas constellation" id="atlas-figure" data-active="">
-      <div class="lane-labels" aria-hidden="true">
-        {laneLabels.map((l) => (
-          <span class="lane-label" style={`top:${l.top}%`}>{l.label}</span>
-        ))}
-      </div>
-      <svg class="chart" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-        <defs>
-          <radialGradient id="halo" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stop-color="currentColor" stop-opacity=".55"/>
-            <stop offset="60%" stop-color="currentColor" stop-opacity=".08"/>
-            <stop offset="100%" stop-color="currentColor" stop-opacity="0"/>
-          </radialGradient>
-          {/* sigils — each one is a tiny piece of celestial print */}
-          <symbol id="sig-clear" viewBox="-10 -10 20 20">
-            <g fill="none" stroke="currentColor" stroke-width=".9" stroke-linecap="round">
-              <line x1="0" y1="-8" x2="0" y2="8"/>
-              <line x1="-8" y1="0" x2="8" y2="0"/>
-              <line x1="-5.7" y1="-5.7" x2="5.7" y2="5.7"/>
-              <line x1="-5.7" y1="5.7" x2="5.7" y2="-5.7"/>
-              <path d="M0 -8 L-1.8 -6 M0 -8 L1.8 -6 M0 8 L-1.8 6 M0 8 L1.8 6 M-8 0 L-6 -1.8 M-8 0 L-6 1.8 M8 0 L6 -1.8 M8 0 L6 1.8"/>
-            </g>
-            <circle r="1.4" fill="currentColor"/>
-          </symbol>
-          <symbol id="sig-natural" viewBox="-10 -10 20 20">
-            <g fill="none" stroke="currentColor" stroke-width=".9" stroke-linecap="round" stroke-linejoin="round">
-              <line x1="0" y1="-9" x2="0" y2="9"/>
-              <path d="M0 -3 Q-5 -4 -5.4 -8.2 Q-2 -7.2 0 -3 Z"/>
-              <path d="M0 -3 Q5 -4 5.4 -8.2 Q2 -7.2 0 -3 Z"/>
-              <path d="M0 3 Q-6 2 -6.4 -2.2 Q-2 -1.2 0 3 Z"/>
-              <path d="M0 3 Q6 2 6.4 -2.2 Q2 -1.2 0 3 Z"/>
-            </g>
-            <circle cx="0" cy="9" r="1" fill="currentColor"/>
-          </symbol>
-          <symbol id="sig-energy" viewBox="-10 -10 20 20">
-            <g fill="none" stroke="currentColor" stroke-width=".9" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M2.5 -8 L-3.5 1.2 L0.2 1.2 L-2.5 8 L4 -1.2 L0.3 -1.2 Z"/>
-            </g>
-          </symbol>
-          <symbol id="sig-inquiry" viewBox="-10 -10 20 20">
-            <g fill="none" stroke="currentColor" stroke-width=".9" stroke-linecap="round">
-              <path d="M-5 -3 C-5 -7 5 -7 5 -3 C5 0 0 1 0 4"/>
-              <circle cx="0" cy="7" r=".9" fill="currentColor" stroke="none"/>
-            </g>
-          </symbol>
-          <symbol id="sig-library" viewBox="-10 -10 20 20">
-            <g fill="none" stroke="currentColor" stroke-width=".9" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M-7 0 L-7 5 L7 5 L7 0 Z"/>
-              <line x1="-7" y1="2" x2="7" y2="2"/>
-              <path d="M-6 -5 L-6 0 L6 0 L6 -5 Z"/>
-              <line x1="-6" y1="-3" x2="6" y2="-3"/>
-            </g>
-          </symbol>
-          <symbol id="sig-diary" viewBox="-10 -10 20 20">
-            <g fill="none" stroke="currentColor" stroke-width=".8" stroke-linecap="round">
-              <path d="M0 8 C-1 4 -1 0 0 -7"/>
-              <path d="M0 6 L-3 5 M0 4 L-3.5 3 M0 2 L-4 1 M0 0 L-4 -1 M0 -2 L-3.5 -3 M0 -4 L-3 -5"/>
-            </g>
-          </symbol>
-          <symbol id="sig-reality" viewBox="-10 -10 20 20">
-            <g fill="none" stroke="currentColor" stroke-width=".9" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M-4 -7 L4 -7 L5 -1 L0 8 L-5 -1 Z"/>
-              <line x1="0" y1="-1" x2="0" y2="5"/>
-              <circle cx="0" cy="1.5" r=".9" fill="currentColor" stroke="none"/>
-            </g>
-          </symbol>
-          <symbol id="sig-scanner" viewBox="-10 -10 20 20">
-            <g fill="none" stroke="currentColor" stroke-width=".8">
-              <circle r="7.5"/>
-              <line x1="-9" y1="0" x2="-5" y2="0"/>
-              <line x1="9" y1="0" x2="5" y2="0"/>
-              <line x1="0" y1="-9" x2="0" y2="-5"/>
-              <line x1="0" y1="9" x2="0" y2="5"/>
-            </g>
-            <circle r="1.2" fill="currentColor"/>
-          </symbol>
-        </defs>
-
-        {/* drifting field stars */}
-        {Array.from({length: 60}).map((_, k) => {
-          const x = (k * 53.7) % 100; const y = (k * 31.3 + 11) % 100;
-          const r = (k % 7 === 0) ? .18 : .09;
-          return <circle cx={x} cy={y} r={r} fill="rgba(243,238,219,.45)" />;
-        })}
-
-        {/* relation lines — faint until illuminated */}
-        {edges.map(({ a, b }) => (
-          <line class="rel" data-a={a.id} data-b={b.id}
-                x1={a.x} y1={a.y} x2={b.x} y2={b.y}
-                stroke="rgba(207,231,255,.18)" stroke-width=".12"
-                stroke-dasharray=".5 1.1" />
-        ))}
-
-        {/* nodes — sigil or glyph + halo, no permanent text */}
-        {nodes.map(n => {
-          const sigMap: Record<string,string> = {
-            'energy-engine':'sig-energy','inquiry-engine':'sig-inquiry',
-            'semantic-archaeology':'sig-library','language':'sig-library',
-            'reality-capture':'sig-diary','reality':'sig-reality',
-            'sense':'sig-scanner','icy-clear-os':'sig-clear','icy-natural':'sig-natural',
-          };
-          const sig = sigMap[n.id];
-          const size = 5.2;
-          const halo = 9;
-          const inactive = isInactive(n);
-          return (
-            <g class={`node ${inactive ? 'node-inactive' : ''}`} data-id={n.id} transform={`translate(${n.x} ${n.y})`}
-               style={`color:${n.accent ?? '#cfe7ff'}`}>
-              <circle class="ripple" r={halo} fill="none" stroke="currentColor" stroke-width=".6" opacity="0"/>
-              <circle class="halo" r={halo} fill="url(#halo)" opacity=".35"/>
-              {sig
-                ? <use href={`#${sig}`} x={-size/2} y={-size/2} width={size} height={size}/>
-                : <text class="node-glyph" x="0" y="0" text-anchor="middle" dominant-baseline="central"
-                        font-size="4.4" fill="currentColor">{n.glyph}</text>}
-            </g>
-          );
-        })}
+    <div class="atlas-shell" id="atlas-shell">
+      <svg class="atlas-lines" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+        <defs><filter id="line-glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation=".35" result="blur" /><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+        {edges.map(({ a, b }) => <line class="atlas-line" data-a={a.id} data-b={b.id} x1={a.x} y1={a.y} x2={b.x} y2={b.y} />)}
       </svg>
+      <div class="orbit orbit--outer" aria-hidden="true"></div><div class="orbit orbit--inner" aria-hidden="true"></div>
+      <span class="axis-label axis-label--x" aria-hidden="true">creative field</span><span class="axis-label axis-label--y" aria-hidden="true">working systems</span>
 
-      {/* large invisible HTML hit targets — stars are easier to touch than to aim at */}
-      <div class="hit-targets">
-        {nodes.map(n => {
-          const inactive = isInactive(n);
-          const href = linkOf(n);
-          if (inactive) {
-            return (
-              <button type="button" class="hit-target" data-id={n.id} data-inactive="1"
-                      aria-label={n.title}
-                      style={`left:${n.x}%; top:${n.y}%`}/>
-            );
-          }
-          return (
-            <a class="hit-target" href={href} data-id={n.id}
-               target={n.external ? '_blank' : undefined} rel={n.external ? 'noopener' : undefined}
-               aria-label={n.title}
-               style={`left:${n.x}%; top:${n.y}%`}/>
-          );
-        })}
-      </div>
+      {nodes.map((node, index) => (
+        <button
+          class={`world-node ${node.id === defaultNode?.id ? "is-active" : ""}`}
+          type="button" data-node={node.id} data-title={node.title} data-philosophy={node.philosophy}
+          data-field={node.field} data-status={statusLabel[node.status] ?? node.status}
+          data-group={node.group === "observatory" ? "Project" : "Instrument"} data-route={node.route}
+          data-external={node.external ? "true" : "false"} data-accent={node.accent}
+          data-atmosphere={node.atmosphere} data-related={relatedIds(node.id).join(",")}
+          data-x={node.x} data-y={node.y}
+          aria-pressed={node.id === defaultNode?.id ? "true" : "false"} aria-controls="focus-dossier"
+          style={`--x:${node.x}%;--y:${node.y}%;--accent:${node.accent};--delay:${index * -0.7}s`}
+        >
+          <span class="world-node__halo" aria-hidden="true"></span><span class="world-node__glyph" aria-hidden="true">{node.glyph}</span>
+          <span class="world-node__label">{node.title}</span><span class="world-node__state">{statusLabel[node.status] ?? node.status}</span>
+        </button>
+      ))}
+    </div>
 
+    {defaultNode && (
+      <aside class="dossier" id="focus-dossier" aria-live="polite" aria-hidden="false" style={`--accent:${defaultNode.accent}`}>
+        <button class="dossier__close" type="button" data-clear-focus aria-label="Return to the whole world">×</button>
+        <div class="dossier__signal" aria-hidden="true"><span>{defaultNode.glyph}</span></div>
+        <div class="dossier__meta"><span data-dossier-group>{defaultNode.group === "observatory" ? "Project" : "Instrument"}</span><span>·</span><span data-dossier-status>{statusLabel[defaultNode.status] ?? defaultNode.status}</span></div>
+        <h2 data-dossier-title>{defaultNode.title}</h2>
+        <p class="dossier__philosophy" data-dossier-philosophy>{defaultNode.philosophy}</p>
+        <p class="dossier__field" id="dossier-field-note" data-dossier-field>{defaultNode.field}</p>
+        <div class="dossier__relations" data-dossier-relations>{relatedIds(defaultNode.id).length ? `Connected · ${relatedIds(defaultNode.id).map((id) => nodeById.get(id)?.title).filter(Boolean).join(" · ")}` : "Independent object"}</div>
+        <div class="dossier__actions">
+          <a class="dossier__enter" data-dossier-link href={defaultNode.route} target={defaultNode.external ? "_blank" : undefined} rel={defaultNode.external ? "noopener" : undefined}>Enter <span data-link-mark aria-hidden="true">{defaultNode.external ? "↗" : "→"}</span></a>
+          <button class="dossier__more" type="button" data-more aria-controls="dossier-field-note" aria-expanded="false">Hold / reveal field note</button>
+        </div>
+      </aside>
+    )}
 
-      {/* field cards — whispers that appear when a node is touched */}
-      <div class="field-cards">
-        {nodes.map(n => {
-          const inactive = isInactive(n);
-          const related = linksOf(n.id);
-          return (
-            <div class="field-card"
-                 data-card={n.id}
-                 data-nx={n.x}
-                 data-ny={n.y}
-                 style={`--accent:${n.accent ?? '#cfe7ff'}`}>
-              <div class="fc-inner">
-                <div class="fc-head">
-                  <span class="fc-emoji">{n.glyph}</span>
-                  <span class="fc-title">{n.title}</span>
-                </div>
-                <p class="fc-meta">
-                  <span class="fc-layer">{layerOf(n)}</span>
-                  <span class="fc-sep" aria-hidden="true">·</span>
-                  <span class="fc-status">{statusLabel[n.status] ?? n.status}</span>
-                </p>
-                <p class="fc-tag">{n.philosophy}</p>
-                {related.length > 0 && (
-                  <p class="fc-rel"><span class="fc-rel-h">Linked</span> {related.join(' · ')}</p>
-                )}
-              {inactive
-                ? <span class="fc-cta fc-cta-soon">In the lab</span>
-                : <a class="fc-cta" href={n.route} target={n.external ? '_blank' : undefined} rel={n.external ? 'noopener' : undefined}>Enter →</a>}
-              </div>
-            </div>
-          );
-        })}
-      </div>
-
-
-    </figure>
-
-    
-
-    {/* conventional navigation fallback for the chart */}
-    <nav class="atlas-index" aria-label="Atlas index">
-      <span class="atlas-index-label">Index</span>
-      <ul>
-        {nodes.map(n => {
-          const inactive = isInactive(n);
-          const href = linkOf(n);
-          if (inactive) {
-            return (
-              <li>
-                <button type="button" class="atlas-index-chip" data-jump={n.id} data-inactive="1">
-                  <span class="dot" style={`background:${n.accent ?? '#cfe7ff'}`}></span>
-                  {n.title}
-                </button>
-              </li>
-            );
-          }
-          return (
-            <li>
-              <button type="button" class="atlas-index-chip" data-jump={n.id}
-                      data-href={href}
-                      data-external={n.external ? '1' : '0'}>
-                <span class="dot" style={`background:${n.accent ?? '#cfe7ff'}`}></span>
-                {n.title}
-              </button>
-            </li>
-          );
-        })}
-      </ul>
-    </nav>
-
-    {/* mobile: a field index, not a shrunken constellation */}
-    <nav class="atlas-field" aria-label="Atlas field index">
-      <p class="atlas-field-head">Field index <span class="atlas-field-count">{nodes.length} bodies</span></p>
-      <ol class="atlas-field-list">
-        {nodes.map((n, i) => {
-          const inactive = isInactive(n);
-          const related = linksOf(n.id);
-          const body = (
-            <>
-              <span class="af-layer">{layerOf(n)}</span>
-              <span class="af-title">{n.title}</span>
-              <span class="af-note">{n.philosophy}</span>
-              {related.length > 0 && <span class="af-rel">Linked · {related.join(' · ')}</span>}
-            </>
-          );
-          return (
-            <li class="af-row" style={`--accent:${n.accent ?? '#cfe7ff'}`}>
-              <span class="af-no" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
-              <span class="af-glyph" aria-hidden="true">{n.glyph}</span>
-              <span class="af-body">
-                {inactive
-                  ? <span class="af-name af-name--off">{body}</span>
-                  : <a class="af-name" href={n.route} target={n.external ? '_blank' : undefined} rel={n.external ? 'noopener': undefined}>{body}</a>}
-              </span>
-              <span class="af-status">{statusLabel[n.status] ?? n.status}</span>
-            </li>
-          );
-        })}
-      </ol>
-    </nav>
-
-
-
-
-    <script is:inline>
-      (function(){
-        var fig = document.getElementById('atlas-figure');
-        if (!fig) return;
-        var reduceMotion = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
-        var scrollMode = function(){ return reduceMotion ? 'auto' : 'smooth'; };
-        var nodes = fig.querySelectorAll('.node');
-        var rels  = fig.querySelectorAll('.rel');
-        var cards = fig.querySelectorAll('.field-card');
-        var hits  = fig.querySelectorAll('.hit-target');
-        var isTouchEnv = (window.matchMedia && window.matchMedia('(hover: none)').matches);
-        var armed = null;   // id revealed but not yet entered (touch)
-        var locked = null;  // last selected id stays highlighted
-
-        function setActive(id){
-          fig.setAttribute('data-active', id || '');
-          nodes.forEach(function(g){
-            g.classList.toggle('is-active', !!id && g.getAttribute('data-id') === id);
-          });
-          var connected = new Set();
-          rels.forEach(function(line){
-            var a = line.getAttribute('data-a'), b = line.getAttribute('data-b');
-            var on = id && (a === id || b === id);
-            line.classList.toggle('is-lit', !!on);
-            if (on) { connected.add(a); connected.add(b); }
-          });
-          nodes.forEach(function(g){
-            var nid = g.getAttribute('data-id');
-            g.classList.toggle('is-linked', !!id && nid !== id && connected.has(nid));
-          });
-          cards.forEach(function(c){
-            var match = !!id && c.getAttribute('data-card') === id;
-            if (match && !isFlowLayout()) { positionCard(c); }
-            c.classList.toggle('is-shown', match);
-          });
-          renderFlowPanel(id);
-          if (id) {
-            fig.classList.add('is-locked');
-          } else {
-            setTimeout(function(){
-              if (!fig.getAttribute('data-active')) fig.classList.remove('is-locked');
-            }, 120);
-          }
-        }
-
-        // ── mobile: render the selection into normal document flow ──
-        var flowPanel = document.getElementById('atlas-selected');
-        var flowMQ = window.matchMedia('(max-width: 900px)');
-        function isFlowLayout(){ return flowMQ.matches; }
-        function renderFlowPanel(id){
-          if (!flowPanel) return;
-          if (!isFlowLayout() || !id) {
-            flowPanel.classList.remove('is-shown');
-            flowPanel.innerHTML = '';
-            return;
-          }
-          var src = null;
-          cards.forEach(function(c){ if (c.getAttribute('data-card') === id) src = c; });
-          if (!src) { flowPanel.classList.remove('is-shown'); flowPanel.innerHTML = ''; return; }
-          var accent = src.style.getPropertyValue('--accent') || '#cfe7ff';
-          flowPanel.style.setProperty('--accent', accent);
-          var inner = src.querySelector('.fc-inner');
-          flowPanel.innerHTML = inner ? inner.outerHTML : '';
-          var body = flowPanel.querySelector('.fc-inner');
-          if (body) {
-            var tie = document.createElement('p');
-            tie.className = 'fc-tie';
-            tie.innerHTML = '<span class="tie-dot"></span><span>selected in atlas</span><span class="tie-line"></span>';
-            body.appendChild(tie);
-          }
-          flowPanel.classList.add('is-shown');
-          // bring the panel into view only if it isn't already
-          var r = flowPanel.getBoundingClientRect();
-          var safeTop = 72, safeBottom = window.innerHeight - 110;
-          if (r.top < safeTop || r.bottom > safeBottom) {
-            var target = window.scrollY + r.top - safeTop;
-            window.scrollTo({ top: Math.max(0, target), behavior: scrollMode() });
-          }
-        }
-        flowMQ.addEventListener('change', function(){ renderFlowPanel(fig.getAttribute('data-active') || ''); });
-
-
-        // ── cards take interaction priority while open ──
-        cards.forEach(function(c){
-          c.addEventListener('click', function(ev){ ev.stopPropagation(); });
-        });
-
-        // ── soft proximity glow (no commitment, just discoverability) ──
-        function setNear(ids){
-          var set = new Set(ids || []);
-          nodes.forEach(function(g){
-            var nid = g.getAttribute('data-id');
-            // don't override the locked/active state
-            if (g.classList.contains('is-active') || g.classList.contains('is-linked')) {
-              g.classList.remove('is-near');
-              return;
-            }
-            g.classList.toggle('is-near', set.has(nid));
-          });
-        }
-        function nearestHits(px, py, max, radius){
-          var ranked = [];
-          hits.forEach(function(el){
-            var r = el.getBoundingClientRect();
-            var cx = r.left + r.width/2, cy = r.top + r.height/2;
-            var d = Math.hypot(cx - px, cy - py);
-            if (d <= radius) ranked.push({ el: el, d: d, id: el.getAttribute('data-id') });
-          });
-          ranked.sort(function(a,b){ return a.d - b.d; });
-          return ranked.slice(0, max);
-        }
-
-        function positionCard(card){
-          var figRect = fig.getBoundingClientRect();
-          var nx = parseFloat(card.getAttribute('data-nx')) || 50;
-          var ny = parseFloat(card.getAttribute('data-ny')) || 50;
-          var cxV = figRect.left + (nx/100) * figRect.width;
-          var cyV = figRect.top  + (ny/100) * figRect.height;
-          var prevVis = card.style.visibility;
-          card.style.visibility = 'hidden';
-          card.style.transform = 'none';
-          card.classList.add('is-measuring');
-          var cw = card.offsetWidth, ch = card.offsetHeight;
-          card.classList.remove('is-measuring');
-          card.style.visibility = prevVis || '';
-
-          var pad = 10, gap = 18;
-          var vw = window.innerWidth, vh = window.innerHeight;
-          var candidates = [
-            { name:'right',  l: cxV + gap,            t: cyV - ch/2 },
-            { name:'left',   l: cxV - gap - cw,       t: cyV - ch/2 },
-            { name:'below',  l: cxV - cw/2,           t: cyV + gap },
-            { name:'above',  l: cxV - cw/2,           t: cyV - gap - ch },
-          ];
-          var chosen = null;
-          for (var i=0;i<candidates.length;i++){
-            var c = candidates[i];
-            if (c.l >= pad && c.l + cw <= vw - pad &&
-                c.t >= pad && c.t + ch <= vh - pad) { chosen = c; break; }
-          }
-          if (!chosen) chosen = { name:'below', l: cxV - cw/2, t: cyV + gap };
-          var lV = Math.max(pad, Math.min(chosen.l, vw - pad - cw));
-          var tV = Math.max(pad, Math.min(chosen.t, vh - pad - ch));
-          card.style.setProperty('--fx', (lV - figRect.left) + 'px');
-          card.style.setProperty('--fy', (tV - figRect.top)  + 'px');
-        }
-
-        window.addEventListener('resize', function(){
-          if (!isFlowLayout()) cards.forEach(function(c){ if (c.classList.contains('is-shown')) positionCard(c); });
-        });
-        window.addEventListener('scroll', function(){
-          if (!isFlowLayout()) cards.forEach(function(c){ if (c.classList.contains('is-shown')) positionCard(c); });
-        }, { passive: true });
-
-        hits.forEach(function(el){
-          var id = el.getAttribute('data-id');
-          var inactive = el.getAttribute('data-inactive') === '1';
-          el.addEventListener('pointerenter', function(){ if (!isTouchEnv) setActive(id); });
-          el.addEventListener('pointerleave', function(){ if (!isTouchEnv && locked !== id) setActive(locked || ''); });
-          el.addEventListener('focus', function(){ setActive(id); });
-
-          el.addEventListener('click', function(ev){
-            if (inactive) { ev.preventDefault(); locked = id; armed = id; setActive(id); return; }
-            if (isTouchEnv) {
-              if (armed === id) { armed = null; return; } // second tap → follow link
-              ev.preventDefault();
-              armed = id; locked = id; setActive(id);
-            } else {
-              locked = id;
-            }
-          });
-        });
-
-        // ── proximity glow on hover (desktop) ──
-        if (!isTouchEnv) {
-          fig.addEventListener('pointermove', function(ev){
-            if (locked) return; // committed view wins
-            var near = nearestHits(ev.clientX, ev.clientY, 3, 140);
-            setNear(near.map(function(x){ return x.id; }));
-          });
-          fig.addEventListener('pointerleave', function(){ if (!locked) setNear([]); });
-        }
-
-        // ── proximity glow on touch drag (mobile) ──
-        fig.addEventListener('touchmove', function(ev){
-          var t = ev.touches[0]; if (!t) return;
-          var near = nearestHits(t.clientX, t.clientY, 4, 160);
-          setNear(near.map(function(x){ return x.id; }));
-        }, { passive: true });
-        fig.addEventListener('touchend',   function(){ setNear([]); }, { passive: true });
-        fig.addEventListener('touchcancel',function(){ setNear([]); }, { passive: true });
-
-        // ── magnetic snap — taps near a node activate the nearest one ──
-        fig.addEventListener('click', function(ev){
-          if (ev.target.closest('.hit-target')) return;
-          if (ev.target.closest('.field-card')) return; // let card links work
-          var near = nearestHits(ev.clientX, ev.clientY, 1, 120);
-          if (near.length) {
-            ev.preventDefault();
-            near[0].el.focus();
-            near[0].el.click();
-          } else {
-            armed = null; locked = null; setActive(''); setNear([]);
-          }
-        });
-
-        // ── bottom-sheet index → jump straight to a node ──
-        var chips = document.querySelectorAll('.atlas-index-chip');
-        chips.forEach(function(chip){
-          chip.addEventListener('click', function(ev){
-            var id = chip.getAttribute('data-jump');
-            if (!id) return;
-            locked = id; armed = id; setActive(id);
-            // scroll the chart into view so the user sees the highlight
-            if (!isFlowLayout()) fig.scrollIntoView({ behavior: scrollMode(), block: 'center' });
-            // mark active chip
-            chips.forEach(function(c){ c.classList.toggle('is-active', c === chip); });
-          });
-        });
-
-        document.addEventListener('click', function(ev){
-          if (!fig.contains(ev.target) && !ev.target.closest('.atlas-index')) {
-            armed = null; locked = null; setActive(''); setNear([]);
-            chips.forEach(function(c){ c.classList.remove('is-active'); });
-          }
-        });
-
-        // keyboard: Escape always returns the chart to rest
-        document.addEventListener('keydown', function(ev){
-          if (ev.key !== 'Escape') return;
-          if (!fig.getAttribute('data-active')) return;
-          armed = null; locked = null; setActive(''); setNear([]);
-          chips.forEach(function(c){ c.classList.remove('is-active'); });
-        });
-
-        // ── hint & first-load pulse ───────────────────────────
-        var hint = document.getElementById('atlas-hint');
-        var hintFaded = false;
-        var introEl = null;
-        function dismissHint(){
-          if (!hint || hintFaded) return;
-          hintFaded = true;
-          hint.classList.add('is-faded');
-          if (introEl) { introEl.classList.remove('is-intro'); introEl = null; }
-        }
-        function touchAnywhere(){ dismissHint(); }
-        fig.addEventListener('click', touchAnywhere, {once:true});
-        fig.addEventListener('touchstart', touchAnywhere, {once:true});
-        var indexNav = document.querySelector('.atlas-index');
-        if (indexNav) { indexNav.addEventListener('click', touchAnywhere, {once:true}); }
-
-        if (hint) {
-          hint.textContent = isTouchEnv ? 'Tap a star to inspect.' : 'Hover a star to inspect.';
-        }
-
-        setTimeout(function(){
-          if (hintFaded) return;
-          var first = nodes[0];
-          if (first) {
-            first.classList.add('is-intro');
-            introEl = first;
-            setTimeout(function(){
-              if (introEl === first) { first.classList.remove('is-intro'); introEl = null; }
-            }, 3600);
-          }
-        }, 700);
-      })();
-    </script>
-
-
+    <noscript><nav class="no-script-index" aria-label="Project links">{nodes.map((node) => <a href={node.route}>{node.glyph} {node.title}</a>)}</nav></noscript>
   </section>
 
-  <style>
-    .plate-clear { margin-top: 8px; }
-    .clear-portal { display: block; margin-top: 22px; text-decoration: none; color: inherit;
-      border: 1px solid rgba(191,228,255,.18); border-radius: 14px;
-      background:
-        radial-gradient(ellipse at 20% 0%, rgba(159,217,255,.10), transparent 55%),
-        radial-gradient(ellipse at 100% 100%, rgba(191,228,255,.06), transparent 60%),
-        linear-gradient(180deg, rgba(12,22,36,.7), rgba(7,14,24,.85));
-      transition: border-color .5s ease, transform .6s cubic-bezier(.22,1,.36,1), box-shadow .6s ease;
-      box-shadow: 0 0 0 1px rgba(191,228,255,.02) inset;
-    }
-    .clear-portal:hover, .clear-portal:focus-visible {
-      border-color: rgba(191,228,255,.42);
-      transform: translateY(-2px);
-      box-shadow: 0 20px 60px -30px rgba(159,217,255,.35);
-    }
-    .clear-portal-inner { display: grid; grid-template-columns: 96px 1fr auto;
-      gap: 24px; align-items: center; padding: 26px 28px; }
-    .clear-glyph { width: 72px; height: 72px; display: flex; align-items: center; justify-content: center;
-      border-radius: 50%; background: radial-gradient(circle, rgba(159,217,255,.18), transparent 68%);
-      filter: drop-shadow(0 0 14px rgba(159,217,255,.35)); }
-    .clear-glyph svg { width: 100%; height: 100%; }
-    .clear-text { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
-    .clear-eyebrow { font-family: "JetBrains Mono", ui-monospace, monospace; font-size: .66rem;
-      letter-spacing: .28em; text-transform: uppercase; color: rgba(191,228,255,.7); }
-    .clear-title { font-family: "IM FELL English", "EB Garamond", serif; font-style: italic;
-      font-size: clamp(1.35rem, 3vw, 1.7rem); color: #eaf6ff; line-height: 1.15; }
-    .clear-body { color: rgba(232,228,216,.68); font-size: .98rem; line-height: 1.55; max-width: 58ch; }
-    .clear-enter { font-family: "JetBrains Mono", ui-monospace, monospace; font-size: .72rem;
-      letter-spacing: .3em; text-transform: uppercase; color: #eaf6ff;
-      padding: 12px 20px; border: 1px solid rgba(191,228,255,.4); border-radius: 999px;
-      background: rgba(159,217,255,.08); white-space: nowrap;
-      transition: border-color .5s ease, background .5s ease; }
-    .clear-portal:hover .clear-enter { border-color: rgba(191,228,255,.75); background: rgba(159,217,255,.14); }
-    @media (max-width: 720px) {
-      .clear-portal-inner { grid-template-columns: 1fr; text-align: left; padding: 22px; gap: 16px; }
-      .clear-glyph { width: 56px; height: 56px; }
-      .clear-enter { justify-self: start; }
-    }
-  </style>
-
-
-
-
-
-
-
-  <!-- ╔══ SELECTED INSTRUMENTS — depth, four at a time ═════════════ -->
-  <section id="instruments" class="plate" aria-labelledby="instruments-title">
-    <header class="plate-head">
-      <span class="plate-no">Plate II</span>
-      <h2 class="plate-title" id="instruments-title">Selected Instruments</h2>
-      <p class="plate-rule">Four instruments taken to depth. The Atlas shows where they sit; this shows what it is like to hold one.</p>
-      <p class="plate-instruction">{featuredInstruments.length} of {artifacts.length} catalogued · read the index for the rest</p>
-    </header>
-
-    <div class="objects">
-      {featuredInstruments.map((a) => {
-        const kind = objectKind[a.id] ?? 'evid';
-        const tag = (
-          <div class="obj-tag">
-            <span class="tag-line"></span>
-            <span class="tag-cat">{catalog[a.id]}</span>
-            <span class="tag-sep">·</span>
-            <span class="tag-kind">{a.subtitle}</span>
-            <span class="tag-sep">·</span>
-            <span class={`flag flag-${a.status}`}>{statusLabel[a.status]}</span>
-          </div>
-        );
-        const cta = ctaFor[a.id] ?? (isInactive(a) ? 'Construction in progress ○' : 'Open object →');
-        const common = `obj obj-${kind} status-${a.status} ${isInactive(a) ? 'obj-off' : ''}`;
-        const style = `--accent:${a.accent ?? '#cfe7ff'}`;
-
-        // ── INSTRUMENT (Energy Engine) ─────────────────────────
-        if (kind === 'instr') return (
-          <a href={linkOf(a)} class={common} style={style} target={a.external ? '_blank':undefined} rel={a.external?'noopener':undefined}>
-            <div class="instr-frame">
-              <div class="instr-dial" aria-hidden="true">
-                <svg viewBox="0 0 200 120">
-                  <defs><linearGradient id="dialface" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#f6efe0"/><stop offset="1" stop-color="#d8cdb2"/></linearGradient></defs>
-                  <rect x="0" y="0" width="200" height="120" fill="url(#dialface)"/>
-                  <path d="M 100 110 A 90 90 0 0 1 190 110" fill="none" stroke="#2a2418" stroke-width="1"/>
-                  {Array.from({length: 21}).map((_, k) => {
-                    const t = (k / 20) * Math.PI;
-                    const x1 = 100 + Math.cos(Math.PI - t) * 78;
-                    const y1 = 110 + Math.sin(Math.PI - t) * 78 * -1;
-                    const x2 = 100 + Math.cos(Math.PI - t) * (k % 5 === 0 ? 64 : 70);
-                    const y2 = 110 + Math.sin(Math.PI - t) * (k % 5 === 0 ? 64 : 70) * -1;
-                    return <line x1={x1} y1={y1} x2={x2} y2={y2} stroke="#2a2418" stroke-width={k%5===0?1.4:.6}/>;
-                  })}
-                  <text x="30" y="118" font-family="EB Garamond, serif" font-size="9" fill="#2a2418">para</text>
-                  <text x="160" y="118" font-family="EB Garamond, serif" font-size="9" fill="#2a2418">symp</text>
-                  <text x="92" y="40" font-family="EB Garamond, serif" font-size="9" fill="#2a2418">lead</text>
-                  <g class="needle">
-                    <line x1="100" y1="110" x2="138" y2="42" stroke="#9b2a1a" stroke-width="1.6" stroke-linecap="round"/>
-                    <circle cx="100" cy="110" r="4" fill="#2a2418"/>
-                  </g>
-                </svg>
-              </div>
-              <div class="instr-meta">
-                {tag}
-                <h3 class="obj-name">{a.title}</h3>
-                <p class="obj-prose">{a.blurb}</p>
-                <p class="instr-spec">Instrument · live · reads autonomic lead in two registers over time.</p>
-                <span class="obj-cta">{cta}</span>
-              </div>
-            </div>
-          </a>
-        );
-
-        // ── SHELF (Potent Library) ─────────────────────────────
-        if (kind === 'shelf') return (
-          <a href={linkOf(a)} class={common} style={style} target={a.external?'_blank':undefined} rel={a.external?'noopener':undefined}>
-            <div class="shelf-frame">
-              <div class="shelf-books" aria-hidden="true">
-                {Array.from({length: 14}).map((_, k) => {
-                  const palette = ['#3a2a1a','#5a3a25','#7a4a2a','#c9a84c','#8a3a25','#2a3a4a','#4a3a3a','#6b3a2a'];
-                  const c = palette[k % palette.length];
-                  const h = 60 + (k * 37) % 40;
-                  const w = 12 + (k * 13) % 10;
-                  return <span class="book" style={`--c:${c}; --h:${h}px; --w:${w}px;`}></span>;
-                })}
-              </div>
-              <div class="shelf-rail" aria-hidden="true"></div>
-              <div class="shelf-meta">
-                {tag}
-                <h3 class="obj-name">{a.title}</h3>
-                <p class="obj-prose">{a.blurb}</p>
-                <p class="shelf-spec">Museum archive · language, meaning, atmosphere · catalogued by signal.</p>
-                <span class="obj-cta">{cta}</span>
-              </div>
-            </div>
-          </a>
-        );
-
-        // ── PINBOARD (Inquiry Engine) ──────────────────────────
-        if (kind === 'board') return (
-          <a href={linkOf(a)} class={common} style={style} target={a.external?'_blank':undefined} rel={a.external?'noopener':undefined}>
-            <div class="board-frame">
-              <div class="board-cork" aria-hidden="true">
-                <span class="pin pin-1">
-                  <em></em>
-                  <p>What is actually being asked?</p>
-                </span>
-                <span class="pin pin-2">
-                  <em></em>
-                  <p>Whose question is this, really?</p>
-                </span>
-                <span class="pin pin-3">
-                  <em></em>
-                  <p>What changes if it stays open?</p>
-                </span>
-                <svg class="board-thread" viewBox="0 0 200 140" aria-hidden="true">
-                  <path d="M 30 30 C 70 80, 130 20, 170 100" fill="none" stroke="#9b2a1a" stroke-width=".6" stroke-dasharray="2 3"/>
-                </svg>
-              </div>
-              <div class="board-meta">
-                {tag}
-                <h3 class="obj-name">{a.title}</h3>
-                <p class="obj-prose">{a.blurb}</p>
-                <p class="board-spec">Investigation room · pinned questions · red thread between leads.</p>
-                <span class="obj-cta">{cta}</span>
-              </div>
-            </div>
-          </a>
-        );
-
-        // ── (Future Diary removed) ─────────────────────────────
-
-        // ── FIELD NOTEBOOK (Pokédex Scanner) ───────────────────
-        if (kind === 'field') return (
-          <a href={linkOf(a)} class={common} style={style} target={a.external?'_blank':undefined} rel={a.external?'noopener':undefined}>
-            <div class="field-frame">
-              <div class="field-sketch" aria-hidden="true">
-                <svg viewBox="0 0 200 140">
-                  {/* phone body */}
-                  <rect x="58" y="10" width="84" height="120" rx="10" ry="10" fill="#f3eedb" stroke="#2a2418" stroke-width="1.4"/>
-                  <rect x="64" y="18" width="72" height="96" fill="#0f1620" stroke="#2a2418" stroke-width=".6"/>
-                  {/* scanner reticle corners */}
-                  <g stroke="#9bb88a" stroke-width="1" fill="none">
-                    <path d="M70 26 L70 36 M70 26 L80 26"/>
-                    <path d="M130 26 L130 36 M130 26 L120 26"/>
-                    <path d="M70 106 L70 96 M70 106 L80 106"/>
-                    <path d="M130 106 L130 96 M130 106 L120 106"/>
-                  </g>
-                  {/* recognized object — leaf */}
-                  <g transform="translate(100 66)" stroke="#9bb88a" stroke-width=".9" fill="none">
-                    <path d="M-14 10 C-18 -4 -6 -18 14 -16 C18 -4 6 12 -14 10 Z"/>
-                    <path d="M-12 8 L12 -14"/>
-                  </g>
-                  {/* scan line */}
-                  <line x1="64" y1="66" x2="136" y2="66" stroke="#9bb88a" stroke-width=".6" stroke-dasharray="2 2" opacity=".75"/>
-                  {/* home indicator */}
-                  <circle cx="100" cy="122" r="2.2" fill="none" stroke="#2a2418" stroke-width=".8"/>
-                  {/* label */}
-                  <line x1="142" y1="40" x2="174" y2="32" stroke="#2a2418" stroke-width=".5"/>
-                  <text x="146" y="28" font-family="Caveat, cursive" font-size="11" fill="#2a2418">identified</text>
-                </svg>
-                <span class="field-stamp">scan · 03 · leaf, juvenile</span>
-              </div>
-              <div class="field-meta">
-                {tag}
-                <h3 class="obj-name">{a.title}</h3>
-                <p class="obj-prose">{a.blurb}</p>
-                <p class="field-spec">Visual scanner · identify, observe · ordinary things → discoveries.</p>
-                <span class="obj-cta">{cta}</span>
-              </div>
-            </div>
-          </a>
-        );
-
-        // ── SANDBOX (Playground) ───────────────────────────────
-        if (kind === 'sandbox') return (
-          <a href={linkOf(a)} class={common} style={style} target={a.external?'_blank':undefined} rel={a.external?'noopener':undefined}>
-            <div class="sandbox-frame">
-              <div class="sandbox-table" aria-hidden="true">
-                <svg viewBox="0 0 200 140">
-                  <rect x="0" y="0" width="200" height="140" fill="#f3eedb"/>
-                  <g stroke="#c9bfa4" stroke-width=".5">
-                    {Array.from({length: 9}).map((_, k) => <line x1={k*22+12} y1="0" x2={k*22+12} y2="140"/>)}
-                    {Array.from({length: 7}).map((_, k) => <line x1="0" y1={k*22+8} x2="200" y2={k*22+8}/>)}
-                  </g>
-                  <g fill="none" stroke="#2a2418" stroke-width="1.2">
-                    <rect x="26" y="30" width="46" height="34"/>
-                    <circle cx="130" cy="46" r="20"/>
-                    <path d="M 40 108 L 66 74 L 92 108 Z"/>
-                    <path d="M 112 92 L 168 92 L 156 118 L 124 118 Z"/>
-                  </g>
-                  <g stroke="#7fe0c8" stroke-width=".8" stroke-dasharray="3 3" fill="none">
-                    <path d="M 72 47 L 110 46"/>
-                    <path d="M 66 74 L 124 100"/>
-                  </g>
-                  <text x="150" y="26" font-family="Caveat, cursive" font-size="12" fill="#2a2418">try it</text>
-                </svg>
-                <span class="sandbox-stamp">sketch · prototype · unfinished on purpose</span>
-              </div>
-              <div class="sandbox-meta">
-                {tag}
-                <h3 class="obj-name">{a.title}</h3>
-                <p class="obj-prose">{a.blurb}</p>
-                <span class="obj-cta">{cta}</span>
-              </div>
-            </div>
-          </a>
-        );
-
-        // ── STATES (Scenario States) ───────────────────────────
-        if (kind === 'states') return (
-          <a href={linkOf(a)} class={common} style={style} target={a.external?'_blank':undefined} rel={a.external?'noopener':undefined}>
-            <div class="states-frame">
-              <div class="states-chart" aria-hidden="true">
-                <svg viewBox="0 0 200 140">
-                  <g stroke="#a8b8ff" stroke-width=".7" fill="none" opacity=".85">
-                    <path d="M 34 70 C 70 70, 80 34, 118 34"/>
-                    <path d="M 34 70 C 70 70, 80 106, 118 106"/>
-                    <path d="M 118 34 C 146 34, 150 18, 176 18"/>
-                    <path d="M 118 34 C 146 34, 150 52, 176 52"/>
-                    <path d="M 118 106 C 146 106, 150 92, 176 92"/>
-                    <path d="M 118 106 C 146 106, 150 124, 176 124"/>
-                  </g>
-                  <g fill="#0f1620" stroke="#a8b8ff" stroke-width="1">
-                    <circle cx="34" cy="70" r="7"/>
-                    <circle cx="118" cy="34" r="5"/>
-                    <circle cx="118" cy="106" r="5"/>
-                    <circle cx="176" cy="18" r="3.4"/>
-                    <circle cx="176" cy="52" r="3.4"/>
-                    <circle cx="176" cy="92" r="3.4"/>
-                    <circle cx="176" cy="124" r="3.4"/>
-                  </g>
-                </svg>
-                <span class="states-stamp">state → state → state</span>
-              </div>
-              <div class="states-meta">
-                {tag}
-                <h3 class="obj-name">{a.title}</h3>
-                <p class="obj-prose">{a.blurb}</p>
-                <span class="obj-cta">{cta}</span>
-              </div>
-            </div>
-          </a>
-        );
-
-        // ── COURT (Hoop Focus) ─────────────────────────────────
-        if (kind === 'court') return (
-          <a href={linkOf(a)} class={common} style={style} target={a.external?'_blank':undefined} rel={a.external?'noopener':undefined}>
-            <div class="court-frame">
-              <div class="court-tape" aria-hidden="true">
-                <svg viewBox="0 0 200 120">
-                  <rect x="0" y="0" width="200" height="120" fill="#12100c"/>
-                  <g stroke="#ff9d5a" stroke-width="1" fill="none" opacity=".9">
-                    <rect x="14" y="12" width="172" height="96"/>
-                    <path d="M 14 60 L 186 60"/>
-                    <circle cx="100" cy="60" r="18"/>
-                    <path d="M 14 30 A 34 30 0 0 1 14 90"/>
-                    <path d="M 186 30 A 34 30 0 0 0 186 90"/>
-                  </g>
-                  <circle cx="132" cy="44" r="3.4" fill="#ff9d5a"/>
-                  <path d="M 132 44 C 116 22, 96 30, 88 52" stroke="#ff9d5a" stroke-width=".7" stroke-dasharray="3 3" fill="none"/>
-                </svg>
-                <div class="court-strip">
-                  {Array.from({length: 4}).map((_, k) => (
-                    <span class="court-clip">{String(k+1).padStart(2,'0')}</span>
-                  ))}
-                </div>
-              </div>
-              <div class="court-meta">
-                {tag}
-                <h3 class="obj-name">{a.title}</h3>
-                <p class="obj-prose">{a.blurb}</p>
-                <span class="obj-cta">{cta}</span>
-              </div>
-            </div>
-          </a>
-        );
-
-        // ── SERIES (Photogression — lens / ways of seeing) ──────
-        if (kind === 'series') return (
-          <a href={linkOf(a)} class={common} style={style} target={a.external?'_blank':undefined} rel={a.external?'noopener':undefined}>
-            <div class="series-frame">
-              <div class="series-plate" aria-hidden="true">
-                <svg class="series-optic" viewBox="0 0 200 92">
-                  <circle cx="100" cy="46" r="34" fill="none" stroke="#cfe7ff" stroke-width=".7" opacity=".55"/>
-                  <circle cx="100" cy="46" r="24" fill="none" stroke="#cfe7ff" stroke-width=".7" opacity=".4"/>
-                  <circle cx="100" cy="46" r="13" fill="none" stroke="#cfe7ff" stroke-width=".9" opacity=".8"/>
-                  <circle cx="100" cy="46" r="4" fill="#cfe7ff" opacity=".85"/>
-                  {[0,60,120,180,240,300].map((deg) => (
-                    <line x1={100 + 13*Math.cos(deg*Math.PI/180)} y1={46 + 13*Math.sin(deg*Math.PI/180)}
-                      x2={100 + 24*Math.cos(deg*Math.PI/180)} y2={46 + 24*Math.sin(deg*Math.PI/180)}
-                      stroke="#cfe7ff" stroke-width=".6" opacity=".45"/>
-                  ))}
-                  <line x1="6" y1="46" x2="60" y2="46" stroke="#cfe7ff" stroke-width=".5" opacity=".3"/>
-                  <line x1="140" y1="46" x2="194" y2="46" stroke="#cfe7ff" stroke-width=".5" opacity=".3"/>
-                  <path d="M 18 24 L 66 42" stroke="#cfe7ff" stroke-width=".5" opacity=".25" fill="none"/>
-                  <path d="M 18 68 L 66 50" stroke="#cfe7ff" stroke-width=".5" opacity=".25" fill="none"/>
-                  <path d="M 134 42 L 182 22" stroke="#cfe7ff" stroke-width=".5" opacity=".25" fill="none"/>
-                  <path d="M 134 50 L 182 70" stroke="#cfe7ff" stroke-width=".5" opacity=".25" fill="none"/>
-                </svg>
-                <div class="series-strip">
-                  {['Framing','Light','Distance','Stillness'].map((n) => (
-                    <span class="series-cell">{n}</span>
-                  ))}
-                </div>
-                <span class="series-stamp">types of seeing · lens study</span>
-              </div>
-              <div class="series-meta">
-                {tag}
-                <h3 class="obj-name">{a.title}</h3>
-                <p class="obj-prose">{a.blurb}</p>
-                <p class="series-spec">A lens that teaches capture · looking as practice.</p>
-                <span class="obj-cta">{cta}</span>
-              </div>
-            </div>
-          </a>
-        );
-
-
-        // ── EVIDENCE (Reality Capture) ─────────────────────────
+  <section class="territory territory--objects" id="objects" data-territory="objects" aria-labelledby="objects-title" tabindex="-1">
+    <header class="territory-heading"><p class="eyebrow">Things you can hold</p><h2 id="objects-title">Working objects</h2><p>Selected systems shown through their own interface language.</p></header>
+    <div class="object-deck">
+      {featuredInstruments.map((artifact, index) => {
+        const external = artifact.external ?? artifact.route.startsWith("http");
         return (
-          <a href={linkOf(a)} class={common} style={style} target={a.external?'_blank':undefined} rel={a.external?'noopener':undefined}>
-            <div class="evid-frame">
-              <div class="evid-strip" aria-hidden="true">
-                <span class="evid-label">EVIDENCE · {catalog[a.id]}</span>
-                <div class="evid-frames">
-                  {Array.from({length: 4}).map((_, k) => (
-                    <div class="evid-cell">
-                      <span class="evid-num">{String(k+1).padStart(2,'0')}</span>
-                      <span class="evid-mark"></span>
-                    </div>
-                  ))}
-                </div>
-                <span class="evid-foot">unprocessed · pre-name · chain of custody open</span>
-              </div>
-              <div class="evid-meta">
-                {tag}
-                <h3 class="obj-name">{a.title}</h3>
-                <p class="obj-prose">{a.blurb}</p>
-                <p class="evid-spec">Evidence archive · notation for what is, before interpretation.</p>
-                <span class="obj-cta">{cta}</span>
-              </div>
-            </div>
-          </a>
+          <article class={`object object--${artifact.atmosphere}`} style={`--accent:${artifact.accent};--object-index:${index}`}>
+            <div class="object__visual" aria-hidden="true"><span class="object__glyph">{artifact.glyph}</span><span class="object__ring object__ring--a"></span><span class="object__ring object__ring--b"></span><span class="object__scan"></span></div>
+            <div class="object__copy"><p class="object__meta">{artifact.subtitle} · {statusLabel[artifact.status]}</p><h3>{artifact.title}</h3><p>{artifact.blurb}</p><a href={artifact.route} target={external ? "_blank" : undefined} rel={external ? "noopener" : undefined}>Open {artifact.title} <span aria-hidden="true">↗</span></a></div>
+          </article>
         );
       })}
     </div>
   </section>
 
-  <!-- ╔══ PLATE III — ICY CLEAR threshold ═══════════════════════ -->
-  <section id="clear-os" class="plate plate-clear" aria-labelledby="clear-title">
-    <header class="plate-head">
-      <span class="plate-no">Plate III</span>
-      <h2 class="plate-title" id="clear-title">ICY CLEAR</h2>
-      <p class="plate-rule">See clearly before you explain. The operating system beneath the Atlas — principles, models, modes, systems, doctrines.</p>
-      <p class="plate-instruction">A separate climate. Enter when ready.</p>
-    </header>
-
-    <a class="clear-portal" href="/clear.html" aria-label="Enter ICY CLEAR">
-      <div class="clear-portal-inner">
-        <span class="clear-glyph" aria-hidden="true">
-          <svg viewBox="0 0 80 80" fill="none" stroke="#bfe4ff" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="40" y1="10" x2="40" y2="70"/>
-            <line x1="14" y1="40" x2="66" y2="40"/>
-            <line x1="22" y1="22" x2="58" y2="58"/>
-            <line x1="58" y1="22" x2="22" y2="58"/>
-            <circle cx="40" cy="40" r="6" fill="rgba(191,228,255,.18)"/>
-          </svg>
-        </span>
-        <div class="clear-text">
-          <span class="clear-eyebrow">Snow · Ice · Clarity</span>
-          <span class="clear-title">See clearly, then decide.</span>
-          <span class="clear-body">A quiet room of principles you return to when the situation gets noisy. {conceptRows.length} written pieces, one intent-based route at a time.</span>
-        </div>
-        <span class="clear-enter">Enter →</span>
-      </div>
-    </a>
-  </section>
-
-  <!-- ╔══ PLATE IV — Full Index ═════════════════════════════════ -->
-  <section id="index" class="plate plate-index" aria-labelledby="index-title">
-    <header class="plate-head">
-      <span class="plate-no">Plate IV</span>
-      <h2 class="plate-title" id="index-title">Full Index</h2>
-      <p class="plate-rule">Every destination in the ecosystem in one list: what it is, what state it is in, and where it actually lives.</p>
-      <p class="plate-instruction">{indexGroups.reduce((n, g) => n + g.rows.length, 0)} entries · nothing curated away</p>
-    </header>
-
-    <div class="index-groups">
-      {indexGroups.map((g) => (
-        <section class="index-group" aria-labelledby={`ig-${g.id}`}>
-          <h3 class="index-group-title" id={`ig-${g.id}`}>
-            <span class="index-group-name">{g.label}</span>
-            <span class="index-group-count">{g.rows.length}</span>
-          </h3>
-          <p class="index-group-note">{g.note}</p>
-          <ul class="index-list">
-            {g.rows.map((r) => (
-              <li class="index-row">
-                {r.href === '#'
-                  ? <span class="index-name">{r.title}</span>
-                  : <a
-                      class="index-name"
-                      href={r.href}
-                      target={r.external ? '_blank' : undefined}
-                      rel={r.external ? 'noopener' : undefined}
-                    >{r.title}</a>}
-                <span class="index-kind">{r.kind}</span>
-                <span class="index-status">{r.status}</span>
-                <span class="index-dest">{destOf(r.href)}</span>
-              </li>
-            ))}
-          </ul>
-        </section>
+  <section class="territory territory--signals" id="signals" data-territory="signals" aria-labelledby="signals-title" tabindex="-1">
+    <header class="territory-heading"><p class="eyebrow">Current transmissions</p><h2 id="signals-title">Signals from the work</h2><p>Short notes already moving through the projects.</p></header>
+    <div class="signal-field">
+      {signals.map((signal, index) => (
+        <article class="signal-note" style={`--signal-index:${index}`}><span class="signal-note__stamp">{signal.stamp}</span><span class="signal-note__origin">{artifacts.find((item) => item.id === signal.origin)?.title ?? "Icy Clearer"}</span><h3>{signal.title}</h3><p>{signal.body}</p></article>
       ))}
     </div>
+    <a class="clear-threshold" href="/clear.html"><span class="clear-threshold__mark" aria-hidden="true">❄</span><span><small>Enter the quieter layer</small><strong>ICY CLEAR</strong><em>See clearly, then decide.</em></span><span aria-hidden="true">→</span></a>
   </section>
 
-  <!-- ╔══ ECOSYSTEM FOOTER ══════════════════════════════════════ -->
-  <footer class="colophon" aria-label="Colophon">
-    <div class="col-left">
-      <p class="col-name">Icy Clearer</p>
-      <p class="col-line">An observatory of systems, language, energy, and becoming.</p>
-      <p class="col-creed">See clearly. Become slowly.</p>
+  <section class="territory territory--registry" id="registry" data-territory="registry" aria-labelledby="registry-title" tabindex="-1">
+    <header class="territory-heading"><p class="eyebrow">Direct access</p><h2 id="registry-title">Instruments + ICY CLEAR</h2><p>A conventional route list when you already know where you want to go.</p></header>
+    <div class="registry-grid">
+      <section class="registry-group" aria-labelledby="registry-instruments"><h3 id="registry-instruments">Instruments</h3><ul>
+        {instrumentRows.map((row) => <li>{row.href === "#" ? <span>{row.title}</span> : <a href={row.href} target={row.external ? "_blank" : undefined} rel={row.external ? "noopener" : undefined}>{row.title}</a>}<small>{row.status}</small><em>{row.kind}</em></li>)}
+      </ul></section>
+      <section class="registry-group" aria-labelledby="registry-clear"><h3 id="registry-clear">ICY CLEAR</h3><ul>
+        {conceptRows.map((row) => <li><a href={row.href}>{row.title}</a><small>{row.status}</small><em>{row.kind}</em></li>)}
+      </ul></section>
     </div>
-    <nav class="col-nav" aria-label="Ecosystem">
-      <div class="col-set">
-        <span class="col-head">Layers</span>
-        <a href="#orientation">Orientation</a>
-        <a href="#atlas">The Atlas</a>
-        <a href="#instruments">Selected Instruments</a>
-        <a href="#index">Full Index</a>
-      </div>
-      <div class="col-set">
-        <span class="col-head">Environments</span>
-        <a href="/clear.html">ICY CLEAR</a>
-        <a href="/natural.html">Icy Natural</a>
-        <a href="/worlds.html">Two Worlds</a>
-      </div>
-      <div class="col-set">
-        <span class="col-head">Registers</span>
-        <a href="/categories/doctrines.html">Doctrines</a>
-        <a href="/categories/perception.html">Perception</a>
-        <a href="/categories/state-management.html">State Management</a>
-        <a href="/categories/systems-thinking.html">Systems Thinking</a>
-      </div>
-    </nav>
-    <p class="col-meta">Field record {dayLabel} · build {buildStamp} · static build, no trackers</p>
-  </footer>
+    <nav class="environment-links" aria-label="Other Icy environments"><a href="/natural.html">Icy Natural <span aria-hidden="true">→</span></a><a href="/worlds.html">Two Worlds <span aria-hidden="true">→</span></a></nav>
+  </section>
 </main>
 
-<style is:global>
-  * { box-sizing: border-box; }
-  html, body { margin: 0; padding: 0; }
-  body {
-    min-height: 100vh; color: #e8e4d8; background: #07090f;
-    font-family: "EB Garamond", "Cormorant Garamond", Georgia, serif;
-    -webkit-font-smoothing: antialiased; overflow-x: hidden;
-    font-size: 17px; line-height: 1.55;
-  }
-  a { color: inherit; }
+<nav class="territory-dock" aria-label="Move through Icy Clearer">
+  <a class="dock-key is-active" data-mode="world" aria-current="page" href="#world"><span aria-hidden="true">◎</span><small>World</small></a>
+  <a class="dock-key" data-mode="objects" href="#objects"><span aria-hidden="true">◇</span><small>Objects</small></a>
+  <a class="dock-key" data-mode="signals" href="#signals"><span aria-hidden="true">⌁</span><small>Signals</small></a>
+  <a class="dock-key" data-mode="registry" href="#registry"><span aria-hidden="true">☰</span><small>Routes</small></a>
+  <a class="dock-key dock-key--clear" href="/clear.html"><span aria-hidden="true">❄</span><small>Clear</small></a>
+</nav>
 
-  /* ── celestial wash & paper texture ───────────────────────── */
-  .sky { position: fixed; inset: 0; z-index: -1; overflow: hidden;
-    background:
-      radial-gradient(ellipse at 18% 0%, #15243f 0%, transparent 55%),
-      radial-gradient(ellipse at 82% 100%, #142a30 0%, transparent 60%),
-      linear-gradient(180deg, #06090f 0%, #0a1018 60%, #06090f 100%);
-  }
-  .nebula { position: absolute; border-radius: 50%; filter: blur(110px); mix-blend-mode: screen; opacity: .25; }
-  .nebula.a { width: 720px; height: 720px; top: -240px; left: -180px;
-    background: radial-gradient(circle, #7fcbff, transparent 70%); animation: drift 80s ease-in-out infinite alternate; }
-  .nebula.b { width: 640px; height: 640px; bottom: -200px; right: -160px;
-    background: radial-gradient(circle, #9bb88a, transparent 70%); animation: drift 90s ease-in-out infinite alternate-reverse; }
-  @keyframes drift { from{transform:translate3d(0,0,0);} to{transform:translate3d(50px,-30px,0);} }
-  .starfield { position: absolute; inset: 0; opacity: .55;
-    background-image:
-      radial-gradient(1px 1px at 20px 30px, #eaf4ff, transparent),
-      radial-gradient(1px 1px at 80px 120px, #cfe7ff, transparent),
-      radial-gradient(1.5px 1.5px at 160px 60px, #fff, transparent),
-      radial-gradient(1px 1px at 220px 200px, #c0d8ff, transparent),
-      radial-gradient(.8px .8px at 50px 220px, #cfe7ff, transparent),
-      radial-gradient(1px 1px at 300px 90px, #fff, transparent);
-    background-size: 360px 280px; animation: tw 9s ease-in-out infinite alternate; }
-  @keyframes tw { from{opacity:.35;} to{opacity:.75;} }
-  .paper { position: absolute; inset: 0; pointer-events: none; opacity: .04;
-    background-image:
-      repeating-linear-gradient(0deg, rgba(232,228,216,.6) 0, rgba(232,228,216,.6) 1px, transparent 1px, transparent 28px),
-      repeating-linear-gradient(90deg, rgba(232,228,216,.4) 0, rgba(232,228,216,.4) 1px, transparent 1px, transparent 28px);
-    mix-blend-mode: overlay;
-  }
-  .grain { position: absolute; inset: 0; opacity: .04; pointer-events: none;
-    background-image: radial-gradient(rgba(255,255,255,.6) 1px, transparent 1px);
-    background-size: 3px 3px; mix-blend-mode: overlay; }
-
-  /* ── corner survey marks ──────────────────────────────────── */
-  .frame { position: fixed; inset: 14px; pointer-events: none; z-index: 30;
-    font-family: "JetBrains Mono", ui-monospace, monospace; font-size: .58rem;
-    letter-spacing: .18em; color: rgba(207,231,255,.4); text-transform: uppercase; }
-  .mk { position: absolute; }
-  .mk.tl { top:0; left:0; } .mk.tr { top:0; right:0; }
-  .mk.bl { bottom:0; left:0; } .mk.br { bottom:0; right:0; }
-  .rule { position: absolute; top: 50%; width: 26px; height: 1px;
-    background: rgba(207,231,255,.18); }
-  .rl { left: 0; } .rr { right: 0; }
-  @media (max-width: 760px){ .frame { font-size: .5rem; inset: 8px; } .mk.tr, .mk.br { display: none; } .rule { display: none; } }
-
-  /* ── seal / bar ───────────────────────────────────────────── */
-  .bar { position: sticky; top: 0; z-index: 40; display: flex; align-items: center; justify-content: space-between;
-    gap: 16px; padding: 14px max(22px, env(safe-area-inset-left));
-    backdrop-filter: blur(14px) saturate(140%);
-    background: rgba(7,10,16,.55);
-    border-bottom: 1px solid rgba(207,231,255,.08);
-  }
-  .seal { display: flex; align-items: center; gap: 12px; text-decoration: none; color: inherit; }
-  .seal-mark { color: #cfe7ff; font-size: 1.1rem; filter: drop-shadow(0 0 8px rgba(127,203,255,.6)); }
-  .seal-words { display: flex; flex-direction: column; line-height: 1; }
-  .seal-name { font-family: "IM FELL English", "EB Garamond", serif; font-size: 1.1rem; letter-spacing: .04em; color: #f3eedb; }
-  .seal-sub { font-family: "JetBrains Mono", monospace; font-size: .56rem; letter-spacing: .22em; text-transform: uppercase; color: rgba(207,231,255,.55); margin-top: 4px; }
-  .nav { display: flex; align-items: center; gap: 22px; font-family: "JetBrains Mono", monospace; font-size: .72rem; letter-spacing: .14em; text-transform: uppercase; }
-  .nav a { text-decoration: none; color: rgba(232,228,216,.6); }
-  .nav a:hover { color: #f3eedb; }
-  .nav .nav-clear { color: #cfe7ff; border-bottom: 1px solid rgba(127,203,255,.4); padding-bottom: 2px; }
-  @media (max-width: 900px) { .nav { gap: 14px; font-size: .62rem; letter-spacing: .1em; } .seal-sub { display: none; } }
-  @media (max-width: 560px) { .nav a:not(.nav-clear) { display: none; } }
-
-  /* ── layout & plates ──────────────────────────────────────── */
-  .institute { width: min(1180px, 100%); margin: 0 auto; padding: 56px 26px 100px; }
-  .kicker { margin: 0 0 12px; font-family: "JetBrains Mono", monospace; font-size: .65rem; font-weight: 500;
-    letter-spacing: .26em; text-transform: uppercase; color: rgba(207,231,255,.7);
-    display: inline-flex; align-items: center; gap: 10px; }
-  .pulse { width: 6px; height: 6px; border-radius: 50%; background: #7fcbff; box-shadow: 0 0 10px #7fcbff; animation: pl 2.4s ease-in-out infinite; }
-  @keyframes pl { 0%,100%{opacity:.5;} 50%{opacity:1;} }
-
-  .plate { margin: 0 0 110px; position: relative; padding-top: 10px; }
-  .plate-head { display: grid; grid-template-columns: auto 1fr; gap: 6px 24px; align-items: baseline;
-    border-top: 1px solid rgba(207,231,255,.18);
-    border-bottom: 1px solid rgba(207,231,255,.08);
-    padding: 18px 0 22px; margin-bottom: 38px;
-    position: relative;
-  }
-  .plate-head::before { content: ""; position: absolute; left: 0; right: 0; top: 4px; height: 1px;
-    background: rgba(207,231,255,.06);
-  }
-  .plate-no { font-family: "JetBrains Mono", monospace; font-size: .68rem; letter-spacing: .26em; text-transform: uppercase; color: rgba(207,231,255,.55); grid-column: 1; grid-row: 1 / span 3; align-self: start; padding-top: 6px; }
-  .plate-title { grid-column: 2; margin: 0; font-family: "IM FELL English", "EB Garamond", serif;
-    font-size: clamp(1.9rem, 4.2vw, 3rem); font-weight: 400; letter-spacing: -.01em; line-height: 1; color: #f3eedb; }
-  .plate-rule { grid-column: 2; margin: 8px 0 0; color: rgba(232,228,216,.65); font-style: italic; font-size: 1.02rem; max-width: 60ch; line-height: 1.5; }
-  .plate-instruction { grid-column: 2; margin: 12px 0 0; font-family: "JetBrains Mono", ui-monospace, monospace; font-size: .68rem; letter-spacing: .28em; text-transform: uppercase; color: rgba(207,231,255,.7); }
-
-  /* ── HALL ─────────────────────────────────────────────────── */
-  .hall { padding: 30px 0 24px; }
-  .hall-title { margin: 14px 0 22px; font-family: "IM FELL English", "EB Garamond", serif;
-    font-size: clamp(3rem, 9vw, 6rem); line-height: .95; letter-spacing: -.02em; font-weight: 400; color: #f6f1de; }
-  .hall-title .line { display: block; }
-  .hall-name { display: block; font-family: "JetBrains Mono", ui-monospace, monospace;
-    font-size: clamp(.66rem, 1.5vw, .8rem); font-weight: 400; letter-spacing: .42em;
-    text-transform: uppercase; color: rgba(207,231,255,.75); margin-bottom: 20px; line-height: 1.4; }
-  .hall-title em { font-style: italic; background: linear-gradient(120deg, #cfe7ff, #7fcbff 50%, #b88aff);
-    -webkit-background-clip: text; background-clip: text; color: transparent; }
-  .hall-lead { margin: 0 0 22px; font-size: 1.18rem; line-height: 1.62; color: rgba(243,238,219,.78); max-width: 56ch; }
-  .hall-rule { width: 72px; height: 1px; background: rgba(207,231,255,.16); margin: 0; }
-
-  /* Compress space between hall and first plate */
-  .hall + .plate { margin-top: 24px; }
-  .hall + .plate .plate-head { margin-bottom: 24px; }
-
-  /* ── ORIENTATION ──────────────────────────────────────────── */
-  .orient-list { list-style: none; margin: 0; padding: 0;
-    display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1px;
-    background: rgba(207,231,255,.12); border: 1px solid rgba(207,231,255,.12); }
-  .orient { display: flex; flex-direction: column; gap: 10px; padding: 24px 22px 22px;
-    background: linear-gradient(180deg, rgba(11,17,28,.92), rgba(7,11,19,.94));
-    position: relative; }
-  .orient::after { content: ""; position: absolute; left: 22px; right: 22px; bottom: 0; height: 2px;
-    background: linear-gradient(90deg, rgba(127,203,255,.55), transparent); opacity: .5; }
-  .orient-head { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
-  .orient-no { font-family: "JetBrains Mono", monospace; font-size: .62rem; letter-spacing: .2em;
-    color: rgba(127,203,255,.6); }
-  .orient-title { margin: 0; font-family: "IM FELL English", "EB Garamond", serif; font-weight: 400;
-    font-size: 1.42rem; line-height: 1.1; color: #f3eedb; }
-  .orient-count { margin-left: auto; font-family: "JetBrains Mono", monospace; font-size: .6rem;
-    letter-spacing: .14em; text-transform: uppercase; color: rgba(207,231,255,.5);
-    display: inline-flex; align-items: baseline; gap: 5px; white-space: nowrap; }
-  .orient-count-n { font-size: .95rem; letter-spacing: 0; color: #cfe7ff; font-variant-numeric: tabular-nums; }
-  .orient-line { margin: 2px 0 0; font-style: italic; font-size: 1.02rem; color: rgba(243,238,219,.9); line-height: 1.4; }
-  .orient-body { margin: 0; font-size: .93rem; line-height: 1.55; color: rgba(232,228,216,.62); }
-  .orient-sample { list-style: none; margin: 2px 0 0; padding: 10px 0 0; display: flex; flex-wrap: wrap; gap: 6px;
-    border-top: 1px solid rgba(207,231,255,.1); }
-  .orient-sample li { font-family: "JetBrains Mono", monospace; font-size: .6rem; letter-spacing: .1em;
-    text-transform: uppercase; color: rgba(207,231,255,.66); border: 1px solid rgba(207,231,255,.16);
-    border-radius: 999px; padding: 4px 9px; }
-  .orient-cta { margin-top: auto; padding-top: 14px; font-family: "JetBrains Mono", monospace; font-size: .66rem;
-    letter-spacing: .2em; text-transform: uppercase; text-decoration: none; color: #cfe7ff;
-    display: inline-flex; align-items: center; gap: 8px; min-height: 24px; }
-  .orient-cta:hover { color: #fff; }
-  @media (max-width: 1040px) { .orient-list { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-  @media (max-width: 600px) {
-    .orient-list { grid-template-columns: 1fr; }
-    .orient { padding: 20px 18px; }
-    .orient-count { margin-left: 0; width: 100%; }
-  }
-
-  /* ── FULL INDEX ───────────────────────────────────────────── */
-  .index-groups { display: grid; gap: 44px; }
-  .index-group-title { display: flex; align-items: baseline; gap: 12px; margin: 0 0 4px;
-    font-family: "JetBrains Mono", monospace; font-size: .7rem; font-weight: 400; letter-spacing: .26em;
-    text-transform: uppercase; color: rgba(207,231,255,.8); }
-  .index-group-count { font-size: .62rem; letter-spacing: .1em; color: rgba(207,231,255,.45);
-    border: 1px solid rgba(207,231,255,.2); border-radius: 999px; padding: 2px 8px;
-    font-variant-numeric: tabular-nums; }
-  .index-group-note { margin: 0 0 16px; font-style: italic; color: rgba(232,228,216,.55); font-size: .95rem; }
-  .index-list { list-style: none; margin: 0; padding: 0;
-    border-top: 1px solid rgba(207,231,255,.14); }
-  .index-row { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, .9fr) minmax(0, .7fr) minmax(0, 1fr);
-    gap: 4px 20px; align-items: baseline; padding: 11px 4px;
-    border-bottom: 1px solid rgba(207,231,255,.08); }
-  .index-row:nth-child(even) { background: rgba(207,231,255,.025); }
-  .index-name { font-family: "EB Garamond", serif; font-size: 1.08rem; color: #f3eedb; text-decoration: none; }
-  a.index-name:hover { color: #cfe7ff; text-decoration: underline; text-underline-offset: 3px; }
-  span.index-name { color: rgba(243,238,219,.6); }
-  .index-kind, .index-status, .index-dest { font-family: "JetBrains Mono", monospace; font-size: .64rem;
-    letter-spacing: .12em; text-transform: uppercase; color: rgba(207,231,255,.55); }
-  .index-status { color: rgba(155,184,138,.85); }
-  .index-dest { color: rgba(232,228,216,.42); text-align: right; overflow-wrap: anywhere; }
-  @media (max-width: 860px) {
-    .index-row { grid-template-columns: minmax(0, 1fr) auto; gap: 4px 14px; padding: 13px 4px; }
-    .index-name { grid-column: 1; grid-row: 1; }
-    .index-status { grid-column: 2; grid-row: 1; text-align: right; }
-    .index-kind { grid-column: 1; grid-row: 2; }
-    .index-dest { grid-column: 1 / -1; grid-row: 3; text-align: left; }
-  }
-
-
-
-
-  /* ── ATLAS (celestial chart) ──────────────────────────────── */
-  .atlas { position: relative; width: 100%; aspect-ratio: 16/10;
-    background:
-      radial-gradient(ellipse at 30% 30%, rgba(127,203,255,.07), transparent 60%),
-      radial-gradient(ellipse at 75% 75%, rgba(155,184,138,.07), transparent 60%),
-      radial-gradient(ellipse at 50% 50%, rgba(7,10,16,.2), rgba(4,7,14,.85));
-    border: 1px solid rgba(207,231,255,.10);
-    box-shadow: inset 0 0 80px rgba(4,7,14,.7);
-    margin: 0; overflow: hidden;
-  }
-  .chart { position: absolute; inset: 0; width: 100%; height: 100%;
-    display: block; }
-  .chart .node { }
-  .chart .node-link { display: block; cursor: pointer; }
-  .chart .node use, .chart .node .halo { transition: opacity .5s ease; opacity: .85; }
-  .chart .node .halo { opacity: .35; animation: breathe 6s ease-in-out infinite; }
-  .chart .node:nth-of-type(odd) .halo { animation-delay: -2.4s; }
-  .chart .node-label { opacity: 0; transition: opacity .4s ease, transform .4s ease; pointer-events: none;
-    text-shadow: 0 1px 6px rgba(4,7,14,.9); transform: translateY(-2px); }
-  .chart .node.is-active use { opacity: 1; }
-  .chart .node.is-active .halo { opacity: .9; animation: none; }
-  .chart .node.is-active .node-label { opacity: 1; transform: translateY(0); }
-  .chart .node.is-linked use { opacity: 1; }
-  .chart .node.is-linked .halo { opacity: .65; }
-  .chart .node.is-linked .node-label { opacity: .55; transform: translateY(0); }
-  .chart .node.node-inactive use { opacity: .45; }
-  .chart .node.node-inactive .halo { opacity: .15; animation: none; }
-  .chart .node.node-inactive .node-label { opacity: 0; }
-  .atlas[data-active]:not([data-active=""]) .chart .node:not(.is-active):not(.is-linked) use { opacity: .25; }
-  .atlas[data-active]:not([data-active=""]) .chart .node:not(.is-active):not(.is-linked) .halo { opacity: .08; }
-  .atlas[data-active]:not([data-active=""]) .chart .node:not(.is-active):not(.is-linked) .node-label { opacity: 0; }
-  .chart .rel { transition: stroke .5s ease, stroke-opacity .5s ease; }
-  .chart .rel.is-lit { stroke: rgba(243,238,219,.7); stroke-dasharray: .4 .8; animation: relPulse 2.4s ease-in-out infinite; }
-  .atlas[data-active]:not([data-active=""]) .chart .rel:not(.is-lit) { stroke: rgba(207,231,255,.06); }
-
-  @keyframes breathe {
-    0%, 100% { opacity: .35; }
-    50%      { opacity: .65; }
-  }
-  @keyframes relPulse { 0%,100% { stroke-opacity: .55; } 50% { stroke-opacity: 1; } }
-
-  .atlas-hint {
-    text-align: center;
-    font-family: "JetBrains Mono", monospace;
-    font-size: .62rem;
-    letter-spacing: .24em;
-    text-transform: uppercase;
-    color: rgba(243,238,219,.30);
-    margin: 16px 0 0;
-    opacity: 1;
-    transition: opacity .8s ease;
-    min-height: 1.2em;
-  }
-  .atlas-hint.is-faded { opacity: 0.15; pointer-events: none; }
-
-  .chart .node.is-intro .halo {
-    animation: introGlow 2.8s ease-in-out 1;
-    transform-box: fill-box;
-    transform-origin: center;
-  }
-  .chart .node.is-intro .ripple {
-    animation: introRipple 2.4s ease-out 1;
-    transform-box: fill-box;
-    transform-origin: center;
-  }
-  @keyframes introGlow {
-    0%, 100% { opacity: .35; transform: scale(1); }
-    50%      { opacity: .75; transform: scale(1.25); }
-  }
-  @keyframes introRipple {
-    0%   { opacity: .45; transform: scale(.6); }
-    100% { opacity: 0;   transform: scale(2.2); }
-  }
-
-  /* ── ATLAS field cards ──────────────────────────────────── */
-  .field-cards { position: absolute; inset: 0; pointer-events: none; }
-  .field-card {
-    position: absolute;
-    left: 0; top: 0;
-    width: min(88vw, 280px);
-    max-width: 90vw;
-    opacity: 0;
-    visibility: hidden; /* keeps hidden cards out of the tab order */
-    transform: translate3d(var(--fx, 0px), var(--fy, 0px), 0) scale(.96);
-    transition: opacity .32s ease, transform .42s cubic-bezier(.2,.7,.2,1), visibility 0s linear .42s;
-    pointer-events: none;
-    z-index: 5;
-    will-change: transform, opacity;
-  }
-  .field-card.is-shown {
-    opacity: 1;
-    visibility: visible;
-    /* card body never intercepts taps — only interactive children do */
-    pointer-events: none;
-    transform: translate3d(var(--fx, 0px), var(--fy, 0px), 0) scale(1);
-    z-index: 7;
-    transition: opacity .32s ease, transform .42s cubic-bezier(.2,.7,.2,1), visibility 0s;
-  }
-  /* only the actionable link inside the card receives touches */
-  .field-card.is-shown .fc-cta { pointer-events: auto; }
-
-  .fc-inner {
-    background: linear-gradient(180deg, rgba(8,12,20,.94), rgba(6,9,15,.9));
-    border: 1px solid color-mix(in oklab, var(--accent) 38%, transparent);
-    box-shadow:
-      0 18px 50px rgba(0,0,0,.55),
-      0 0 0 1px rgba(243,238,219,.03) inset,
-      0 0 30px color-mix(in oklab, var(--accent) 22%, transparent);
-    padding: 14px 16px 14px;
-    backdrop-filter: blur(8px);
-    color: rgba(243,238,219,.92);
-    font-family: "EB Garamond", Garamond, serif;
-    overflow-wrap: break-word;
-    word-break: break-word;
-  }
-  .fc-head { display: flex; align-items: baseline; gap: 8px; margin-bottom: 4px; flex-wrap: wrap; }
-  .fc-emoji { font-size: .95rem; color: var(--accent); flex: 0 0 auto; }
-  .fc-title { font-family: "IM Fell English", "EB Garamond", serif;
-    font-size: 1.02rem; letter-spacing: .01em; color: rgba(243,238,219,.96);
-    line-height: 1.2; }
-  .fc-tag { margin: 2px 0 8px; font-size: .9rem; line-height: 1.45;
-    color: rgba(243,238,219,.72); font-style: italic; }
-  .fc-meta { margin: 0 0 6px; display: flex; align-items: center; gap: 7px; flex-wrap: wrap;
-    font-family: "JetBrains Mono", ui-monospace, monospace; font-size: .54rem;
-    letter-spacing: .2em; text-transform: uppercase; color: rgba(207,231,255,.5); }
-  .fc-layer { color: rgba(207,231,255,.6); }
-  .fc-status { color: rgba(155,184,138,.9); }
-  .fc-rel { margin: 0 0 8px; font-family: "JetBrains Mono", ui-monospace, monospace;
-    font-size: .56rem; letter-spacing: .1em; text-transform: uppercase; line-height: 1.6;
-    color: rgba(243,238,219,.5); }
-  .fc-rel-h { color: rgba(127,203,255,.75); }
-  .fc-cta { display: inline-flex; align-items: center; justify-content: flex-start;
-    min-height: 48px; min-width: 48px;
-    font-family: "JetBrains Mono", monospace;
-    font-size: .58rem; letter-spacing: .22em; text-transform: uppercase;
-    color: var(--accent); border-top: 1px solid color-mix(in oklab, var(--accent) 28%, transparent);
-    padding: 8px 12px 0 0; text-decoration: none; }
-  .fc-cta-soon { color: rgba(243,238,219,.45); }
-
-  @media (max-width: 760px){
-    .atlas { aspect-ratio: 1/1; }
-    .field-card { width: min(90vw, 300px); }
-    .fc-inner { padding: 13px 14px; }
-    .fc-title { font-size: .98rem; }
-    .fc-tag { font-size: .86rem; }
-  }
-
-  /* ── lane guides — visible structure, no hover required ──── */
-  .lane-labels { position: absolute; inset: 0; pointer-events: none; z-index: 3; }
-  .lane-label { position: absolute; left: 14px;
-    font-family: "JetBrains Mono", ui-monospace, monospace; font-size: .56rem;
-    letter-spacing: .3em; text-transform: uppercase; color: rgba(207,231,255,.42);
-    text-shadow: 0 1px 6px rgba(4,7,14,.9); }
-  .lane-label::after { content: ""; display: inline-block; width: 46px; height: 1px;
-    background: rgba(207,231,255,.18); vertical-align: middle; margin-left: 10px; }
-
-  /* ── mobile: the constellation is replaced, not shrunk ───── */
-  .atlas-field { display: none; }
-  .atlas-selected { display: none; }
-  @media (max-width: 900px){
-    #atlas-figure, .atlas-index, .atlas-selected { display: none; }
-    .atlas-field { display: block; margin-top: 4px; }
-  }
-  .atlas-field-head { display: flex; align-items: baseline; justify-content: space-between; gap: 14px;
-    margin: 0 0 14px; padding-bottom: 10px; border-bottom: 1px solid rgba(207,231,255,.18);
-    font-family: "JetBrains Mono", ui-monospace, monospace; font-size: .62rem;
-    letter-spacing: .26em; text-transform: uppercase; color: rgba(207,231,255,.7); }
-  .atlas-field-count { color: rgba(207,231,255,.4); letter-spacing: .14em; }
-  .atlas-field-list { list-style: none; margin: 0; padding: 0; }
-  .af-row { display: grid; grid-template-columns: auto auto minmax(0, 1fr) auto;
-    gap: 4px 14px; align-items: start; padding: 16px 2px;
-    border-bottom: 1px solid rgba(207,231,255,.08); }
-  .af-no { font-family: "JetBrains Mono", ui-monospace, monospace; font-size: .6rem;
-    letter-spacing: .1em; color: rgba(127,203,255,.5); padding-top: 4px;
-    font-variant-numeric: tabular-nums; }
-  .af-glyph { color: var(--accent, #cfe7ff); font-size: 1rem; line-height: 1.2; padding-top: 1px;
-    filter: drop-shadow(0 0 8px color-mix(in oklab, var(--accent, #cfe7ff) 45%, transparent)); }
-  .af-body { min-width: 0; display: flex; flex-direction: column; gap: 4px; }
-  .af-name { text-decoration: none; color: inherit; display: flex; flex-direction: column; gap: 4px;
-    min-height: 44px; }
-  .af-layer { font-family: "JetBrains Mono", ui-monospace, monospace; font-size: .54rem;
-    letter-spacing: .2em; text-transform: uppercase; color: rgba(207,231,255,.45); }
-  .af-title { font-family: "IM FELL English", "EB Garamond", serif; font-size: 1.28rem;
-    line-height: 1.15; color: #f3eedb; }
-  .af-name:hover .af-title, .af-name:focus-visible .af-title { color: #cfe7ff; }
-  .af-name--off .af-title { color: rgba(243,238,219,.55); }
-  .af-note { font-size: .95rem; line-height: 1.45; color: rgba(232,228,216,.6); font-style: italic; }
-  .af-rel { font-family: "JetBrains Mono", ui-monospace, monospace; font-size: .56rem;
-    letter-spacing: .1em; text-transform: uppercase; line-height: 1.6; color: rgba(127,203,255,.6); }
-  .af-status { font-family: "JetBrains Mono", ui-monospace, monospace; font-size: .56rem;
-    letter-spacing: .14em; text-transform: uppercase; color: rgba(155,184,138,.85);
-    padding-top: 4px; white-space: nowrap; }
-  @media (max-width: 520px) {
-    .af-row { grid-template-columns: auto auto minmax(0, 1fr); }
-    .af-status { grid-column: 3; grid-row: 1; text-align: right; }
-    .af-body { grid-column: 1 / -1; grid-row: 2; }
-    .af-no, .af-glyph { grid-row: 1; }
-  }
-
-
-
-
-  /* ── ATLAS hit targets — invisible, generous touch zones over each star ── */
-  .hit-targets { position: absolute; inset: 0; pointer-events: none; z-index: 4; }
-  .hit-target {
-    position: absolute;
-    width: 64px; height: 64px;
-    transform: translate(-50%, -50%);
-    background: transparent;
-    border: 0;
-    padding: 0;
-    margin: 0;
-    border-radius: 50%;
-    pointer-events: auto;
-    cursor: pointer;
-    -webkit-tap-highlight-color: transparent;
-    touch-action: manipulation;
-    appearance: none;
-    outline: none;
-    z-index: 6; /* sit above field cards so neighboring stars stay tappable */
-  }
-  .hit-target:focus-visible {
-    outline: 2px solid rgba(243,238,219,.8);
-    outline-offset: 2px;
-    box-shadow: 0 0 0 2px rgba(4,7,14,.75);
-  }
-  @media (max-width: 760px) {
-    .hit-target { width: 72px; height: 72px; }
-  }
-
-  /* soft proximity reveal — labels surface without committing */
-  .chart .node.is-near use { opacity: 1; }
-  .chart .node.is-near .halo { opacity: .55; }
-  .chart .node.is-near .node-label { opacity: .7; transform: translateY(0); }
-  .atlas[data-active]:not([data-active=""]) .chart .node.is-near:not(.is-active):not(.is-linked) use { opacity: .6; }
-
-  /* ripple pulse on the active node */
-  .chart .node .ripple { transform-box: fill-box; transform-origin: center; }
-  .chart .node.is-active .ripple {
-    animation: nodeRipple 1.6s ease-out infinite;
-  }
-  @keyframes nodeRipple {
-    0%   { opacity: .55; transform: scale(.6); }
-    80%  { opacity: 0;   transform: scale(2.2); }
-    100% { opacity: 0;   transform: scale(2.2); }
-  }
-
-  /* ── ATLAS INDEX — quick-jump strip / mobile bottom sheet ── */
-  .atlas-index {
-    margin: 18px auto 0;
-    max-width: 1100px;
-    padding: 14px 16px;
-    border-top: 1px solid rgba(207,231,255,.08);
-    display: flex; align-items: center; gap: 12px;
-    flex-wrap: wrap;
-  }
-  .atlas-index-label {
-    font-family: var(--font-serif, Georgia, serif);
-    font-size: 11px; letter-spacing: .22em; text-transform: uppercase;
-    color: rgba(243,238,219,.45);
-  }
-  .atlas-index ul {
-    list-style: none; margin: 0; padding: 0;
-    display: flex; flex-wrap: wrap; gap: 8px;
-  }
-  .atlas-index-chip {
-    display: inline-flex; align-items: center; gap: 8px;
-    background: rgba(255,255,255,.02);
-    border: 1px solid rgba(207,231,255,.10);
-    color: rgba(243,238,219,.78);
-    font: inherit; font-size: 12px;
-    padding: 7px 12px; border-radius: 999px;
-    cursor: pointer;
-    transition: background .25s, border-color .25s, color .25s, transform .2s;
-    -webkit-tap-highlight-color: transparent;
-  }
-  .atlas-index-chip .dot {
-    width: 7px; height: 7px; border-radius: 50%;
-    box-shadow: 0 0 8px currentColor;
-  }
-  .atlas-index-chip:hover,
-  .atlas-index-chip:focus-visible {
-    background: rgba(255,255,255,.05);
-    border-color: rgba(207,231,255,.28);
-    color: #f3eedb;
-    outline: none;
-  }
-  .atlas-index-chip.is-active {
-    background: rgba(207,231,255,.10);
-    border-color: rgba(207,231,255,.45);
-    color: #fff;
-  }
-  .atlas-index-chip[data-inactive="1"] { opacity: .5; }
-  /* the chip strip is a desktop affordance; below 900 the field index
-     replaces it entirely (declared here so it wins over the rules above) */
-  @media (max-width: 900px) {
-    .atlas-index { display: none; }
-  }
-
-
-
-
-
-  /* ── WINGS ───────────────────────────────────────────────── */
-  .wings { display: flex; flex-direction: column; gap: 28px; }
-  .wing { position: relative; display: grid; grid-template-columns: 1.1fr 1fr;
-    text-decoration: none; color: inherit; --accent:#7fcbff;
-    border-top: 1px solid color-mix(in oklab, var(--accent) 32%, transparent);
-    border-bottom: 1px solid color-mix(in oklab, var(--accent) 12%, transparent);
-    background: linear-gradient(180deg, rgba(243,238,219,.02), rgba(243,238,219,.005));
-    transition: background .3s ease;
-  }
-  .wing:hover { background: linear-gradient(180deg, rgba(243,238,219,.05), rgba(243,238,219,.01)); }
-  .wing-strip { position: relative; min-height: 220px; overflow: hidden; }
-  .wing-strip svg { position: absolute; inset: 0; width: 100%; height: 100%; }
-  .wing-strip::after { content: ""; position: absolute; inset: 0;
-    background: linear-gradient(90deg, transparent 30%, rgba(7,10,16,.65) 100%); }
-  .wing-room { padding: 30px 36px 32px; display: flex; flex-direction: column; gap: 10px; }
-  .wing-ledger { display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
-    font-family: "JetBrains Mono", monospace; font-size: .6rem; letter-spacing: .2em; text-transform: uppercase;
-    color: rgba(232,228,216,.55); padding-bottom: 12px;
-    border-bottom: 1px solid rgba(207,231,255,.12); margin-bottom: 4px; }
-  .led-cat { color: var(--accent); }
-  .led-sep { opacity: .4; }
-  .wing-name { display: flex; align-items: baseline; gap: 14px; margin: 0;
-    font-family: "IM FELL English", "EB Garamond", serif; font-weight: 400;
-    font-size: clamp(2rem, 4.6vw, 2.9rem); letter-spacing: -.02em; line-height: 1; color: #f3eedb; }
-  .wing-no { font-family: "JetBrains Mono", monospace; font-size: .78rem; letter-spacing: .18em; color: var(--accent); }
-  .wing-sub { margin: 0; color: rgba(232,228,216,.55); font-style: italic; font-size: .98rem; }
-  .wing-prose { margin: 6px 0 0; color: rgba(232,228,216,.78); font-size: 1.05rem; line-height: 1.6; max-width: 52ch; }
-  .wing-enter { margin-top: 12px; color: var(--accent); font-family: "JetBrains Mono", monospace; font-size: .72rem; letter-spacing: .18em; text-transform: uppercase; }
-  @media (max-width: 820px) { .wing { grid-template-columns: 1fr; } .wing-strip { min-height: 160px; } .wing-strip::after { background: linear-gradient(180deg, transparent 30%, rgba(7,10,16,.85) 100%); } .wing-room { padding: 22px 22px 26px; } }
-
-  /* ── FLAGS (status) ──────────────────────────────────────── */
-  .flag { display: inline-block; padding: 2px 8px;
-    font-family: "JetBrains Mono", monospace; font-size: .54rem; font-weight: 500;
-    letter-spacing: .18em; text-transform: uppercase;
-    border: 1px solid rgba(232,228,216,.2); color: rgba(232,228,216,.75); }
-  .flag-live    { color: #7fcbff; border-color: rgba(127,203,255,.45); }
-  .flag-forming { color: #9bb88a; border-color: rgba(155,184,138,.45); }
-  .flag-lab     { color: #b88aff; border-color: rgba(184,138,255,.45); }
-  .flag-soon    { color: #e8c07a; border-color: rgba(232,192,122,.45); }
-
-  /* ── OBJECTS — paired exhibition wall, not a uniform card grid ── */
-  .objects { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
-    column-gap: 24px; row-gap: 26px; align-items: start; align-content: start; }
-  /* masonry mode: fine row track so each artifact keeps its natural height */
-  .objects.is-masonry { grid-auto-rows: 8px; row-gap: 0; }
-  .obj { --accent:#cfe7ff; text-decoration: none; color: inherit;
-    display: block; min-width: 0; align-self: start;
-    transition: transform .35s ease, filter .35s ease; }
-  .obj:hover { transform: translateY(-2px); }
-  .obj-off { opacity: .82; }
-  /* inner frames stack vertically once a tool only has half the width */
-  @media (min-width: 901px) {
-    .objects .instr-frame,
-    .objects .field-frame,
-    .objects .sandbox-frame { grid-template-columns: 1fr; gap: 18px; }
-    .objects .instr-dial { max-width: 260px; }
-  }
-  @media (max-width: 900px){
-    .objects { grid-template-columns: 1fr; row-gap: 26px; }
-    .objects.is-masonry { grid-auto-rows: auto; row-gap: 26px; }
-    .objects.is-masonry > .obj { grid-row: auto !important; }
-  }
-
-
-
-  .obj-tag { display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
-    font-family: "JetBrains Mono", monospace; font-size: .56rem; letter-spacing: .2em; text-transform: uppercase;
-    color: rgba(232,228,216,.55); margin-bottom: 14px; padding-bottom: 10px;
-    border-bottom: 1px solid rgba(207,231,255,.1);
-  }
-  .tag-line { width: 22px; height: 1px; background: var(--accent); opacity: .7; }
-  .tag-cat { color: var(--accent); }
-  .tag-sep { opacity: .4; }
-  .obj-name { margin: 0 0 6px; font-family: "IM FELL English", serif; font-weight: 400;
-    font-size: 1.55rem; letter-spacing: -.01em; line-height: 1.1; color: #f3eedb; }
-  .obj-prose { margin: 0 0 10px; color: rgba(232,228,216,.72); font-size: 1rem; line-height: 1.55; max-width: 46ch; }
-  .obj-cta { display: inline-block; margin-top: 8px; color: var(--accent);
-    font-family: "JetBrains Mono", monospace; font-size: .68rem; letter-spacing: .22em; text-transform: uppercase;
-    border-bottom: 1px solid color-mix(in oklab, var(--accent) 40%, transparent); padding-bottom: 2px; }
-
-  /* ── INSTRUMENT (Energy Engine) ──────────────────────────── */
-  .instr-frame { display: grid; grid-template-columns: 220px 1fr; gap: 28px; align-items: start;
-    padding: 22px; background: rgba(7,10,16,.45);
-    border: 1px solid rgba(232,228,216,.1);
-    box-shadow: inset 0 0 0 4px rgba(7,10,16,.6); }
-  .instr-dial { background: linear-gradient(180deg, #f6efe0, #d8cdb2); padding: 10px; border: 1px solid #2a2418; }
-  .instr-dial svg { width: 100%; display: block; }
-  .needle { transform-origin: 100px 110px; animation: sway 6s ease-in-out infinite alternate; }
-  @keyframes sway { from { transform: rotate(-18deg); } to { transform: rotate(14deg); } }
-  .instr-spec { margin: 6px 0 0; font-family: "JetBrains Mono", monospace; font-size: .68rem; letter-spacing: .12em; color: rgba(232,228,216,.5); text-transform: uppercase; }
-  @media (max-width: 600px){ .instr-frame { grid-template-columns: 1fr; } .instr-dial { max-width: 240px; } }
-
-  /* ── SHELF (Potent Library) ──────────────────────────────── */
-  .shelf-frame { display: grid; grid-template-rows: auto 1fr; gap: 0;
-    background: linear-gradient(180deg, rgba(58,42,26,.18), rgba(7,10,16,.6));
-    border: 1px solid rgba(232,228,216,.1);
-    padding: 0; overflow: hidden;
-  }
-  .shelf-books { display: flex; align-items: flex-end; gap: 3px; padding: 22px 18px 0; min-height: 120px; }
-  .book { width: var(--w); height: var(--h); background: var(--c);
-    box-shadow: inset -2px 0 0 rgba(0,0,0,.3), inset 0 -3px 0 rgba(255,255,255,.08);
-    position: relative; }
-  .book::before { content: ""; position: absolute; top: 8px; left: 2px; right: 2px; height: 1px; background: rgba(243,238,219,.4); }
-  .book::after { content: ""; position: absolute; top: 14px; left: 2px; right: 2px; height: 1px; background: rgba(243,238,219,.25); }
-  .shelf-rail { height: 8px; background: linear-gradient(180deg, #3a2a1a, #1a1208); border-top: 1px solid rgba(0,0,0,.6); box-shadow: 0 4px 8px rgba(0,0,0,.4); }
-  .shelf-meta { padding: 18px 22px 22px; }
-  .shelf-spec { margin: 6px 0 0; font-family: "JetBrains Mono", monospace; font-size: .68rem; letter-spacing: .12em; color: rgba(232,228,216,.5); text-transform: uppercase; }
-
-  /* ── PINBOARD (Inquiry Engine) ───────────────────────────── */
-  .board-frame { padding: 22px;
-    background: repeating-linear-gradient(45deg, #6b4a26 0 6px, #5a3f20 6px 12px);
-    background-color: #6b4a26;
-    border: 1px solid #2a1a08;
-    box-shadow: inset 0 0 40px rgba(0,0,0,.45);
-    position: relative;
-  }
-  .board-cork { position: relative; min-height: 180px; }
-  .board-thread { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
-  .pin { position: absolute; display: block; max-width: 150px;
-    background: #f3eedb; color: #2a2418;
-    padding: 8px 10px 10px; font-family: "Caveat", "Cormorant Garamond", cursive;
-    font-size: 1rem; line-height: 1.15;
-    box-shadow: 0 6px 12px rgba(0,0,0,.35);
-    transform: rotate(var(--r, -2deg));
-  }
-  .pin em { position: absolute; top: -4px; left: 50%; transform: translateX(-50%); width: 10px; height: 10px;
-    border-radius: 50%; background: radial-gradient(circle at 30% 30%, #d94a3a, #6b1a10);
-    box-shadow: 0 2px 3px rgba(0,0,0,.45); }
-  .pin p { margin: 4px 0 0; }
-  .pin-1 { --r: -3deg; top: 4px;  left: 10px; }
-  .pin-2 { --r:  2deg; top: 70px; left: 38%; }
-  .pin-3 { --r: -1deg; top: 28px; right: 8px; }
-  .board-meta { margin-top: 16px; padding: 16px 18px 18px; background: rgba(7,10,16,.7); border: 1px solid rgba(232,228,216,.1); }
-  .board-spec { margin: 6px 0 0; font-family: "JetBrains Mono", monospace; font-size: .68rem; letter-spacing: .12em; color: rgba(232,228,216,.5); text-transform: uppercase; }
-
-  /* ── DIARY (Future Diary) ────────────────────────────────── */
-  .diary-frame { display: grid; grid-template-columns: 1fr 1fr; gap: 0;
-    border: 1px solid rgba(232,228,216,.1);
-    background: rgba(7,10,16,.45);
-  }
-  .diary-page { padding: 26px 28px; background: #f3eedb; color: #2a2418;
-    background-image: repeating-linear-gradient(0deg, transparent 0 27px, rgba(42,36,24,.12) 27px 28px);
-    position: relative; min-height: 220px;
-    border-right: 1px solid rgba(0,0,0,.1);
-  }
-  .diary-page::before { content: ""; position: absolute; left: 32px; top: 0; bottom: 0; width: 1px; background: rgba(155,42,26,.5); }
-  .diary-date { display: block; font-family: "JetBrains Mono", monospace; font-size: .58rem; letter-spacing: .2em; color: #6b4a26; text-transform: uppercase; margin: 0 0 14px 22px; }
-  .diary-line { margin: 0 0 4px 22px; font-family: "Caveat", cursive; font-size: 1.22rem; line-height: 1.55; color: #2a2418; }
-  .diary-sig { display: block; margin: 14px 0 0 22px; font-family: "Caveat", cursive; font-size: 1rem; color: #6b4a26; }
-  .diary-meta { padding: 22px; display: flex; flex-direction: column; justify-content: center; }
-  .diary-spec { margin: 6px 0 0; font-family: "JetBrains Mono", monospace; font-size: .68rem; letter-spacing: .12em; color: rgba(232,228,216,.5); text-transform: uppercase; }
-  @media (max-width: 600px){ .diary-frame { grid-template-columns: 1fr; } .diary-page { border-right: none; border-bottom: 1px solid rgba(0,0,0,.1); } }
-
-  /* ── FIELD NOTEBOOK (Pokédex Scanner) ────────────────────── */
-  .field-frame { display: grid; grid-template-columns: 240px 1fr; gap: 24px; align-items: start;
-    padding: 22px; background: rgba(7,10,16,.45);
-    border: 1px solid rgba(232,228,216,.1);
-  }
-  .field-sketch { background: #f3eedb; padding: 14px 14px 18px; border: 1px solid #2a2418;
-    background-image: radial-gradient(rgba(42,36,24,.06) 1px, transparent 1px);
-    background-size: 8px 8px;
-    position: relative;
-  }
-  .field-sketch svg { width: 100%; display: block; }
-  .field-stamp { display: block; margin-top: 6px; font-family: "Caveat", cursive; font-size: .92rem; color: #6b4a26; text-align: right; }
-  .field-spec { margin: 6px 0 0; font-family: "JetBrains Mono", monospace; font-size: .68rem; letter-spacing: .12em; color: rgba(232,228,216,.5); text-transform: uppercase; }
-  @media (max-width: 600px){ .field-frame { grid-template-columns: 1fr; } }
-
-  /* ── EVIDENCE (Reality Capture) ──────────────────────────── */
-  .evid-frame { display: grid; grid-template-columns: 1fr 1fr; gap: 0;
-    border: 1px solid rgba(232,228,216,.1); background: rgba(7,10,16,.45);
-  }
-  .evid-strip { padding: 18px 20px; background: #1a1d22;
-    border-right: 1px solid rgba(232,228,216,.1);
-    position: relative;
-  }
-  .evid-label { display: block; font-family: "JetBrains Mono", monospace; font-size: .58rem; letter-spacing: .22em; color: #d8cdb2; text-transform: uppercase; margin-bottom: 14px; padding-bottom: 8px; border-bottom: 1px dashed rgba(216,205,178,.3); }
-  .evid-frames { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .evid-cell { aspect-ratio: 4/3; background: #0a0c0e; border: 1px solid rgba(216,205,178,.25);
-    position: relative; display: grid; place-items: center;
-  }
-  .evid-num { position: absolute; top: 4px; left: 6px; font-family: "JetBrains Mono", monospace; font-size: .54rem; color: rgba(216,205,178,.55); letter-spacing: .18em; }
-  .evid-mark { width: 50%; height: 1px; background: rgba(216,205,178,.4); position: relative; }
-  .evid-mark::before, .evid-mark::after { content: ""; position: absolute; left: 50%; width: 1px; height: 8px; background: rgba(216,205,178,.4); }
-  .evid-mark::before { top: -8px; transform: translateX(-50%); }
-  .evid-mark::after { top: 0; transform: translateX(-50%); }
-  .evid-foot { display: block; margin-top: 12px; font-family: "JetBrains Mono", monospace; font-size: .54rem; letter-spacing: .18em; color: rgba(216,205,178,.5); text-transform: uppercase; }
-  .evid-meta { padding: 22px; display: flex; flex-direction: column; justify-content: center; }
-  .evid-spec { margin: 6px 0 0; font-family: "JetBrains Mono", monospace; font-size: .68rem; letter-spacing: .12em; color: rgba(232,228,216,.5); text-transform: uppercase; }
-  @media (max-width: 600px){ .evid-frame { grid-template-columns: 1fr; } .evid-strip { border-right: none; border-bottom: 1px solid rgba(232,228,216,.1); } }
-
-  /* ── SANDBOX (Playground) ────────────────────────────────── */
-  .sandbox-frame { display: grid; grid-template-columns: 240px 1fr; gap: 24px; align-items: start;
-    padding: 22px; background: rgba(7,10,16,.45); border: 1px solid rgba(232,228,216,.1); }
-  .sandbox-table { background: #f3eedb; border: 1px solid #2a2418; padding: 8px; }
-  .sandbox-table svg { width: 100%; display: block; }
-  .sandbox-stamp { display: block; margin-top: 8px; font-family: "JetBrains Mono", monospace; font-size: .54rem;
-    letter-spacing: .18em; text-transform: uppercase; color: rgba(42,36,24,.65); }
-  @media (max-width: 600px){ .sandbox-frame { grid-template-columns: 1fr; } }
-
-  /* ── STATES (Scenario States) ────────────────────────────── */
-  .states-frame { padding: 22px; background: rgba(7,10,16,.5); border: 1px solid rgba(168,184,255,.16); }
-  .states-chart { background: rgba(10,14,22,.7); border: 1px solid rgba(168,184,255,.14); padding: 10px; }
-  .states-chart svg { width: 100%; display: block; }
-  .states-stamp { display: block; margin-top: 8px; font-family: "JetBrains Mono", monospace; font-size: .54rem;
-    letter-spacing: .18em; text-transform: uppercase; color: rgba(168,184,255,.6); }
-  .states-meta { margin-top: 16px; }
-
-  /* ── SERIES (Photogression) ──────────────────────────────── */
-  .series-frame { padding: 22px; background: rgba(7,10,16,.5); border: 1px solid rgba(207,231,255,.16); }
-  .series-plate { background: rgba(10,14,22,.7); border: 1px solid rgba(207,231,255,.14); padding: 12px; }
-  .series-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
-  .series-optic { width: 100%; display: block; margin-bottom: 10px; }
-  .series-cell { display: block; border: 1px solid rgba(207,231,255,.2); background: rgba(15,22,32,.9);
-    padding: 6px 2px; text-align: center; font-family: "JetBrains Mono", monospace;
-    font-size: .5rem; letter-spacing: .14em; text-transform: uppercase; color: rgba(207,231,255,.65); }
-  .series-stamp { display: block; margin-top: 8px; font-family: "JetBrains Mono", monospace; font-size: .54rem;
-    letter-spacing: .18em; text-transform: uppercase; color: rgba(207,231,255,.6); }
-  .series-meta { margin-top: 16px; }
-  .series-spec { font-family: "JetBrains Mono", monospace; font-size: .56rem; letter-spacing: .14em;
-    text-transform: uppercase; color: rgba(207,231,255,.5); margin-top: 10px; }
-
-  /* ── COURT (Hoop Focus) ──────────────────────────────────── */
-  .court-frame { display: grid; grid-template-columns: 1fr 1fr; gap: 0;
-    background: rgba(7,10,16,.5); border: 1px solid rgba(255,157,90,.16); }
-  .court-tape { padding: 18px; border-right: 1px solid rgba(255,157,90,.16); }
-  .court-tape svg { width: 100%; display: block; }
-  .court-strip { display: flex; gap: 8px; margin-top: 10px; }
-  .court-clip { flex: 1; text-align: center; padding: 6px 0; font-family: "JetBrains Mono", monospace;
-    font-size: .54rem; letter-spacing: .16em; color: rgba(255,157,90,.7);
-    border: 1px solid rgba(255,157,90,.24); background: rgba(18,16,12,.7); }
-  .court-meta { padding: 22px; display: flex; flex-direction: column; justify-content: center; }
-  @media (max-width: 600px){ .court-frame { grid-template-columns: 1fr; }
-    .court-tape { border-right: none; border-bottom: 1px solid rgba(255,157,90,.16); } }
-
-
-
-  /* ── PATHWAYS ────────────────────────────────────────────── */
-  .paths { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 28px; }
-  @media (max-width: 900px){ .paths { grid-template-columns: 1fr; } }
-  .path { padding: 22px 24px 26px; border-left: 1px solid rgba(207,231,255,.2);
-    background: linear-gradient(180deg, rgba(243,238,219,.02), transparent);
-  }
-  .path-head { margin-bottom: 18px; border-bottom: 1px dashed rgba(207,231,255,.18); padding-bottom: 14px; }
-  .path-no { font-family: "JetBrains Mono", monospace; font-size: .58rem; letter-spacing: .22em; color: rgba(207,231,255,.7); text-transform: uppercase; }
-  .path-head h3 { margin: 4px 0 6px; font-family: "IM FELL English", serif; font-weight: 400; font-size: 1.35rem; color: #f3eedb; letter-spacing: -.005em; }
-  .path-head p { margin: 0; color: rgba(232,228,216,.6); font-style: italic; font-size: .92rem; line-height: 1.5; }
-  .path-route { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
-  .path-stop a { display: grid; grid-template-columns: 18px auto 1fr; align-items: center; gap: 12px;
-    padding: 10px 0; text-decoration: none; color: inherit; position: relative;
-    border-bottom: 1px dotted rgba(207,231,255,.1); transition: color .2s ease; }
-  .path-stop:last-child a { border-bottom: none; }
-  .path-stop a:hover { color: #cfe7ff; }
-  .path-stop a.off { opacity: .55; }
-  .bullet { width: 9px; height: 9px; border-radius: 50%;
-    background: rgba(207,231,255,.85);
-    box-shadow: 0 0 8px rgba(127,203,255,.6); justify-self: center; position: relative; }
-  .path-stop + .path-stop a .bullet::before { content: ""; position: absolute; left: 50%; top: -28px; width: 1px; height: 28px; background: rgba(207,231,255,.3); transform: translateX(-50%); }
-  .path-cat { font-family: "JetBrains Mono", monospace; font-size: .58rem; letter-spacing: .18em; color: rgba(207,231,255,.6); text-transform: uppercase; }
-  .path-name { font-family: "EB Garamond", serif; font-size: 1.02rem; color: #f3eedb; }
-
-  /* ── FIELD JOURNAL (pinned notes) ────────────────────────── */
-  .notes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; }
-  @media (max-width: 900px){ .notes { grid-template-columns: 1fr; } }
-  .note { position: relative; padding: 28px 22px 22px;
-    background: #f3eedb; color: #2a2418;
-    box-shadow: 0 14px 30px rgba(0,0,0,.35);
-    transform: rotate(var(--rot, 0deg));
-    font-family: "EB Garamond", serif;
-  }
-  .note::before, .note::after { content: ""; position: absolute; }
-  .note::before { /* tape */
-    top: -8px; left: 50%; transform: translateX(-50%) rotate(-2deg);
-    width: 70px; height: 16px; background: rgba(207,231,255,.35);
-    box-shadow: 0 2px 4px rgba(0,0,0,.2);
-  }
-  .note-pin { position: absolute; top: 8px; left: 14px; width: 8px; height: 8px; border-radius: 50%;
-    background: radial-gradient(circle at 30% 30%, #d94a3a, #6b1a10); box-shadow: 0 1px 2px rgba(0,0,0,.4); }
-  .note-head { display: flex; align-items: baseline; gap: 10px; justify-content: space-between;
-    font-family: "JetBrains Mono", monospace; font-size: .56rem; letter-spacing: .2em; text-transform: uppercase;
-    color: #6b4a26; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid rgba(42,36,24,.15); }
-  .note-origin b { color: #2a2418; font-weight: 600; }
-  .note-title { margin: 0 0 10px; font-family: "IM FELL English", serif; font-size: 1.25rem; line-height: 1.2; color: #1a140c; }
-  .note-body { margin: 0; font-size: 1rem; line-height: 1.55; color: #3a3022; }
-  .note-sig { display: block; margin-top: 14px; font-family: "Caveat", cursive; font-size: 1.05rem; color: #6b4a26; text-align: right; }
-
-  /* ── ECOSYSTEM FOOTER ─────────────────────────────────────── */
-  .colophon { margin-top: 80px; padding: 34px 0 0;
-    border-top: 1px solid rgba(207,231,255,.18);
-    display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr);
-    gap: 30px 40px; align-items: start;
-  }
-  .col-name { margin: 0; font-family: "IM FELL English", serif; font-size: 1.3rem; color: #f3eedb; }
-  .col-line { margin: 6px 0 8px; color: rgba(232,228,216,.6); font-style: italic; font-size: .95rem; max-width: 34ch; }
-  .col-creed { margin: 0; font-family: "JetBrains Mono", monospace; font-size: .6rem; letter-spacing: .24em;
-    text-transform: uppercase; color: rgba(127,203,255,.65); }
-  .col-nav { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 22px 26px; }
-  .col-set { display: flex; flex-direction: column; gap: 7px; }
-  .col-head { font-family: "JetBrains Mono", monospace; font-size: .58rem; letter-spacing: .26em;
-    text-transform: uppercase; color: rgba(232,228,216,.38); margin-bottom: 3px; }
-  .col-set a { font-family: "JetBrains Mono", monospace; font-size: .68rem; letter-spacing: .1em;
-    text-transform: uppercase; text-decoration: none; color: rgba(207,231,255,.7); min-height: 20px; }
-  .col-set a:hover { color: #cfe7ff; }
-  .col-meta { grid-column: 1 / -1; margin: 8px 0 0; padding-top: 18px;
-    border-top: 1px solid rgba(207,231,255,.08);
-    font-family: "JetBrains Mono", monospace; font-size: .58rem; letter-spacing: .2em;
-    text-transform: uppercase; color: rgba(232,228,216,.35); }
-  @media (max-width: 900px) {
-    .colophon { grid-template-columns: 1fr; }
-    .col-nav { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  }
-  @media (max-width: 520px) {
-    .col-nav { grid-template-columns: 1fr; }
-    .col-set a { min-height: 34px; display: flex; align-items: center; }
-  }
-
-  /* ── REDUCED MOTION — the structure must read without movement ── */
-  @media (prefers-reduced-motion: reduce) {
-    .nebula.a, .nebula.b, .starfield, .pulse,
-    .chart .node .halo,
-    .chart .node.is-active .ripple,
-    .chart .node.is-intro .halo,
-    .chart .node.is-intro .ripple,
-    .chart .rel.is-lit,
-    .needle {
-      animation: none !important;
-    }
-    .field-card, .field-card.is-shown {
-      transition: none !important;
-      transform: translate3d(var(--fx, 0px), var(--fy, 0px), 0) !important;
-    }
-    .clear-portal, .clear-portal:hover, .clear-portal:focus-visible,
-    .obj, .obj:hover {
-      transition: none !important;
-      transform: none !important;
-    }
-  }
-</style>
+<footer class="world-foot"><span>See clearly. Become slowly.</span><a href="/natural.html">Icy Natural</a><a href="/worlds.html">Two Worlds</a></footer>
 
 <script is:inline>
-  (function(){
-    var el = document.getElementById('live-date');
-    if (!el) return;
-    var update = function(){
-      var d = new Date();
-      el.textContent = d.toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' }).toUpperCase();
-    };
-    update();
-    setInterval(update, 60000);
-  })();
-</script>
+  (function () {
+    var root = document.documentElement;
+    var shell = document.getElementById('atlas-shell');
+    var nodeButtons = Array.from(document.querySelectorAll('[data-node]'));
+    var lines = Array.from(document.querySelectorAll('.atlas-line'));
+    var dockKeys = Array.from(document.querySelectorAll('.dock-key[data-mode]'));
+    var territories = Array.from(document.querySelectorAll('[data-territory]'));
+    var dossier = document.getElementById('focus-dossier');
+    var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var activeId = nodeButtons.find(function (node) { return node.classList.contains('is-active'); })?.dataset.node || '';
+    var holdTimer = null;
+    var heldNode = null;
 
-<script is:inline>
-  /* Plate III — masonry placement so paired artifacts keep natural heights */
-  (function(){
-    var grid = document.querySelector('.objects');
-    if (!grid) return;
-    var ROW = 8, GAP = 26;
-    function layout(){
-      var wide = window.matchMedia('(min-width: 901px)').matches;
-      var items = grid.querySelectorAll(':scope > .obj');
-      if (!wide) {
-        grid.classList.remove('is-masonry');
-        items.forEach(function(it){ it.style.gridRowEnd = ''; });
-        return;
-      }
-      grid.classList.add('is-masonry');
-      items.forEach(function(it){
-        it.style.gridRowEnd = '';
-        var h = it.getBoundingClientRect().height;
-        it.style.gridRowEnd = 'span ' + Math.ceil((h + GAP) / ROW);
+    function namesFor(ids) {
+      return ids.map(function (id) { return nodeButtons.find(function (node) { return node.dataset.node === id; })?.dataset.title; }).filter(Boolean);
+    }
+    function focusNode(node) {
+      if (!node || !dossier) return;
+      activeId = node.dataset.node || '';
+      var related = (node.dataset.related || '').split(',').filter(Boolean);
+      root.dataset.atmosphere = node.dataset.atmosphere || 'void';
+      root.style.setProperty('--active-accent', node.dataset.accent || '#cfe7ff');
+      nodeButtons.forEach(function (item) {
+        var id = item.dataset.node || ''; var active = id === activeId;
+        item.classList.toggle('is-active', active); item.classList.toggle('is-related', related.includes(id)); item.classList.toggle('is-muted', !active && !related.includes(id));
+        item.setAttribute('aria-pressed', active ? 'true' : 'false');
       });
+      lines.forEach(function (line) { line.classList.toggle('is-active', line.dataset.a === activeId || line.dataset.b === activeId); });
+      dossier.style.setProperty('--accent', node.dataset.accent || '#cfe7ff');
+      dossier.querySelector('[data-dossier-title]').textContent = node.dataset.title || '';
+      dossier.querySelector('[data-dossier-philosophy]').textContent = node.dataset.philosophy || '';
+      dossier.querySelector('[data-dossier-field]').textContent = node.dataset.field || '';
+      dossier.querySelector('[data-dossier-group]').textContent = node.dataset.group || '';
+      dossier.querySelector('[data-dossier-status]').textContent = node.dataset.status || '';
+      var glyph = dossier.querySelector('.dossier__signal span'); if (glyph) glyph.textContent = node.querySelector('.world-node__glyph')?.textContent || '✦';
+      var relationCopy = namesFor(related); dossier.querySelector('[data-dossier-relations]').textContent = relationCopy.length ? 'Connected · ' + relationCopy.join(' · ') : 'Independent object';
+      var link = dossier.querySelector('[data-dossier-link]'); link.setAttribute('href', node.dataset.route || '#');
+      var external = node.dataset.external === 'true';
+      if (external) { link.setAttribute('target', '_blank'); link.setAttribute('rel', 'noopener'); link.setAttribute('aria-label', 'Enter ' + (node.dataset.title || '') + ' — opens in a new tab'); } else { link.removeAttribute('target'); link.removeAttribute('rel'); link.removeAttribute('aria-label'); }
+      dossier.querySelector('[data-link-mark]').textContent = external ? '↗' : '→';
+      dossier.classList.add('is-visible'); dossier.classList.remove('is-expanded'); dossier.removeAttribute('inert'); dossier.setAttribute('aria-hidden', 'false');
+      dossier.querySelector('[data-more]').setAttribute('aria-expanded', 'false');
     }
-    layout();
-    window.addEventListener('load', layout);
-    window.addEventListener('resize', function(){
-      clearTimeout(window.__objT); window.__objT = setTimeout(layout, 120);
+    function clearFocus() {
+      activeId = ''; root.dataset.atmosphere = 'void';
+      nodeButtons.forEach(function (node) { node.classList.remove('is-active', 'is-related', 'is-muted'); node.setAttribute('aria-pressed', 'false'); });
+      lines.forEach(function (line) { line.classList.remove('is-active'); });
+      if (dossier) { dossier.classList.remove('is-visible', 'is-expanded'); dossier.setAttribute('inert', ''); dossier.setAttribute('aria-hidden', 'true'); dossier.querySelector('[data-more]').setAttribute('aria-expanded', 'false'); }
+    }
+    nodeButtons.forEach(function (node, index) {
+      node.addEventListener('click', function (event) { if (heldNode === node) { event.preventDefault(); heldNode = null; return; } focusNode(node); });
+      node.addEventListener('keydown', function (event) {
+        if (!['ArrowRight', 'ArrowDown', 'ArrowLeft', 'ArrowUp'].includes(event.key)) return;
+        event.preventDefault();
+        var x = Number(node.dataset.x || 0), y = Number(node.dataset.y || 0);
+        var candidates = nodeButtons.filter(function (candidate) {
+          if (candidate === node) return false;
+          var cx = Number(candidate.dataset.x || 0), cy = Number(candidate.dataset.y || 0);
+          return event.key === 'ArrowRight' ? cx > x : event.key === 'ArrowLeft' ? cx < x : event.key === 'ArrowDown' ? cy > y : cy < y;
+        });
+        candidates.sort(function (a, b) {
+          var ax = Number(a.dataset.x || 0) - x, ay = Number(a.dataset.y || 0) - y;
+          var bx = Number(b.dataset.x || 0) - x, by = Number(b.dataset.y || 0) - y;
+          return Math.hypot(ax, ay) - Math.hypot(bx, by);
+        });
+        var next = candidates[0] || nodeButtons[(index + 1) % nodeButtons.length]; next.focus(); focusNode(next);
+      });
+      node.addEventListener('pointerdown', function () { heldNode = null; holdTimer = window.setTimeout(function () { heldNode = node; focusNode(node); dossier?.classList.add('is-expanded'); dossier?.querySelector('[data-more]')?.setAttribute('aria-expanded', 'true'); }, 620); });
+      ['pointerup', 'pointercancel', 'pointerleave'].forEach(function (name) { node.addEventListener(name, function () { if (holdTimer) window.clearTimeout(holdTimer); }); });
     });
-    if (document.fonts && document.fonts.ready) document.fonts.ready.then(layout);
+    document.querySelector('[data-clear-focus]')?.addEventListener('click', clearFocus);
+    document.querySelector('[data-more]')?.addEventListener('click', function (event) { var expanded = dossier?.classList.toggle('is-expanded') || false; event.currentTarget.setAttribute('aria-expanded', expanded ? 'true' : 'false'); });
+    document.addEventListener('keydown', function (event) { if (event.key === 'Escape') clearFocus(); });
+    function setMode(mode) {
+      root.dataset.mode = mode;
+      territories.forEach(function (territory) { var active = territory.dataset.territory === mode; territory.classList.toggle('is-active', active); territory.setAttribute('aria-hidden', active ? 'false' : 'true'); });
+      dockKeys.forEach(function (key) { var active = key.dataset.mode === mode; key.classList.toggle('is-active', active); if (active) key.setAttribute('aria-current', 'page'); else key.removeAttribute('aria-current'); });
+      if (!reduceMotion) document.querySelector('[data-territory="' + mode + '"]')?.animate([{ opacity: 0, transform: 'translateY(12px) scale(.992)' }, { opacity: 1, transform: 'translateY(0) scale(1)' }], { duration: 420, easing: 'cubic-bezier(.22,1,.36,1)' });
+    }
+    dockKeys.forEach(function (key) { key.addEventListener('click', function (event) { event.preventDefault(); var mode = key.dataset.mode || 'world'; setMode(mode); window.history.replaceState(null, '', '#' + mode); document.querySelector('[data-territory="' + mode + '"]')?.focus({ preventScroll: true }); }); });
+    if (shell && !reduceMotion && window.matchMedia('(pointer:fine)').matches) {
+      shell.addEventListener('pointermove', function (event) { var rect = shell.getBoundingClientRect(); root.style.setProperty('--pointer-x', String((event.clientX - rect.left) / rect.width - .5)); root.style.setProperty('--pointer-y', String((event.clientY - rect.top) / rect.height - .5)); });
+      shell.addEventListener('pointerleave', function () { root.style.setProperty('--pointer-x', '0'); root.style.setProperty('--pointer-y', '0'); });
+    }
+    var initial = nodeButtons.find(function (node) { return node.dataset.node === activeId; }); if (initial) focusNode(initial);
   })();
 </script>
-
 </body>
 </html>
