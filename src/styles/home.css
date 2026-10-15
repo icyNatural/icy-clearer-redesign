@@ -1,36 +1,22 @@
 /* ============================================================
-   HOME — living collision of Clearer × Natural
-   One composition · full-bleed media · controlled motion
+   HOME — Visual Identity Homepage Styles
+   Complex visually, clear cognitively.
    ============================================================ */
 
 :root {
   --void: #06090f;
   --ink: #eee9dc;
+  --muted: rgba(238, 233, 220, 0.58);
   --signal: #cfe7ff;
   --signal-hot: #7fcbff;
-  --nat: #c7e3b1;
-  --nat-hot: #8fc98a;
+  --active-accent: #cfe7ff;
   --pointer-x: 0;
   --pointer-y: 0;
-  --scroll: 0;
 }
 
 * { box-sizing: border-box; }
-html {
-  min-height: 100%;
-  background: var(--void);
-  scroll-behavior: smooth;
-}
-body {
-  min-height: 100svh;
-  margin: 0;
-  overflow-x: hidden;
-  overflow-x: clip;
-  color: var(--ink);
-  background: var(--void);
-  font-family: "EB Garamond", "Cormorant Garamond", Georgia, serif;
-  -webkit-font-smoothing: antialiased;
-}
+html { min-height: 100%; background: var(--void); scroll-behavior: smooth; }
+body { min-height: 100svh; margin: 0; overflow-x: hidden; color: var(--ink); background: var(--void); font-family: "EB Garamond", "Cormorant Garamond", Georgia, serif; -webkit-font-smoothing: antialiased; }
 button, a { -webkit-tap-highlight-color: transparent; }
 button { font: inherit; }
 
@@ -44,215 +30,152 @@ button { font: inherit; }
   border: 1px solid rgba(6, 9, 15, .45); border-radius: 2px;
   transform: translateY(calc(-100% - 20px)); transition: transform .18s ease;
 }
-.skip-link:focus, .skip-link:focus-visible {
-  transform: none; outline: 2px solid var(--signal-hot); outline-offset: 3px;
-}
+.skip-link:focus, .skip-link:focus-visible { transform: none; outline: 2px solid var(--signal-hot); outline-offset: 3px; }
 
 /* ── Focus ── */
 :focus-visible { outline: 2px solid var(--signal-hot); outline-offset: 3px; }
+a:focus-visible, button:focus-visible { border-radius: 2px; }
 :where(main, [tabindex="-1"]):focus { outline: none; }
 
 /* ── Reduced motion ── */
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto !important; }
   *, *::before, *::after {
-    animation-duration: .01ms !important;
-    animation-iteration-count: 1 !important;
-    animation-delay: 0ms !important;
-    transition-duration: .01ms !important;
+    animation-duration: .01ms !important; animation-iteration-count: 1 !important;
+    animation-delay: 0ms !important; transition-duration: .01ms !important;
     transition-delay: 0ms !important;
   }
 }
 
-/* ── Environment: two climates on one canvas ── */
+/* ── Environment ── */
 .environment {
-  position: fixed; inset: 0; z-index: -2; overflow: hidden;
-  background: var(--void);
+  position: fixed; inset: 0; z-index: -2; overflow: hidden; background: var(--void);
+}
+.environment::before {
+  content: ""; position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse at 50% 35%, color-mix(in srgb, var(--active-accent) 10%, transparent), transparent 50%),
+    radial-gradient(ellipse at 80% 80%, color-mix(in srgb, var(--active-accent) 6%, transparent), transparent 45%),
+    linear-gradient(180deg, rgba(8,16,29,.98), rgba(5,8,14,1));
+  transition: background 1.5s ease;
+}
+/* Two Worlds atmosphere — cold climate above-left, forest climate below-right,
+   breathing slowly. Frame only; never competes with content. */
+.environment::after {
+  content: ""; position: absolute; inset: -12%;
+  background:
+    radial-gradient(48% 55% at 16% 14%, rgba(28, 66, 110, .38), transparent 70%),
+    radial-gradient(52% 52% at 86% 88%, rgba(46, 92, 56, .32), transparent 70%),
+    linear-gradient(118deg, rgba(18, 44, 76, .16) 0%, transparent 42%, transparent 58%, rgba(24, 52, 30, .14) 100%);
+  animation: climate-breathe 26s ease-in-out infinite;
   pointer-events: none;
 }
-.environment__climate {
-  position: absolute;
-  width: 90vmax;
-  height: 90vmax;
-  border-radius: 50%;
-  filter: blur(110px);
-  opacity: .34;
-  mix-blend-mode: screen;
+@keyframes climate-breathe {
+  0%, 100% { opacity: .6; transform: translate3d(0, 0, 0); }
+  50% { opacity: .95; transform: translate3d(1.2%, -.8%, 0); }
 }
-.environment__climate--clear {
-  left: -34vmax; top: -30vmax;
-  background: radial-gradient(circle, rgba(48, 116, 178, .85), transparent 62%);
-  transform: translate3d(
-    calc(var(--pointer-x) * 26px + var(--scroll) * 8vmin),
-    calc(var(--pointer-y) * 18px),
-    0
-  );
-  transition: transform 1.4s cubic-bezier(.22,1,.36,1);
+.environment__light {
+  position: absolute; border-radius: 50%; filter: blur(120px); opacity: .18; mix-blend-mode: screen;
+  transition: background 1.5s ease, transform 2.5s ease;
 }
-.environment__climate--nat {
-  right: -34vmax; bottom: -32vmax;
-  background: radial-gradient(circle, rgba(74, 128, 70, .8), transparent 62%);
-  transform: translate3d(
-    calc(var(--pointer-x) * -22px - var(--scroll) * 6vmin),
-    calc(var(--pointer-y) * -16px),
-    0
-  );
-  transition: transform 1.4s cubic-bezier(.22,1,.36,1);
+.environment__light--a { width: 60vw; height: 60vw; left: -25vw; top: -28vw; background: #347db2; transform: translate(calc(var(--pointer-x) * 30px), calc(var(--pointer-y) * 22px)); }
+.environment__light--b { width: 52vw; height: 52vw; right: -20vw; bottom: -28vw; background: #4b806b; transform: translate(calc(var(--pointer-x) * -26px), calc(var(--pointer-y) * -20px)); }
+[data-atmosphere="aurora"] .environment__light--b { background: #7755a8; }
+[data-atmosphere="ember"] .environment__light--b { background: #a66b35; }
+[data-atmosphere="forest"] .environment__light--b, [data-atmosphere="meadow"] .environment__light--b { background: #477758; }
+[data-atmosphere="lab"] .environment__light--b { background: #4f707d; }
+.environment__horizon {
+  position: absolute; left: -5%; right: -5%; top: 58%; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(207,231,255,.18), transparent);
+  box-shadow: 0 0 50px rgba(127,203,255,.14); transform: rotate(-1.5deg);
 }
-.environment__seam {
-  position: absolute; inset: 0;
-  background: linear-gradient(105deg,
-    rgba(10, 24, 42, .5) 0%,
-    rgba(6, 9, 15, .2) 42%,
-    rgba(6, 9, 15, .2) 58%,
-    rgba(8, 18, 12, .5) 100%);
+.environment__grid {
+  position: absolute; inset: 0; opacity: .12;
+  background-image:
+    linear-gradient(rgba(207,231,255,.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(207,231,255,.05) 1px, transparent 1px);
+  background-size: 7vw 7vw;
+  mask-image: linear-gradient(to bottom, transparent, #000 30%, #000 70%, transparent);
+  transform: perspective(600px) rotateX(62deg) translateY(40%); transform-origin: center bottom;
 }
 .environment__grain {
-  position: absolute; inset: -40%; opacity: .035;
-  background-image: radial-gradient(#fff .55px, transparent .65px);
-  background-size: 4px 4px;
-  animation: env-grain 1.3s steps(2) infinite;
+  position: absolute; inset: -40%; opacity: .03;
+  background-image: radial-gradient(#fff .6px, transparent .7px); background-size: 4px 4px;
+  animation: grain 1.2s steps(2) infinite;
 }
-@keyframes env-grain {
-  0% { transform: translate(0, 0); }
-  50% { transform: translate(1.6%, -1%); }
-  100% { transform: translate(-1%, 1.6%); }
-}
+@keyframes grain { 0% { transform: translate(0,0); } 50% { transform: translate(2%,-1%); } 100% { transform: translate(-1%,2%); } }
 
-/* ── Main stage ── */
-.home-main {
-  position: relative;
-  z-index: 1;
-  min-height: 100svh;
-}
+/* ── Main ── */
+.home-main { min-height: 100svh; padding-bottom: 0; }
 
-.home-stage {
-  position: relative;
+/* ── Composition flow ── */
+.home-flow {
   display: grid;
-  gap: clamp(10px, 1.6vw, 22px);
-  padding: clamp(4px, .8vw, 10px) 0 clamp(10px, 2vw, 20px);
+  gap: 0;
+  grid-template-rows: auto auto auto auto auto auto;
 }
 
-/* faint atmosphere band crossing between zones — the climates intermix */
-.home-block {
-  position: relative;
-  min-width: 0;
-}
-.home-block--noticing::before {
-  content: "";
-  position: absolute;
-  left: 0; right: 0; top: 40%;
-  height: 40%;
-  z-index: -1;
-  background: radial-gradient(ellipse at 70% 50%, rgba(189, 217, 164, .07), transparent 60%),
-              radial-gradient(ellipse at 20% 50%, rgba(159, 217, 255, .06), transparent 55%);
-  pointer-events: none;
-}
-.home-block--outside::before {
-  content: "";
-  position: absolute;
-  left: 0; right: 0; top: 20%;
-  height: 60%;
-  z-index: -1;
-  background: radial-gradient(ellipse at 50% 50%, rgba(120, 160, 200, .05), transparent 65%);
-  pointer-events: none;
-}
-.home-block--doors::before {
-  content: "";
-  position: absolute;
-  left: 0; right: 0; top: -20%;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(191, 228, 255, .2) 30%, rgba(199, 227, 177, .2) 70%, transparent);
-  pointer-events: none;
-}
+/* Identity zone — full viewport width, anchored top */
+.home-identity { position: relative; z-index: 10; }
 
-/* full-bleed feel: fields escape the usual container */
-.home-block--current .drop-field__grid {
-  padding-inline: clamp(8px, 1.6vw, 22px);
-}
+/* Current zone — large visual pieces */
+.home-current { position: relative; z-index: 8; padding: clamp(10px, 2vw, 22px) clamp(18px, 4vw, 64px); }
+.home-current__inner { max-width: 1400px; margin: 0 auto; }
 
-/* ── Archive row: portfolio relic + world portal ── */
-.home-archive {
-  width: min(1560px, 100%);
-  margin: 0 auto;
-  padding: 0 clamp(10px, 2vw, 22px);
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: clamp(8px, 1.2vw, 14px);
-  align-items: stretch;
-}
-@media (min-width: 860px) {
-  .home-archive {
-    grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr);
-  }
-}
+/* Highlights zone — smaller featured moments */
+.home-highlights { position: relative; z-index: 6; padding: clamp(10px, 2vw, 22px) clamp(18px, 4vw, 64px); background: linear-gradient(180deg, transparent, rgba(207,231,255,.02), transparent); }
+.home-highlights__inner { max-width: 1200px; margin: 0 auto; }
 
-/* ── Footer: compact signals ── */
+/* Outside zone — outward portals */
+.home-outside { position: relative; z-index: 6; padding: clamp(10px, 2vw, 22px) clamp(18px, 4vw, 64px); }
+.home-outside__inner { max-width: 1200px; margin: 0 auto; }
+
+/* Portfolio zone */
+.home-destinations { width: min(1240px, calc(100% - clamp(36px, 8vw, 128px))); margin: clamp(10px, 2vw, 22px) auto; display: grid; grid-template-columns: 1.15fr .85fr; gap: clamp(10px, 1.5vw, 16px); }
+.home-portfolio { position: relative; z-index: 6; min-width: 0; }
+
+/* World doorway zone */
+.home-world-doorway { position: relative; z-index: 6; min-width: 0; }
+
+/* Footer zone */
 .home-foot {
-  position: relative;
-  z-index: 5;
-  padding: clamp(12px, 1.8vw, 20px) clamp(14px, 3vw, 28px) clamp(16px, 2.4vw, 26px);
-  border-top: 1px solid rgba(207, 231, 255, .08);
-  background: linear-gradient(180deg, transparent, rgba(6, 9, 15, .7));
+  position: relative; z-index: 5;
+  padding: clamp(14px, 2vw, 22px) clamp(18px, 4vw, 64px);
+  border-top: 1px solid rgba(207,231,255,.08);
+  background: linear-gradient(180deg, transparent, rgba(6,9,15,.6));
 }
-.home-foot__inner {
-  width: min(1560px, 100%);
-  margin: 0 auto;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px 18px;
-}
-.home-foot__mark {
-  font-family: "IM FELL English", serif;
-  font-size: 1rem;
-  color: rgba(207, 231, 255, .45);
-}
-.home-foot__nav {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px 18px;
-}
-.home-foot__link {
-  display: inline-flex;
-  align-items: center;
-  min-height: 44px;
-  color: rgba(238, 233, 220, .55);
-  text-decoration: none;
-  font-family: "JetBrains Mono", monospace;
-  font-size: .55rem;
-  letter-spacing: .14em;
-  text-transform: uppercase;
-  transition: color .2s ease;
-}
+.home-foot__inner { max-width: 1400px; margin: 0 auto; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 16px; }
+.home-foot__mark { font-family: "IM FELL English", serif; font-size: 1.1rem; color: rgba(207,231,255,.5); }
+.home-foot__nav { display: flex; flex-wrap: wrap; gap: 20px; }
+.home-foot__link { color: rgba(238,233,220,.55); text-decoration: none; font-family: "JetBrains Mono", monospace; font-size: .55rem; letter-spacing: .14em; text-transform: uppercase; transition: color .2s ease; }
 .home-foot__link:hover { color: var(--signal); }
 
-/* ── Mobile composition ── */
+/* ── Parallax pointer response ── */
+@media (pointer: fine) {
+  .home-current,
+  .home-highlights,
+  .home-outside {
+    transition: transform .8s cubic-bezier(.22,1,.36,1);
+  }
+}
+
+/* ── Responsive spacing ── */
 @media (max-width: 640px) {
-  .home-foot__inner {
-    justify-content: center;
-    text-align: center;
-  }
-  .home-foot .signal-row {
-    width: 100%;
-    justify-content: center;
-    order: 1;
-  }
-  .home-foot__nav {
-    order: 2;
-    justify-content: center;
-  }
-  .home-foot__mark {
-    order: 3;
-    width: 100%;
-    text-align: center;
-  }
+  .home-current, .home-highlights, .home-outside,
+  .home-portfolio, .home-world-doorway { padding-inline: 0; }
+  .home-current, .home-highlights, .home-outside { padding: 9px 12px; }
+  .home-destinations { width: calc(100% - 24px); margin: 9px auto; grid-template-columns: 1fr; gap: 8px; }
+  .media-tile__label { font-size: clamp(.9rem, 4vw, 1.2rem); }
+  .media-tile__glyph { width: 28px; height: 28px; font-size: .8rem; }
+  .home-foot__inner { justify-content: center; }
+  .home-foot__mark { order: 2; font-size: .9rem; }
+  .home-foot__nav { order: 3; justify-content: center; gap: 12px; }
+  .edge-portals { order: 1; width: 100%; }
 }
 
 /* ── Print ── */
 @media print {
-  .environment, .skip-link { display: none !important; }
+  .environment, .edge-portals, .skip-link { display: none !important; }
   body { background: #fff !important; color: #000 !important; }
-  .drop, .world-door, .world-portal, .portfolio-relic { break-inside: avoid; }
+  .media-tile { break-inside: avoid; border: 1px solid #ccc !important; }
 }

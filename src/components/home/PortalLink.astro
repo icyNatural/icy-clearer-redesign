@@ -1,0 +1,165 @@
+---
+// PortalLink — small visual portal for external destinations
+// Used in edge/corner positions
+
+interface Props {
+  item: import('../../data/home').MediaItem;
+  position?: 'corner-tl' | 'corner-tr' | 'corner-bl' | 'corner-br' | 'edge-t' | 'edge-r' | 'edge-b' | 'edge-l' | 'inline';
+  class?: string;
+}
+
+const { item, position = 'inline', class: className = '' } = Astro.props;
+const { src, alt, label, href, external, accent = '#cfe7ff', glyph } = item;
+
+const isInteractive = !!href;
+const Tag = isInteractive ? 'a' : 'span';
+const portalClass = `portal-link portal-link--${position}${isInteractive ? '' : ' portal-link--static'} ${className}`;
+const style = `--accent: ${accent};`;
+---
+
+<style is:global>
+  .portal-link {
+    --accent: #cfe7ff;
+    position: relative;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    flex-direction: row;
+    gap: 7px;
+    padding: 8px 10px;
+    text-decoration: none;
+    color: #fff;
+    border: 1px solid rgba(207, 231, 255, 0.15);
+    border-radius: 999px;
+    background: linear-gradient(135deg, rgba(10, 15, 26, 0.9), rgba(6, 9, 15, 0.95));
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow:
+      0 8px 32px rgba(0, 0, 0, 0.35),
+      inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    transition:
+      border-color 0.3s ease,
+      box-shadow 0.3s ease,
+      transform 0.2s ease;
+    cursor: pointer;
+    min-width: 0;
+  }
+  .portal-link:hover,
+  .portal-link:focus-visible {
+    border-color: color-mix(in srgb, var(--accent) 50%, transparent);
+    box-shadow:
+      0 12px 40px rgba(0, 0, 0, 0.4),
+      0 0 24px color-mix(in srgb, var(--accent) 25%, transparent),
+      inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    transform: translateY(-2px);
+  }
+  .portal-link:active {
+    transform: translateY(0) scale(0.98);
+  }
+  .portal-link:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+  .portal-link--static {
+    cursor: default;
+  }
+  .portal-link--static:hover {
+    border-color: rgba(207, 231, 255, 0.15);
+    box-shadow:
+      0 8px 32px rgba(0, 0, 0, 0.35),
+      inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    transform: none;
+  }
+
+  .portal-link__glyph {
+    display: grid;
+    place-items: center;
+    width: 24px;
+    height: 24px;
+    border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+    border-radius: 50%;
+    background: radial-gradient(circle, color-mix(in srgb, var(--accent) 16%, transparent), transparent 65%);
+    color: var(--accent);
+    font-size: .75rem;
+    box-shadow: 0 0 20px color-mix(in srgb, var(--accent) 18%, transparent);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  .portal-link:hover .portal-link__glyph,
+  .portal-link:focus-visible .portal-link__glyph {
+    transform: scale(1.08);
+    box-shadow: 0 0 30px color-mix(in srgb, var(--accent) 30%, transparent);
+  }
+
+  .portal-link__label {
+    font-family: "JetBrains Mono", monospace;
+    font-size: clamp(0.5rem, 0.9vw, 0.58rem);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(238, 233, 220, 0.75);
+    white-space: nowrap;
+    transition: color 0.2s ease;
+  }
+  .portal-link:hover .portal-link__label {
+    color: var(--accent);
+  }
+
+  .portal-link__ring {
+    position: absolute;
+    inset: -4px;
+    border: 1px solid color-mix(in srgb, var(--accent) 20%, transparent);
+    border-radius: 20px;
+    opacity: 0;
+    animation: portal-ring 3s ease-out infinite;
+  }
+  @keyframes portal-ring {
+    0% { transform: scale(1); opacity: 0.4; }
+    100% { transform: scale(1.15); opacity: 0; }
+  }
+
+  /* Position variants */
+  .portal-link--corner-tl { position: fixed; top: 24px; left: 24px; z-index: 50; }
+  .portal-link--corner-tr { position: fixed; top: 24px; right: 24px; z-index: 50; }
+  .portal-link--corner-bl { position: fixed; bottom: 100px; left: 24px; z-index: 50; }
+  .portal-link--corner-br { position: fixed; bottom: 100px; right: 24px; z-index: 50; }
+  .portal-link--edge-t { position: absolute; top: -32px; left: 50%; transform: translateX(-50%); }
+  .portal-link--edge-r { position: absolute; right: -32px; top: 50%; transform: translateY(-50%); }
+  .portal-link--edge-b { position: absolute; bottom: -32px; left: 50%; transform: translateX(-50%); }
+  .portal-link--edge-l { position: absolute; left: -32px; top: 50%; transform: translateY(-50%); }
+
+  @media (max-width: 640px) {
+    .portal-link__ring {
+      display: none;
+    }
+    .portal-link--corner-tl,
+    .portal-link--corner-tr,
+    .portal-link--corner-bl,
+    .portal-link--corner-br {
+      position: static;
+    }
+    .portal-link--edge-t,
+    .portal-link--edge-r,
+    .portal-link--edge-b,
+    .portal-link--edge-l {
+      position: static;
+      transform: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .portal-link__ring { animation: none; }
+    .portal-link { transition: none; }
+  }
+</style>
+
+<Tag
+  class={portalClass}
+  style={style}
+  href={isInteractive ? href : undefined}
+  target={isInteractive && external ? '_blank' : undefined}
+  rel={isInteractive && external ? 'noopener' : undefined}
+  aria-label={label}
+>
+  <span class="portal-link__ring" aria-hidden="true"></span>
+  <span class="portal-link__glyph" aria-hidden="true">{glyph || '✦'}</span>
+  <span class="portal-link__label">{label || ''}</span>
+</Tag>

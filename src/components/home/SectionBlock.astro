@@ -1,0 +1,145 @@
+---
+// SectionBlock — renders a section using layout slots from the content manifest
+// Receives sectionId, looks up slots and items from homeContent
+
+import MediaTile from "./MediaTile.astro";
+import { homeContent, getItemsForSection, getSlot, type LayoutSlot } from "../../data/home";
+
+interface Props {
+  sectionId: string;
+  class?: string;
+}
+
+const { sectionId, class: className = '' } = Astro.props;
+
+const section = homeContent.sections.find((s) => s.id === sectionId);
+if (!section) throw new Error(`Section not found: ${sectionId}`);
+
+const slotIds = section.slotIds;
+const items = getItemsForSection(sectionId);
+const slots = slotIds.map((id) => getSlot(id)).filter(Boolean) as LayoutSlot[];
+
+// Build item map by slotId
+const itemMap = new Map(items.map((item) => [item.slotId, item]));
+
+const sectionClass = `section-block section-block--${sectionId} ${className}`;
+---
+
+<style is:global>
+  .section-block {
+    position: relative;
+    padding: 0;
+  }
+  .section-block__header {
+    margin-bottom: clamp(7px, 1.2vw, 12px);
+  }
+  .section-block__title {
+    margin: 0;
+    font-family: "JetBrains Mono", monospace;
+    font-size: clamp(0.52rem, 0.8vw, 0.66rem);
+    font-weight: 500;
+    line-height: 1.1;
+    letter-spacing: 0.17em;
+    text-transform: uppercase;
+    color: rgba(207, 231, 255, 0.62);
+  }
+
+  .section-block__grid {
+    display: grid;
+    gap: clamp(8px, 1.4vw, 14px);
+  }
+
+  /* Section-specific grid layouts */
+  .section-block--current .section-block__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-areas: "drop-01 drop-01" "drop-02 drop-03";
+  }
+  .section-block--current .section-block__item[data-slot="drop-01"] { grid-area: drop-01; }
+  .section-block--current .section-block__item[data-slot="drop-02"] { grid-area: drop-02; }
+  .section-block--current .section-block__item[data-slot="drop-03"] { grid-area: drop-03; }
+  .section-block--highlights .section-block__grid {
+    grid-template-columns: minmax(0, .82fr) minmax(0, 1.18fr);
+    align-items: stretch;
+  }
+  .section-block--outside .section-block__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .section-block--outside .section-block__item:last-child { grid-column: 1 / -1; }
+
+  @media (min-width: 640px) {
+    .section-block--current .section-block__grid {
+      grid-template-columns: 1fr 1fr;
+      grid-template-areas:
+        "drop-01 drop-01"
+        "drop-02 drop-03";
+    }
+    .section-block--current .section-block__item[data-slot="drop-01"] { grid-area: drop-01; }
+    .section-block--current .section-block__item[data-slot="drop-02"] { grid-area: drop-02; }
+    .section-block--current .section-block__item[data-slot="drop-03"] { grid-area: drop-03; }
+
+    .section-block--highlights .section-block__grid {
+      grid-template-columns: 1fr 1fr;
+      grid-template-areas:
+        "drop-04 drop-05";
+    }
+    .section-block--highlights .section-block__item[data-slot="drop-04"] { grid-area: drop-04; }
+    .section-block--highlights .section-block__item[data-slot="drop-05"] { grid-area: drop-05; }
+
+    .section-block--outside .section-block__grid {
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-areas:
+        "drop-06 drop-07 drop-08";
+    }
+    .section-block--outside .section-block__item[data-slot="drop-06"] { grid-area: drop-06; }
+    .section-block--outside .section-block__item[data-slot="drop-07"] { grid-area: drop-07; }
+    .section-block--outside .section-block__item[data-slot="drop-08"] { grid-area: drop-08; }
+    .section-block--outside .section-block__item:last-child { grid-column: auto; }
+  }
+
+  @media (min-width: 1080px) {
+    .section-block--current .section-block__grid {
+      grid-template-columns: 2fr 1fr 1fr;
+      grid-template-rows: auto auto;
+      grid-template-areas:
+        "drop-01 drop-01 drop-02"
+        "drop-01 drop-01 drop-03";
+    }
+  }
+
+  .section-block__item {
+    min-width: 0;
+    min-height: 0;
+  }
+</style>
+
+<section class={sectionClass} aria-labelledby={`section-${sectionId}`}>
+  <header class="section-block__header">
+    <h2 class="section-block__title" id={`section-${sectionId}`}>{section.label}</h2>
+  </header>
+  <div class="section-block__grid" role="list">
+    {slots.map((slot) => {
+      const item = itemMap.get(slot.id);
+      return (
+        <div class="section-block__item" data-slot={slot.id} role="listitem">
+          {item ? (
+            <MediaTile item={item} slotSize={slot.size} />
+          ) : (
+            <MediaTile
+              item={{
+                id: `placeholder-${slot.id}`,
+                type: 'image',
+                slotId: slot.id,
+                src: `/home/drops/${slot.id}.svg`,
+                alt: `Drop zone ${slot.id}`,
+                label: slot.id,
+                accent: '#cfe7ff',
+              } as import('../../data/home').MediaItem}
+              slotSize={slot.size}
+              class="media-tile--placeholder"
+            />
+          )}
+        </div>
+      );
+    })}
+  </div>
+</section>

@@ -38,13 +38,13 @@ button { font: inherit; }
 .js .territory { display: none; }
 .js .territory.is-active { display: block; }
 .territory--world { overflow: hidden; }
-.world-intro { position: absolute; z-index: 10; left: clamp(24px,5vw,74px); top: clamp(112px,16vh,170px); width: min(420px,38vw); pointer-events: none; }
+.world-intro { position: absolute; z-index: 10; left: clamp(24px,5vw,74px); top: clamp(98px,12.5vh,136px); width: min(420px,38vw); pointer-events: none; }
 .eyebrow { margin: 0 0 12px; font-family: "JetBrains Mono", monospace; font-size: .58rem; letter-spacing: .2em; text-transform: uppercase; color: rgba(207,231,255,.64); }
-.world-intro h1 { margin: 0; font-family: "IM FELL English", "EB Garamond", serif; font-size: clamp(2.7rem,5.4vw,6.5rem); font-weight: 400; line-height: .86; letter-spacing: -.045em; }
+.world-intro h1 { margin: 0; font-family: "IM FELL English", "EB Garamond", serif; font-size: clamp(2.7rem,5vw,5.9rem); font-weight: 400; line-height: .86; letter-spacing: -.045em; }
 .world-intro h1 span, .world-intro h1 em { display: block; }
 .world-intro h1 em { margin-left: clamp(26px,4vw,70px); color: var(--signal); font-weight: 400; }
-.world-intro__line { max-width: 34ch; margin: 22px 0 0; font-size: clamp(1rem,1.45vw,1.28rem); line-height: 1.42; color: rgba(238,233,220,.73); }
-.world-intro__instruction { margin: 24px 0 0; font-family: "JetBrains Mono", monospace; font-size: .57rem; letter-spacing: .1em; text-transform: uppercase; color: rgba(207,231,255,.4); }
+.world-intro__line { max-width: 34ch; margin: 18px 0 0; font-size: clamp(1rem,1.45vw,1.28rem); line-height: 1.42; color: rgba(238,233,220,.73); }
+.world-intro__instruction { margin: 20px 0 0; font-family: "JetBrains Mono", monospace; font-size: .57rem; letter-spacing: .1em; text-transform: uppercase; color: rgba(207,231,255,.4); }
 .world-intro__instruction span { color: var(--signal); margin-right: 7px; }
 
 .atlas-shell { position: absolute; inset: var(--head-h) 0 var(--dock-h); transform: translate(calc(var(--pointer-x) * -8px), calc(var(--pointer-y) * -6px)); transition: transform .8s cubic-bezier(.22,1,.36,1); }
@@ -156,10 +156,10 @@ html:not(.js) .dossier { display: none; }
   :root { --head-h: 64px; --dock-h: 74px; }
   .world-head { padding: 10px 16px; }.identity small, .world-state > span:not(.world-state__pulse) { display: none; }.identity__mark { width: 34px; height: 34px; }
   .territory { min-height: 100svh; padding: var(--head-h) 16px calc(var(--dock-h) + 22px); }.territory--world { padding-inline: 0; }
-  .world-intro { position: relative; left: auto; top: auto; width: auto; height: 28svh; min-height: 205px; padding: 28px 22px 0; }
+  .world-intro { position: relative; left: auto; top: auto; width: auto; height: 22svh; min-height: 168px; padding: 18px 22px 0; }
   .world-intro h1 { font-size: clamp(2.55rem,12vw,4.2rem); line-height: .88; }.world-intro h1 em { margin-left: 22px; }
-  .world-intro__line { max-width: 31ch; margin-top: 15px; font-size: .95rem; }.world-intro__instruction { display: none; }
-  .atlas-shell { position: relative; inset: auto; height: calc(72svh - var(--head-h) - var(--dock-h)); min-height: 390px; transform: none; overflow: hidden; }
+  .world-intro__line { max-width: 31ch; margin-top: 13px; font-size: .95rem; }.world-intro__instruction { display: none; }
+  .atlas-shell { position: relative; inset: auto; height: calc(78svh - var(--head-h) - var(--dock-h)); min-height: 340px; transform: none; overflow: hidden; }
   .orbit--outer { width: 560px; right: -290px; top: -100px; }.orbit--inner { width: 300px; right: -70px; top: 80px; }.axis-label { display: none; }
   .world-node { width: 76px; min-height: 76px; }.world-node__halo { width: 38px; height: 38px; }.world-node__label { top: 57px; min-width: 0; width: 104px; font-size: .78rem; line-height: 1.05; white-space: normal; }.world-node__state { display: none; }
   .world-node[style*="--x:14%"], .world-node[style*="--x:18%"] { left: 20%; }
@@ -183,7 +183,7 @@ html:not(.js) .dossier { display: none; }
   .territory-dock { left: 8px; right: 8px; bottom: max(8px,env(safe-area-inset-bottom)); transform: none; justify-content: stretch; }.dock-key { min-width: 0; flex: 1 1 25%; padding-inline: 5px; color: rgba(207,231,255,.62); }.dock-key--clear { margin-left: 0; }
 }
 @media (max-width: 430px) {
-  .world-intro { height: 30svh; min-height: 215px; }.atlas-shell { height: calc(70svh - var(--head-h) - var(--dock-h)); }.world-node__label { font-size: .7rem; }
+  .world-intro { height: 24svh; min-height: 178px; }.atlas-shell { height: calc(76svh - var(--head-h) - var(--dock-h)); }.world-node__label { font-size: .7rem; }
   .dossier__actions { align-items: center; }.dossier__more { max-width: none; text-align: center; }.registry-group small { max-width: 90px; text-align: right; }
 }
 @keyframes deck-hint { 0%,100% { transform: translateX(0); } 45% { transform: translateX(-18px); } }
