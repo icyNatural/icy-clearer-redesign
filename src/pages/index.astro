@@ -100,7 +100,7 @@ const today = new Date();
 const dayLabel = today.toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric" }).toUpperCase();
 ---
 
-<html lang="en" data-mode="world" data-atmosphere={defaultNode?.atmosphere ?? "void"}>
+<html lang="en" data-mode="world" data-atmosphere="void">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
@@ -158,14 +158,14 @@ const dayLabel = today.toLocaleDateString("en-US", { month: "short", day: "2-dig
 
       {nodes.map((node, index) => (
         <button
-          class={`world-node ${node.id === defaultNode?.id ? "is-active" : ""}`}
+          class="world-node"
           type="button" data-node={node.id} data-title={node.title} data-philosophy={node.philosophy}
           data-field={node.field} data-status={statusLabel[node.status] ?? node.status}
           data-group={node.group === "observatory" ? "Project" : "Instrument"} data-route={node.route}
           data-external={node.external ? "true" : "false"} data-accent={node.accent}
           data-atmosphere={node.atmosphere} data-related={relatedIds(node.id).join(",")}
           data-x={node.x} data-y={node.y}
-          aria-pressed={node.id === defaultNode?.id ? "true" : "false"} aria-controls="focus-dossier"
+          aria-pressed="false" aria-controls="focus-dossier"
           style={`--x:${node.x}%;--y:${node.y}%;--accent:${node.accent};--delay:${index * -0.7}s`}
         >
           <span class="world-node__halo" aria-hidden="true"></span><span class="world-node__glyph" aria-hidden="true">{node.glyph}</span>
@@ -175,9 +175,9 @@ const dayLabel = today.toLocaleDateString("en-US", { month: "short", day: "2-dig
     </div>
 
     {defaultNode && (
-      <aside class="dossier" id="focus-dossier" aria-live="polite" aria-hidden="false" style={`--accent:${defaultNode.accent}`}>
-        <button class="dossier__close" type="button" data-clear-focus aria-label="Return to the whole world">×</button>
-        <div class="dossier__signal" aria-hidden="true"><span>{defaultNode.glyph}</span></div>
+      <aside class="dossier" id="focus-dossier" aria-live="polite" aria-hidden="true" inert style={`--accent:${defaultNode.accent}`}>
+        <button class="dossier__close" type="button" data-clear-focus aria-label="Close project details"><span aria-hidden="true">×</span></button>
+        <a class="dossier__signal" data-dossier-glyph-link href={defaultNode.route} target={defaultNode.external ? "_blank" : undefined} rel={defaultNode.external ? "noopener" : undefined} aria-label={`Open ${defaultNode.title}`}><span aria-hidden="true">{defaultNode.glyph}</span></a>
         <div class="dossier__meta"><span data-dossier-group>{defaultNode.group === "observatory" ? "Project" : "Instrument"}</span><span>·</span><span data-dossier-status>{statusLabel[defaultNode.status] ?? defaultNode.status}</span></div>
         <h2 data-dossier-title>{defaultNode.title}</h2>
         <p class="dossier__philosophy" data-dossier-philosophy>{defaultNode.philosophy}</p>
@@ -185,7 +185,7 @@ const dayLabel = today.toLocaleDateString("en-US", { month: "short", day: "2-dig
         <div class="dossier__relations" data-dossier-relations>{relatedIds(defaultNode.id).length ? `Connected · ${relatedIds(defaultNode.id).map((id) => nodeById.get(id)?.title).filter(Boolean).join(" · ")}` : "Independent object"}</div>
         <div class="dossier__actions">
           <a class="dossier__enter" data-dossier-link href={defaultNode.route} target={defaultNode.external ? "_blank" : undefined} rel={defaultNode.external ? "noopener" : undefined}>Enter <span data-link-mark aria-hidden="true">{defaultNode.external ? "↗" : "→"}</span></a>
-          <button class="dossier__more" type="button" data-more aria-controls="dossier-field-note" aria-expanded="false">Hold / reveal field note</button>
+          <button class="dossier__more" type="button" data-more aria-controls="dossier-field-note" aria-expanded="false"><span aria-hidden="true">＋</span> Tap · field note</button>
         </div>
       </aside>
     )}
@@ -195,7 +195,13 @@ const dayLabel = today.toLocaleDateString("en-US", { month: "short", day: "2-dig
 
   <section class="territory territory--objects" id="objects" data-territory="objects" aria-labelledby="objects-title" tabindex="-1">
     <header class="territory-heading"><p class="eyebrow">Things you can hold</p><h2 id="objects-title">Working objects</h2><p>Selected systems shown through their own interface language.</p></header>
-    <div class="object-deck">
+    <div class="object-deck-guide" aria-hidden="true">
+      <span class="object-deck-guide__instruction">Swipe <b>→</b></span>
+      <span class="object-deck-guide__count"><b data-object-current>01</b> / {String(featuredInstruments.length).padStart(2, "0")}</span>
+      <span class="object-deck-guide__marks">{featuredInstruments.map((_, index) => <i class={index === 0 ? "is-current" : ""} data-object-mark={index}></i>)}</span>
+    </div>
+    <div class="object-deck-wrap">
+    <div class="object-deck" data-object-deck>
       {featuredInstruments.map((artifact, index) => {
         const external = artifact.external ?? artifact.route.startsWith("http");
         return (
@@ -205,6 +211,7 @@ const dayLabel = today.toLocaleDateString("en-US", { month: "short", day: "2-dig
           </article>
         );
       })}
+    </div>
     </div>
   </section>
 
@@ -252,9 +259,9 @@ const dayLabel = today.toLocaleDateString("en-US", { month: "short", day: "2-dig
     var territories = Array.from(document.querySelectorAll('[data-territory]'));
     var dossier = document.getElementById('focus-dossier');
     var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    var activeId = nodeButtons.find(function (node) { return node.classList.contains('is-active'); })?.dataset.node || '';
-    var holdTimer = null;
-    var heldNode = null;
+    var activeId = '';
+    var objectDeck = document.querySelector('[data-object-deck]');
+    var objectDeckHinted = false;
 
     function namesFor(ids) {
       return ids.map(function (id) { return nodeButtons.find(function (node) { return node.dataset.node === id; })?.dataset.title; }).filter(Boolean);
@@ -280,8 +287,15 @@ const dayLabel = today.toLocaleDateString("en-US", { month: "short", day: "2-dig
       var glyph = dossier.querySelector('.dossier__signal span'); if (glyph) glyph.textContent = node.querySelector('.world-node__glyph')?.textContent || '✦';
       var relationCopy = namesFor(related); dossier.querySelector('[data-dossier-relations]').textContent = relationCopy.length ? 'Connected · ' + relationCopy.join(' · ') : 'Independent object';
       var link = dossier.querySelector('[data-dossier-link]'); link.setAttribute('href', node.dataset.route || '#');
+      var glyphLink = dossier.querySelector('[data-dossier-glyph-link]'); glyphLink.setAttribute('href', node.dataset.route || '#'); glyphLink.setAttribute('aria-label', 'Open ' + (node.dataset.title || 'project'));
       var external = node.dataset.external === 'true';
-      if (external) { link.setAttribute('target', '_blank'); link.setAttribute('rel', 'noopener'); link.setAttribute('aria-label', 'Enter ' + (node.dataset.title || '') + ' — opens in a new tab'); } else { link.removeAttribute('target'); link.removeAttribute('rel'); link.removeAttribute('aria-label'); }
+      if (external) {
+        link.setAttribute('target', '_blank'); link.setAttribute('rel', 'noopener'); link.setAttribute('aria-label', 'Enter ' + (node.dataset.title || '') + ' — opens in a new tab');
+        glyphLink.setAttribute('target', '_blank'); glyphLink.setAttribute('rel', 'noopener'); glyphLink.setAttribute('aria-label', 'Open ' + (node.dataset.title || 'project') + ' — opens in a new tab');
+      } else {
+        link.removeAttribute('target'); link.removeAttribute('rel'); link.removeAttribute('aria-label');
+        glyphLink.removeAttribute('target'); glyphLink.removeAttribute('rel');
+      }
       dossier.querySelector('[data-link-mark]').textContent = external ? '↗' : '→';
       dossier.classList.add('is-visible'); dossier.classList.remove('is-expanded'); dossier.removeAttribute('inert'); dossier.setAttribute('aria-hidden', 'false');
       dossier.querySelector('[data-more]').setAttribute('aria-expanded', 'false');
@@ -293,7 +307,7 @@ const dayLabel = today.toLocaleDateString("en-US", { month: "short", day: "2-dig
       if (dossier) { dossier.classList.remove('is-visible', 'is-expanded'); dossier.setAttribute('inert', ''); dossier.setAttribute('aria-hidden', 'true'); dossier.querySelector('[data-more]').setAttribute('aria-expanded', 'false'); }
     }
     nodeButtons.forEach(function (node, index) {
-      node.addEventListener('click', function (event) { if (heldNode === node) { event.preventDefault(); heldNode = null; return; } focusNode(node); });
+      node.addEventListener('click', function () { focusNode(node); });
       node.addEventListener('keydown', function (event) {
         if (!['ArrowRight', 'ArrowDown', 'ArrowLeft', 'ArrowUp'].includes(event.key)) return;
         event.preventDefault();
@@ -310,24 +324,44 @@ const dayLabel = today.toLocaleDateString("en-US", { month: "short", day: "2-dig
         });
         var next = candidates[0] || nodeButtons[(index + 1) % nodeButtons.length]; next.focus(); focusNode(next);
       });
-      node.addEventListener('pointerdown', function () { heldNode = null; holdTimer = window.setTimeout(function () { heldNode = node; focusNode(node); dossier?.classList.add('is-expanded'); dossier?.querySelector('[data-more]')?.setAttribute('aria-expanded', 'true'); }, 620); });
-      ['pointerup', 'pointercancel', 'pointerleave'].forEach(function (name) { node.addEventListener(name, function () { if (holdTimer) window.clearTimeout(holdTimer); }); });
     });
     document.querySelector('[data-clear-focus]')?.addEventListener('click', clearFocus);
     document.querySelector('[data-more]')?.addEventListener('click', function (event) { var expanded = dossier?.classList.toggle('is-expanded') || false; event.currentTarget.setAttribute('aria-expanded', expanded ? 'true' : 'false'); });
     document.addEventListener('keydown', function (event) { if (event.key === 'Escape') clearFocus(); });
+    document.querySelector('[data-territory="world"]')?.addEventListener('click', function (event) {
+      if (!dossier?.classList.contains('is-visible')) return;
+      if (event.target.closest('#focus-dossier') || event.target.closest('[data-node]')) return;
+      clearFocus();
+    });
     function setMode(mode) {
       root.dataset.mode = mode;
       territories.forEach(function (territory) { var active = territory.dataset.territory === mode; territory.classList.toggle('is-active', active); territory.setAttribute('aria-hidden', active ? 'false' : 'true'); });
       dockKeys.forEach(function (key) { var active = key.dataset.mode === mode; key.classList.toggle('is-active', active); if (active) key.setAttribute('aria-current', 'page'); else key.removeAttribute('aria-current'); });
       if (!reduceMotion) document.querySelector('[data-territory="' + mode + '"]')?.animate([{ opacity: 0, transform: 'translateY(12px) scale(.992)' }, { opacity: 1, transform: 'translateY(0) scale(1)' }], { duration: 420, easing: 'cubic-bezier(.22,1,.36,1)' });
+      if (mode === 'objects' && objectDeck && !objectDeckHinted && !reduceMotion) {
+        objectDeckHinted = true; objectDeck.classList.add('is-hinting');
+        window.setTimeout(function () { objectDeck.classList.remove('is-hinting'); }, 1100);
+      }
     }
     dockKeys.forEach(function (key) { key.addEventListener('click', function (event) { event.preventDefault(); var mode = key.dataset.mode || 'world'; setMode(mode); window.history.replaceState(null, '', '#' + mode); document.querySelector('[data-territory="' + mode + '"]')?.focus({ preventScroll: true }); }); });
+    if (objectDeck) {
+      var objectCards = Array.from(objectDeck.querySelectorAll('.object'));
+      var objectMarks = Array.from(document.querySelectorAll('[data-object-mark]'));
+      var objectCurrent = document.querySelector('[data-object-current]');
+      var updateObjectPosition = function () {
+        var deckLeft = objectDeck.getBoundingClientRect().left;
+        var nearest = 0, nearestDistance = Infinity;
+        objectCards.forEach(function (card, index) { var distance = Math.abs(card.getBoundingClientRect().left - deckLeft); if (distance < nearestDistance) { nearest = index; nearestDistance = distance; } });
+        if (objectCurrent) objectCurrent.textContent = String(nearest + 1).padStart(2, '0');
+        objectMarks.forEach(function (mark, index) { mark.classList.toggle('is-current', index === nearest); });
+      };
+      objectDeck.addEventListener('scroll', updateObjectPosition, { passive: true });
+      updateObjectPosition();
+    }
     if (shell && !reduceMotion && window.matchMedia('(pointer:fine)').matches) {
       shell.addEventListener('pointermove', function (event) { var rect = shell.getBoundingClientRect(); root.style.setProperty('--pointer-x', String((event.clientX - rect.left) / rect.width - .5)); root.style.setProperty('--pointer-y', String((event.clientY - rect.top) / rect.height - .5)); });
       shell.addEventListener('pointerleave', function () { root.style.setProperty('--pointer-x', '0'); root.style.setProperty('--pointer-y', '0'); });
     }
-    var initial = nodeButtons.find(function (node) { return node.dataset.node === activeId; }); if (initial) focusNode(initial);
   })();
 </script>
 </body>
