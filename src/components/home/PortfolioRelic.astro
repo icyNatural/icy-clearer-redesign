@@ -1,0 +1,148 @@
+---
+// PortfolioRelic — compact living-archive object. Not a recruiter panel.
+
+import { homeContent } from '../../data/home';
+
+const { portfolio } = homeContent;
+---
+
+<style is:global>
+  .portfolio-relic {
+    --accent: #bfe4ff;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 14px;
+    min-width: 0;
+    padding: clamp(16px, 2.6vw, 26px);
+    border-radius: 3px;
+    overflow: hidden;
+    color: #f4f9ff;
+    text-decoration: none;
+    background:
+      radial-gradient(120% 100% at 12% 0%, rgba(159, 217, 255, 0.14), transparent 55%),
+      radial-gradient(100% 90% at 90% 100%, rgba(189, 217, 164, 0.1), transparent 50%),
+      linear-gradient(160deg, rgba(12, 20, 34, 0.96), rgba(6, 10, 16, 0.99));
+    border: 1px solid rgba(191, 228, 255, 0.16);
+    box-shadow: 0 18px 60px rgba(0, 0, 0, 0.35);
+    transition: border-color 0.35s ease, box-shadow 0.35s ease, transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .portfolio-relic::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image:
+      linear-gradient(rgba(207, 231, 255, 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(207, 231, 255, 0.04) 1px, transparent 1px);
+    background-size: 28px 28px;
+    mask-image: radial-gradient(ellipse at 30% 20%, #000 0%, transparent 70%);
+    opacity: 0.6;
+  }
+  .portfolio-relic:hover,
+  .portfolio-relic:focus-visible {
+    border-color: rgba(191, 228, 255, 0.45);
+    box-shadow: 0 26px 80px rgba(0, 0, 0, 0.5), 0 0 50px rgba(159, 217, 255, 0.12);
+    transform: translateY(-3px);
+  }
+  .portfolio-relic:focus-visible {
+    outline: 2px solid #9fd9ff;
+    outline-offset: 3px;
+  }
+
+  .portfolio-relic__top {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .portfolio-relic__glyph {
+    display: grid;
+    place-items: center;
+    width: clamp(38px, 5vw, 48px);
+    height: clamp(38px, 5vw, 48px);
+    border-radius: 50%;
+    border: 1px solid rgba(191, 228, 255, 0.4);
+    background: radial-gradient(circle, rgba(191, 228, 255, 0.16), transparent 70%);
+    color: #bfe4ff;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+  }
+  .portfolio-relic__eyebrow {
+    margin: 0 0 3px;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.5rem;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: rgba(207, 231, 255, 0.55);
+  }
+  .portfolio-relic__title {
+    margin: 0;
+    font-family: "IM FELL English", "EB Garamond", serif;
+    font-weight: 400;
+    font-size: clamp(1.5rem, 2.8vw, 2.1rem);
+    line-height: 1;
+  }
+
+  .portfolio-relic__desc {
+    position: relative;
+    margin: 0;
+    max-width: 44ch;
+    font-size: clamp(0.85rem, 1.15vw, 0.98rem);
+    line-height: 1.45;
+    color: rgba(238, 244, 250, 0.72);
+  }
+
+  .portfolio-relic__cta {
+    position: relative;
+    align-self: flex-start;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 44px;
+    padding: 10px 18px;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.55rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    border-radius: 999px;
+    border: 1px solid rgba(191, 228, 255, 0.45);
+    color: #eaf6ff;
+    transition: background 0.3s ease, border-color 0.3s ease;
+  }
+  .portfolio-relic:hover .portfolio-relic__cta,
+  .portfolio-relic:focus-visible .portfolio-relic__cta {
+    background: rgba(159, 217, 255, 0.12);
+    border-color: #bfe4ff;
+  }
+  .portfolio-relic__cta span {
+    transition: transform 0.25s ease;
+  }
+  .portfolio-relic:hover .portfolio-relic__cta span {
+    transform: translateX(3px);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .portfolio-relic { transition: none; }
+    .portfolio-relic:hover { transform: none; }
+  }
+</style>
+
+<a
+  class="portfolio-relic"
+  href={portfolio.href}
+  target={portfolio.external ? '_blank' : undefined}
+  rel={portfolio.external ? 'noopener' : undefined}
+  aria-label={`${portfolio.title} — ${portfolio.eyebrow}`}
+>
+  <div class="portfolio-relic__top">
+    <span class="portfolio-relic__glyph" aria-hidden="true">{portfolio.glyph}</span>
+    <div>
+      <p class="portfolio-relic__eyebrow">{portfolio.eyebrow}</p>
+      <h2 class="portfolio-relic__title">{portfolio.title}</h2>
+    </div>
+  </div>
+  <p class="portfolio-relic__desc">{portfolio.description}</p>
+  <span class="portfolio-relic__cta">Open archive <span aria-hidden="true">↗</span></span>
+</a>

@@ -1,0 +1,146 @@
+---
+// DropField — renders one labeled section of generic drops from the manifest.
+// Layouts: mosaic (staggered composition), strip (horizontal swipe), field (compact row).
+
+import Drop from './Drop.astro';
+import { homeContent, getDropsForSection, type DropSection } from '../../data/home';
+
+interface Props {
+  sectionId: string;
+}
+
+const { sectionId } = Astro.props;
+const section = homeContent.sections.find((s) => s.id === sectionId);
+if (!section) throw new Error(`Section not found: ${sectionId}`);
+
+const drops = getDropsForSection(sectionId);
+const layout = section.layout;
+---
+
+<style is:global>
+  .drop-field {
+    position: relative;
+    min-width: 0;
+  }
+
+  .drop-field__head {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    padding: 0 clamp(14px, 3vw, 28px) clamp(8px, 1.4vw, 14px);
+    max-width: 1560px;
+    margin: 0 auto;
+  }
+  .drop-field__label {
+    margin: 0;
+    font-family: "JetBrains Mono", monospace;
+    font-size: clamp(0.55rem, 0.85vw, 0.68rem);
+    font-weight: 500;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: rgba(207, 231, 255, 0.66);
+  }
+  .drop-field--natural .drop-field__label { color: rgba(199, 227, 177, 0.62); }
+  .drop-field__note {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.52rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(238, 233, 220, 0.32);
+  }
+
+  /* ── mosaic ── */
+  .drop-field__grid {
+    display: grid;
+    gap: clamp(8px, 1.2vw, 14px);
+    padding: 0 clamp(10px, 2vw, 22px);
+    max-width: 1560px;
+    margin: 0 auto;
+  }
+  .drop-field--mosaic .drop-field__grid {
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas:
+      "hero hero"
+      "a b";
+  }
+  .drop-field--mosaic .drop__slot:nth-child(1) { grid-area: hero; }
+  .drop-field--mosaic .drop__slot:nth-child(2) { grid-area: a; }
+  .drop-field--mosaic .drop__slot:nth-child(3) { grid-area: b; }
+
+  @media (min-width: 900px) {
+    .drop-field--mosaic .drop-field__grid {
+      grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr) minmax(0, 1fr);
+      grid-template-areas: "hero a b";
+      align-items: stretch;
+    }
+    .drop-field--mosaic .drop__slot:nth-child(1) .drop { height: 100%; aspect-ratio: auto; min-height: 320px; }
+    .drop-field--mosaic .drop__slot:nth-child(2),
+    .drop-field--mosaic .drop__slot:nth-child(3) { display: flex; }
+    .drop-field--mosaic .drop__slot:nth-child(2) .drop,
+    .drop-field--mosaic .drop__slot:nth-child(3) .drop { flex: 1; aspect-ratio: auto; }
+  }
+
+  /* ── strip: horizontal swipe field ── */
+  .drop-field--strip .drop-field__grid {
+    display: flex;
+    gap: clamp(8px, 1.2vw, 14px);
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(207, 231, 255, 0.25) transparent;
+    padding: 4px clamp(14px, 3vw, 28px) 12px;
+    max-width: none;
+    margin: 0;
+  }
+  .drop-field--strip .drop__slot {
+    flex: 0 0 clamp(200px, 30vw, 340px);
+    scroll-snap-align: start;
+  }
+  .drop-field--strip .drop {
+    height: 100%;
+    aspect-ratio: 3 / 4;
+  }
+  .drop-field--strip .drop__slot:nth-child(even) {
+    margin-top: clamp(10px, 2vw, 22px);
+  }
+
+  /* ── field: compact asymmetric row ── */
+  .drop-field--field .drop-field__grid {
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 720px) {
+    .drop-field--field .drop-field__grid {
+      grid-template-columns: 1.2fr 1fr 1fr;
+      align-items: end;
+    }
+    .drop-field--field .drop__slot:nth-child(1) .drop { aspect-ratio: 16 / 10; }
+    .drop-field--field .drop__slot:nth-child(2) .drop { aspect-ratio: 4 / 3; }
+    .drop-field--field .drop__slot:nth-child(3) .drop { aspect-ratio: 1 / 1; }
+  }
+
+  .drop__slot {
+    min-width: 0;
+    position: relative;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .drop-field--strip .drop-field__grid {
+      scroll-snap-type: none;
+    }
+  }
+</style>
+
+<section class={`drop-field drop-field--${layout}`} data-field={section.id} aria-label={section.label}>
+  <header class="drop-field__head">
+    <h2 class="drop-field__label">{section.label}</h2>
+    {section.note && <span class="drop-field__note" aria-hidden="true">{section.note}</span>}
+  </header>
+  <div class="drop-field__grid" role="list">
+    {drops.map((drop, i) => (
+      <div class="drop__slot" role="listitem">
+        <Drop drop={drop} index={i} />
+      </div>
+    ))}
+  </div>
+</section>

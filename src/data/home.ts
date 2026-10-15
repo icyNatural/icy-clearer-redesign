@@ -1,322 +1,329 @@
-// Homepage content manifest — single authoritative source for the visual identity page.
+// Homepage content manifest — single authoritative source for the living homepage.
 // Edit this file to update content. No layout code changes needed for normal updates.
+//
+// AUTHORING RULES
+// 1. Drop media into public/home/... (or use an external URL).
+// 2. Add/edit one entry below.
+// 3. Assign role / world / motion as needed. Done.
+//
+// NAVIGATION RULE
+// A drop NEVER navigates unless it has an explicit `href`.
+// Image drops focus/view only. Video drops play/focus only.
+// Placeholders never navigate. No inherited project links.
 
-export type MediaType = 'image' | 'video' | 'project' | 'link';
+export type DropType = 'image' | 'video';
 
-export type SlotSize = 'hero-wide' | 'wide' | 'square' | 'portrait' | 'tall' | 'compact' | 'feature';
+export type DropShape =
+  | 'hero-wide'
+  | 'panoramic'
+  | 'wide'
+  | 'square'
+  | 'portrait'
+  | 'tall'
+  | 'compact';
 
-export interface LayoutSlot {
+export type DropRole =
+  | 'hero'
+  | 'field'
+  | 'fragment'
+  | 'strip'
+  | 'signal'
+  | 'quiet';
+
+export type WorldSide = 'clearer' | 'natural' | 'shared';
+
+export type MotionMode = 'still' | 'drift' | 'parallax' | 'drag';
+
+export interface Drop {
   id: string;
-  size: SlotSize;
-  group: 'identity' | 'current' | 'highlights' | 'outside' | 'portfolio' | 'world' | 'social';
-  order: number;
+  type: DropType;
+  src: string;
+  poster?: string;
+  label?: string;
+  alt: string;
+  /** Explicit destination. Omit → non-interactive (view / play only). */
+  href?: string;
+  external?: boolean;
+  role?: DropRole;
+  shape?: DropShape;
+  world?: WorldSide;
+  motion?: MotionMode;
+  accent?: string;
+  glyph?: string;
 }
 
-export interface MediaItem {
+export interface DropSection {
   id: string;
-  type: MediaType;
-  slotId: string;          // references a layout slot
-  src: string;             // path under /home/... or external URL
-  poster?: string;         // for video
-  alt: string;
-  label?: string;          // short label
-  href?: string;           // destination on click
-  external?: boolean;      // opens in new tab
-  accent?: string;         // accent color for this item
-  tags?: string[];         // for filtering/grouping
-  glyph?: string;
+  label: string;
+  note?: string;
+  layout: 'mosaic' | 'strip' | 'field';
+  dropIds: string[];
 }
 
 export interface IdentityConfig {
   mark: string;
   title: string;
+  titleAmp?: string;
   subtitle: string;
-  accent: string;
+  tagline?: string;
   background?: string;
 }
 
-export interface SectionConfig {
+export interface DoorConfig {
   id: string;
-  label: string;
-  slotIds: string[];       // which slots belong to this section
+  title: string;
+  eyebrow: string;
+  description: string;
+  href: string;
+  external?: boolean;
+  image: string;
+  world: WorldSide;
+  glyph: string;
 }
 
 export interface PortfolioConfig {
   title: string;
+  eyebrow: string;
   description: string;
   href: string;
   external: boolean;
-  accent: string;
   glyph: string;
-  stats?: { label: string; value: string }[];
 }
 
-export interface WorldDoorwayConfig {
+export interface WorldPortalConfig {
   title: string;
+  eyebrow: string;
   description: string;
   href: string;
-  accent: string;
+  image: string;
   glyph: string;
 }
 
-export interface SocialConfig {
-  items: MediaItem[];      // edge/corner portals
+export interface SignalItem {
+  id: string;
+  label: string;
+  href: string;
+  external?: boolean;
+  glyph?: string;
+  accent?: string;
 }
 
 export const homeContent = {
-  // Layout slots — generic drop zones, not tied to specific projects
-  layoutSlots: [
-    // Identity (special — not a media slot)
-    { id: 'identity', size: 'hero-wide', group: 'identity', order: 0 },
-
-    // Current — "Going crazy on"
-    { id: 'drop-01', size: 'hero-wide', group: 'current', order: 1 },
-    { id: 'drop-02', size: 'square', group: 'current', order: 2 },
-    { id: 'drop-03', size: 'square', group: 'current', order: 3 },
-
-    // Highlights — "Worth noticing"
-    { id: 'drop-04', size: 'portrait', group: 'highlights', order: 4 },
-    { id: 'drop-05', size: 'wide', group: 'highlights', order: 5 },
-
-    // Outside — "Outside with it"
-    { id: 'drop-06', size: 'compact', group: 'outside', order: 6 },
-    { id: 'drop-07', size: 'compact', group: 'outside', order: 7 },
-    { id: 'drop-08', size: 'compact', group: 'outside', order: 8 },
-
-    // Portfolio (special)
-    { id: 'portfolio', size: 'feature', group: 'portfolio', order: 9 },
-
-    // World doorway (special)
-    { id: 'world', size: 'feature', group: 'world', order: 10 },
-  ] as LayoutSlot[],
-
-  // Section configuration — which slots belong to which labeled section
-  sections: [
-    { id: 'current', label: 'Going crazy on', slotIds: ['drop-01', 'drop-02', 'drop-03'] },
-    { id: 'highlights', label: 'Worth noticing', slotIds: ['drop-04', 'drop-05'] },
-    { id: 'outside', label: 'Outside with it', slotIds: ['drop-06', 'drop-07', 'drop-08'] },
-  ] as SectionConfig[],
-
-  // Content items — assigned to slots, not sections
-  items: [
-    // drop-01: hero-wide (current)
-    {
-      id: 'item-01',
-      type: 'project' as MediaType,
-      slotId: 'drop-01',
-      src: '/home/drops/drop-01.svg',
-      alt: 'Current focus — large visual piece',
-      label: 'Current focus',
-      href: 'https://photogression.icynatural.now',
-      external: true,
-      accent: '#cfe7ff',
-      tags: ['photography', 'live'],
-    },
-    // drop-02: square (current)
-    {
-      id: 'item-02',
-      type: 'project' as MediaType,
-      slotId: 'drop-02',
-      src: '/home/drops/drop-02.svg',
-      alt: 'Current system — energy engine',
-      label: 'Energy Engine',
-      href: 'https://phases.icynatural.now',
-      external: true,
-      accent: '#b88aff',
-      tags: ['systems', 'live'],
-    },
-    // drop-03: square (current)
-    {
-      id: 'item-03',
-      type: 'image' as MediaType,
-      slotId: 'drop-03',
-      src: '/home/drops/drop-03.svg',
-      alt: 'Active experiment',
-      label: 'Active experiment',
-      accent: '#7fe0c8',
-      tags: ['experiment', 'lab'],
-    },
-    // drop-04: portrait (highlights)
-    {
-      id: 'item-04',
-      type: 'project' as MediaType,
-      slotId: 'drop-04',
-      src: '/home/drops/drop-04.svg',
-      alt: 'Reality Capture — document archive',
-      label: 'Reality Capture',
-      href: 'https://reality.icynatural.now',
-      external: true,
-      accent: '#cfe7ff',
-      tags: ['archive', 'live'],
-    },
-    // drop-05: wide (highlights)
-    {
-      id: 'item-05',
-      type: 'project' as MediaType,
-      slotId: 'drop-05',
-      src: '/home/drops/drop-05.svg',
-      alt: 'Semantic Archaeology — word atlas',
-      label: 'Semantic Archaeology',
-      href: 'https://language.icynatural.now',
-      external: true,
-      accent: '#e8c07a',
-      tags: ['words', 'live'],
-    },
-    // drop-06: compact (outside)
-    {
-      id: 'item-06',
-      type: 'link' as MediaType,
-      slotId: 'drop-06',
-      src: '/home/drops/drop-06.svg',
-      alt: 'Portfolio — body of work',
-      label: 'Portfolio',
-      href: '/portfolio.html',
-      external: false,
-      accent: '#bfe4ff',
-      tags: ['portfolio', 'archive'],
-    },
-    // drop-07: compact (outside)
-    {
-      id: 'item-07',
-      type: 'link' as MediaType,
-      slotId: 'drop-07',
-      src: '/home/drops/drop-07.svg',
-      alt: 'Public presence — GitHub',
-      label: 'Public presence',
-      href: 'https://github.com/icyclear',
-      external: true,
-      accent: '#7fcbff',
-      tags: ['github', 'code'],
-    },
-    // drop-08: compact (outside)
-    {
-      id: 'item-08',
-      type: 'link' as MediaType,
-      slotId: 'drop-08',
-      src: '/home/drops/drop-08.svg',
-      alt: 'Media archive',
-      label: 'Media archive',
-      href: '/archive.html',
-      external: false,
-      accent: '#8fc98a',
-      tags: ['media', 'archive'],
-    },
-  ] as MediaItem[],
-
   identity: {
     mark: '✦',
     title: 'Icy Clearer',
-    subtitle: 'Personal visual identity · media · systems',
-    accent: '#cfe7ff',
+    titleAmp: '&',
+    subtitle: 'World 01 · Systems — World 02 · Forming',
+    tagline: 'See clearly. Become slowly.',
   } as IdentityConfig,
+
+  // ── Generic drops — assigned to sections, never tied to project routes ──
+  drops: [
+    {
+      id: 'drop-01',
+      type: 'image',
+      src: '/home/drops/drop-01.svg',
+      alt: 'Frozen ridge under a signal sky — current systems work',
+      label: 'Systems weather',
+      role: 'hero',
+      shape: 'hero-wide',
+      world: 'clearer',
+      motion: 'parallax',
+      accent: '#bfe4ff',
+      glyph: '❄',
+    },
+    {
+      id: 'drop-02',
+      type: 'image',
+      src: '/home/drops/drop-02.svg',
+      alt: 'Forest light shaft — field notes in progress',
+      label: 'Field notes',
+      role: 'field',
+      shape: 'square',
+      world: 'natural',
+      motion: 'drift',
+      accent: '#c7e3b1',
+      glyph: '❧',
+    },
+    {
+      id: 'drop-03',
+      type: 'image',
+      src: '/home/drops/drop-03.svg',
+      alt: 'Instrument glow — an active experiment',
+      label: 'Instrument',
+      role: 'field',
+      shape: 'square',
+      world: 'shared',
+      motion: 'parallax',
+      accent: '#9fd9ff',
+      glyph: '◎',
+    },
+    {
+      id: 'drop-04',
+      type: 'image',
+      src: '/home/drops/drop-04.svg',
+      alt: 'Portrait light in the trees — a moment worth noticing',
+      label: 'Worth keeping',
+      role: 'fragment',
+      shape: 'portrait',
+      world: 'natural',
+      motion: 'drag',
+      accent: '#d7e8b8',
+      glyph: '✤',
+    },
+    {
+      id: 'drop-05',
+      type: 'image',
+      src: '/home/drops/drop-05.svg',
+      alt: 'Ice lake horizon with constellation overlay',
+      label: 'Long horizon',
+      role: 'fragment',
+      shape: 'wide',
+      world: 'clearer',
+      motion: 'drift',
+      accent: '#bfe4ff',
+      glyph: '✦',
+    },
+    {
+      id: 'drop-06',
+      type: 'image',
+      src: '/home/drops/drop-06.svg',
+      alt: 'Public signal — code constellation over night sky',
+      label: 'Public signal',
+      role: 'signal',
+      shape: 'compact',
+      world: 'clearer',
+      href: 'https://github.com/icyclear',
+      external: true,
+      motion: 'still',
+      accent: '#7fcbff',
+      glyph: '⌘',
+    },
+    {
+      id: 'drop-07',
+      type: 'image',
+      src: '/home/drops/drop-07.svg',
+      alt: 'Moss and static — a quiet field recording',
+      label: 'Field recording',
+      role: 'quiet',
+      shape: 'compact',
+      world: 'natural',
+      motion: 'still',
+      accent: '#c7e3b1',
+      glyph: '∿',
+    },
+    {
+      id: 'drop-08',
+      type: 'image',
+      src: '/home/drops/drop-08.svg',
+      alt: 'Threshold where ice meets forest',
+      label: 'Threshold',
+      role: 'quiet',
+      shape: 'compact',
+      world: 'shared',
+      motion: 'still',
+      accent: '#a8d8c8',
+      glyph: '◈',
+    },
+  ] as Drop[],
+
+  sections: [
+    {
+      id: 'current',
+      label: 'Going crazy on',
+      note: 'live signal',
+      layout: 'mosaic',
+      dropIds: ['drop-01', 'drop-02', 'drop-03'],
+    },
+    {
+      id: 'noticing',
+      label: 'Worth noticing',
+      note: 'swipe',
+      layout: 'strip',
+      dropIds: ['drop-04', 'drop-05', 'drop-02', 'drop-08'],
+    },
+    {
+      id: 'outside',
+      label: 'Outside with it',
+      layout: 'field',
+      dropIds: ['drop-06', 'drop-07', 'drop-08'],
+    },
+  ] as DropSection[],
+
+  // ── Environmental doorways ──
+  doors: [
+    {
+      id: 'clear',
+      title: 'Clear',
+      eyebrow: 'Icy Clear OS',
+      description: 'Doctrine · models · instruments',
+      href: '/clear.html',
+      image: '/clearnatural.png',
+      world: 'clearer',
+      glyph: '❄',
+    },
+    {
+      id: 'natural',
+      title: 'Natural',
+      eyebrow: 'Icy Natural',
+      description: 'Forming · play · becoming',
+      href: '/natural.html',
+      image: '/clearnatural.png',
+      world: 'natural',
+      glyph: '❧',
+    },
+    {
+      id: 'worlds',
+      title: 'Two Worlds',
+      eyebrow: 'The boundary',
+      description: 'One life · two climates',
+      href: '/worlds.html',
+      image: '/clearnatural.png',
+      world: 'shared',
+      glyph: '◎',
+    },
+  ] as DoorConfig[],
 
   portfolio: {
     title: 'Portfolio',
-    description: 'A constellation of systems, archives, experiments, and builds. Not a resume — a living record of what I\'ve made.',
+    eyebrow: 'Living archive',
+    description: 'Systems, archives, experiments — a record of what I\'ve made, still accumulating.',
     href: 'https://github.com/icyclear',
     external: true,
-    accent: '#bfe4ff',
     glyph: '◇',
-    stats: [
-      { label: 'Systems', value: '8' },
-      { label: 'Works', value: '29' },
-    ],
   } as PortfolioConfig,
 
-  worldDoorway: {
+  worldPortal: {
     title: 'World',
-    description: 'My systems ecosystem — spatial map of every instrument, observatory, and connection.',
+    eyebrow: 'Enter my systems',
+    description: 'The spatial map — every instrument, observatory, and connection.',
     href: '/world.html',
-    accent: '#cfe7ff',
+    image: '/icy-portal.png',
     glyph: '◎',
-  } as WorldDoorwayConfig,
+  } as WorldPortalConfig,
 
-  social: {
-    items: [
-      {
-        id: 'social-github',
-        type: 'link' as MediaType,
-        slotId: 'social-github',
-        src: '/home/portals/github.svg',
-        alt: 'GitHub',
-        label: 'GitHub',
-        href: 'https://github.com/icyclear',
-        external: true,
-        accent: '#e8e4d8',
-        tags: ['code', 'external'],
-      },
-      {
-        id: 'social-twitter',
-        type: 'link' as MediaType,
-        slotId: 'social-twitter',
-        src: '/home/portals/twitter.svg',
-        alt: 'Twitter / X',
-        label: 'Twitter',
-        href: 'https://x.com/icyclear',
-        external: true,
-        accent: '#e8e4d8',
-        tags: ['social', 'external'],
-      },
-      {
-        id: 'social-instagram',
-        type: 'link' as MediaType,
-        slotId: 'social-instagram',
-        src: '/home/portals/instagram.svg',
-        alt: 'Instagram',
-        label: 'Instagram',
-        href: 'https://instagram.com/icyclear',
-        external: true,
-        accent: '#e8e4d8',
-        tags: ['social', 'external'],
-      },
-      {
-        id: 'social-discord',
-        type: 'link' as MediaType,
-        slotId: 'social-discord',
-        src: '/home/portals/discord.svg',
-        alt: 'Discord',
-        label: 'Discord',
-        href: 'https://discord.gg/icyclear',
-        external: true,
-        accent: '#7fcbff',
-        tags: ['community', 'external'],
-      },
-      {
-        id: 'social-youtube',
-        type: 'link' as MediaType,
-        slotId: 'social-youtube',
-        src: '/home/portals/youtube.svg',
-        alt: 'YouTube',
-        label: 'YouTube',
-        href: 'https://youtube.com/@icyclear',
-        external: true,
-        accent: '#ff4444',
-        tags: ['video', 'external'],
-      },
-    ],
-  } as SocialConfig,
+  // Only real, configured destinations. Never invent links.
+  signals: [
+    { id: 'github', label: 'GitHub', href: 'https://github.com/icyclear', external: true, glyph: '⌘', accent: '#e8e4d8' },
+    { id: 'twitter', label: 'Twitter', href: 'https://x.com/icyclear', external: true, glyph: '✕', accent: '#e8e4d8' },
+    { id: 'instagram', label: 'Instagram', href: 'https://instagram.com/icyclear', external: true, glyph: '◎', accent: '#e8e4d8' },
+    { id: 'discord', label: 'Discord', href: 'https://discord.gg/icyclear', external: true, glyph: '◈', accent: '#7fcbff' },
+    { id: 'youtube', label: 'YouTube', href: 'https://youtube.com/@icyclear', external: true, glyph: '▶', accent: '#ff6b6b' },
+  ] as SignalItem[],
 };
 
-// Helpers
-export function getSlot(slotId: string): LayoutSlot | undefined {
-  return homeContent.layoutSlots.find((s) => s.id === slotId);
+export function getDrop(dropId: string): Drop | undefined {
+  return homeContent.drops.find((d) => d.id === dropId);
 }
 
-export function getItemsForSlot(slotId: string): MediaItem[] {
-  return homeContent.items.filter((item) => item.slotId === slotId);
-}
-
-export function getItemsForSection(sectionId: string): MediaItem[] {
+export function getDropsForSection(sectionId: string): Drop[] {
   const section = homeContent.sections.find((s) => s.id === sectionId);
   if (!section) return [];
-  return homeContent.items.filter((item) => section.slotIds.includes(item.slotId));
+  return section.dropIds
+    .map((id) => getDrop(id))
+    .filter((d): d is Drop => Boolean(d));
 }
 
-export function getAllMediaItems(): MediaItem[] {
-  return [...homeContent.items, ...homeContent.social.items];
-}
-
-// Asset folder map for documentation
 export const HOME_ASSET_FOLDERS = {
   drops: '/home/drops/',
   portals: '/home/portals/',

@@ -1,0 +1,240 @@
+---
+// WorldDoors — environmental doorways into Clear / Natural / Two Worlds.
+// Image-backed portals, not footer links.
+
+import { homeContent } from '../../data/home';
+
+const { doors } = homeContent;
+
+// object-position per door so the shared split image crops to the right climate
+// (vertical position kept high to frame sky/canopy, not the baked lettering)
+const crop: Record<string, string> = {
+  clearer: '16% 14%',
+  natural: '84% 16%',
+  shared: 'center 44%',
+};
+---
+
+<style is:global>
+  .world-doors {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: clamp(8px, 1.2vw, 12px);
+    width: min(1560px, 100%);
+    margin: 0 auto;
+    padding: clamp(6px, 1vw, 10px) clamp(10px, 2vw, 22px);
+  }
+  @media (min-width: 760px) {
+    .world-doors {
+      grid-template-columns: 1fr 1fr 1.15fr;
+    }
+  }
+
+  .world-door {
+    position: relative;
+    display: block;
+    min-height: clamp(140px, 22vw, 210px);
+    overflow: hidden;
+    border-radius: 3px;
+    text-decoration: none;
+    color: #f4f9ff;
+    isolation: isolate;
+    background: #081018;
+    transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.5s ease;
+  }
+  .world-door:focus-visible {
+    outline: 2px solid #eaf6ff;
+    outline-offset: 3px;
+  }
+  .world-door:hover,
+  .world-door:focus-visible {
+    transform: translateY(-4px);
+    box-shadow: 0 24px 70px rgba(0, 0, 0, 0.5);
+  }
+
+  .world-door__media {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+  }
+  .world-door__media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform: scale(1.55);
+    transition: transform 1s cubic-bezier(0.22, 1, 0.36, 1), filter 0.5s ease;
+    filter: saturate(1.1) brightness(0.9);
+  }
+  /* zoom origin follows each climate's territory in the split image */
+  .world-door--clearer .world-door__media img { transform-origin: 8% 20%; transform: scale(2); }
+  .world-door--natural .world-door__media img { transform-origin: 92% 22%; transform: scale(2.05); }
+  .world-door--shared .world-door__media img { transform-origin: 50% 44%; transform: scale(1.4); }
+  .world-door:hover .world-door__media img,
+  .world-door:focus-visible .world-door__media img {
+    transform: scale(2.18);
+    filter: saturate(1.25) brightness(1.05);
+  }
+  .world-door--natural:hover .world-door__media img,
+  .world-door--natural:focus-visible .world-door__media img { transform: scale(2.22); }
+  .world-door--shared:hover .world-door__media img,
+  .world-door--shared:focus-visible .world-door__media img { transform: scale(1.54); }
+
+  .world-door__veil {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+  }
+  .world-door--clearer .world-door__veil {
+    background:
+      linear-gradient(115deg, rgba(7, 16, 28, 0.82) 10%, rgba(7, 16, 28, 0.25) 70%),
+      linear-gradient(180deg, transparent 30%, rgba(6, 9, 15, 0.7) 100%);
+  }
+  .world-door--natural .world-door__veil {
+    background:
+      linear-gradient(245deg, rgba(8, 16, 10, 0.82) 10%, rgba(8, 16, 10, 0.25) 70%),
+      linear-gradient(180deg, transparent 30%, rgba(6, 10, 7, 0.72) 100%);
+  }
+  .world-door--shared .world-door__veil {
+    background:
+      linear-gradient(180deg, rgba(7, 14, 18, 0.35), rgba(6, 10, 12, 0.78)),
+      radial-gradient(ellipse at 50% 50%, transparent 30%, rgba(6, 9, 15, 0.55) 100%);
+  }
+
+  .world-door__content {
+    position: relative;
+    z-index: 2;
+    height: 100%;
+    min-height: inherit;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    gap: 4px;
+    padding: clamp(14px, 2.4vw, 22px);
+  }
+
+  .world-door__eyebrow {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.5rem;
+    letter-spacing: 0.26em;
+    text-transform: uppercase;
+    color: rgba(240, 248, 255, 0.62);
+  }
+  .world-door--natural .world-door__eyebrow { color: rgba(238, 247, 227, 0.65); }
+
+  .world-door__title {
+    margin: 0;
+    font-family: "IM FELL English", "EB Garamond", serif;
+    font-weight: 400;
+    font-size: clamp(1.9rem, 4.6vw, 3.2rem);
+    line-height: 0.95;
+    letter-spacing: -0.02em;
+    text-shadow: 0 3px 28px rgba(0, 0, 0, 0.6);
+  }
+
+  .world-door__desc {
+    margin: 2px 0 0;
+    font-family: "JetBrains Mono", monospace;
+    font-size: clamp(0.52rem, 0.9vw, 0.62rem);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(235, 244, 250, 0.55);
+  }
+
+  .world-door__glyph {
+    position: absolute;
+    top: clamp(12px, 2vw, 18px);
+    right: clamp(12px, 2vw, 18px);
+    z-index: 2;
+    display: grid;
+    place-items: center;
+    width: clamp(30px, 3.4vw, 40px);
+    height: clamp(30px, 3.4vw, 40px);
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    background: rgba(6, 9, 15, 0.35);
+    color: #f4f9ff;
+    font-size: clamp(0.8rem, 1.4vw, 1.05rem);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+
+  .world-door__enter {
+    position: absolute;
+    left: clamp(14px, 2.4vw, 22px);
+    bottom: clamp(14px, 2.4vw, 22px);
+    z-index: 3;
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 10px 18px;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.55rem;
+    letter-spacing: 0.26em;
+    text-transform: uppercase;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.45);
+    color: #f4f9ff;
+    background: rgba(6, 9, 15, 0.3);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.35s ease, transform 0.35s ease, background 0.3s ease;
+  }
+  .world-door:hover .world-door__enter,
+  .world-door:focus-visible .world-door__enter {
+    opacity: 1;
+    transform: none;
+    background: rgba(6, 9, 15, 0.55);
+  }
+  /* keep an always-visible affordance on touch devices */
+  @media (hover: none) {
+    .world-door__enter {
+      opacity: 1;
+      transform: none;
+      font-size: 0.5rem;
+      padding: 10px 14px;
+    }
+    .world-door__content { padding-bottom: 60px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .world-door,
+    .world-door__media img,
+    .world-door__enter {
+      transition: none;
+    }
+    .world-door:hover { transform: none; }
+  }
+</style>
+
+<nav class="world-doors" aria-label="Climate doorways">
+  {doors.map((door) => (
+    <a
+      class={`world-door world-door--${door.world}`}
+      href={door.href}
+      target={door.external ? '_blank' : undefined}
+      rel={door.external ? 'noopener' : undefined}
+      aria-label={`Enter ${door.title} — ${door.description}`}
+    >
+      <div class="world-door__media" aria-hidden="true">
+        <img
+          src={door.image}
+          alt=""
+          loading="lazy"
+          decoding="async"
+          style={`object-position: ${crop[door.world] ?? 'center'};`}
+        />
+      </div>
+      <div class="world-door__veil" aria-hidden="true"></div>
+      <span class="world-door__glyph" aria-hidden="true">{door.glyph}</span>
+      <div class="world-door__content">
+        <span class="world-door__eyebrow">{door.eyebrow}</span>
+        <h2 class="world-door__title">{door.title}</h2>
+        <p class="world-door__desc">{door.description}</p>
+      </div>
+      <span class="world-door__enter" aria-hidden="true">Enter →</span>
+    </a>
+  ))}
+</nav>

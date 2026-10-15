@@ -1,1 +1,29 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900" fill="none"><rect width="1200" height="900" fill="#0a0f1a"/><rect x="55" y="55" width="1090" height="790" rx="12" stroke="#7fcbff" stroke-dasharray="16 16" opacity=".3"/><path d="m430 520 170-210 170 210-170 90-170-90Z" stroke="#7fcbff" opacity=".16"/><text x="600" y="735" text-anchor="middle" font-family="monospace" font-size="22" letter-spacing="7" fill="#7fcbff" opacity=".5">DROP-07 · COMPACT</text></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900" fill="none">
+<defs>
+  <linearGradient id="n67sky" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#dfe9c0"/><stop offset=".35" stop-color="#7fa05a"/><stop offset="1" stop-color="#152a14"/>
+  </linearGradient>
+  <radialGradient id="n67sun" cx=".55" cy=".18" r=".55">
+    <stop offset="0" stop-color="#f5f8d8" stop-opacity=".9"/><stop offset=".5" stop-color="#d8e8a8" stop-opacity=".35"/><stop offset="1" stop-color="#d8e8a8" stop-opacity="0"/>
+  </radialGradient>
+  <linearGradient id="n67shaft" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#f2f6cc" stop-opacity=".5"/><stop offset="1" stop-color="#f2f6cc" stop-opacity="0"/>
+  </linearGradient>
+</defs>
+<rect width="1200" height="900" fill="url(#n67sky)"/>
+<rect width="1200" height="900" fill="url(#n67sun)"/>
+<polygon points="504,0 696,0 936,900 240,900" fill="url(#n67shaft)" opacity=".55"/>
+<polygon points="840,0 936,0 1140,900 720,900" fill="url(#n67shaft)" opacity=".3"/>
+<polygon points="0,263 47,686 -46,686" fill="#0f2412"/><polygon points="378,145 438,692 318,692" fill="#0f2412"/><polygon points="340,378 374,682 307,682" fill="#0f2412"/><polygon points="513,366 549,698 476,698" fill="#0f2412"/><polygon points="1046,134 1106,685 985,685" fill="#0f2412"/><polygon points="68,370 102,684 33,684" fill="#0f2412"/><polygon points="1097,191 1151,685 1043,685" fill="#0f2412"/><polygon points="285,261 332,685 238,685" fill="#0f2412"/><polygon points="573,399 606,693 541,693" fill="#0f2412"/>
+<polygon points="0,390 41,757 -40,757" fill="#1a3a1c"/><polygon points="514,350 559,767 468,767" fill="#1a3a1c"/><polygon points="25,473 57,760 -6,760" fill="#1a3a1c"/><polygon points="229,520 256,768 201,768" fill="#1a3a1c"/><polygon points="927,323 975,760 878,760" fill="#1a3a1c"/><polygon points="789,533 815,773 763,773" fill="#1a3a1c"/><polygon points="319,429 356,763 282,763" fill="#1a3a1c"/>
+<polygon points="0,498 38,840 -37,840" fill="#0a1a0c"/><polygon points="971,603 997,845 944,845" fill="#0a1a0c"/><polygon points="962,464 1003,837 921,837" fill="#0a1a0c"/><polygon points="254,558 286,852 222,852" fill="#0a1a0c"/><polygon points="496,569 527,851 465,851" fill="#0a1a0c"/><polygon points="744,465 784,836 703,836" fill="#0a1a0c"/>
+<g fill="#eef7c8">
+  <circle cx="336.00000000000006" cy="315" r="5.4" opacity=".9"/>
+  <circle cx="744" cy="378" r="4.5" opacity=".7"/>
+  <circle cx="576" cy="252.00000000000003" r="3.6" opacity=".8"/>
+  <circle cx="900" cy="495.00000000000006" r="4.5" opacity=".6"/>
+  <circle cx="240" cy="540" r="3.6" opacity=".7"/>
+</g>
+<path d="M480 900 C 540 765, 660 738, 744 900" stroke="#c7e3b1" stroke-opacity=".25" stroke-width="9" fill="none"/>
+<text x="600" y="872" text-anchor="middle" font-family="monospace" font-size="13.333333333333334" letter-spacing="6" fill="#eef7c8" opacity=".25">FIELD RECORDING</text>
+</svg>
