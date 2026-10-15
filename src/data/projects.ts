@@ -37,7 +37,7 @@ export const artifacts: Entity[] = [
     atmosphere: 'aurora',
     route: 'https://phases.icynatural.now',
     external: false,
-    status: 'forming',
+    status: 'live',
     accent: '#b88aff',
     glyph: '◉',
     blurb: 'Energy Engine models rhythm, recovery, baseline shifts, and daily direction in one feedback loop. It is a physiological instrument for observing energy, recovery, and autonomic lead over time.',
@@ -249,7 +249,7 @@ export const lenses: Lens[] = [
 
   // ── Instruments — the working tools of the institute ──
   { id: 'icy-clear-os', title: 'Icy Clear OS', lens: 'Observe clearly.', philosophy: 'See clearly.', field: 'An operating system for observation. Models, modes, and frameworks for seeing what is actually happening before reaching for explanation.', url: '/clear.html', status: 'live', accent: '#bfe4ff', glyph: '❄', group: 'instruments' },
-  { id: 'energy-engine', title: 'Energy Engine', lens: 'Observe internal state.', philosophy: 'Understand your rhythms.', field: 'Energy Engine models rhythm, recovery, baseline shifts, and daily direction in one feedback loop. It is a physiological instrument for observing energy, recovery, and autonomic lead over time.', url: 'https://phases.icynatural.now', status: 'forming', accent: '#b88aff', glyph: '◉', group: 'instruments' },
+  { id: 'energy-engine', title: 'Energy Engine', lens: 'Observe internal state.', philosophy: 'Understand your rhythms.', field: 'Energy Engine models rhythm, recovery, baseline shifts, and daily direction in one feedback loop. It is a physiological instrument for observing energy, recovery, and autonomic lead over time.', url: 'https://phases.icynatural.now', status: 'live', accent: '#b88aff', glyph: '◉', group: 'instruments' },
   { id: 'inquiry-engine', title: 'Inquiry Engine', lens: 'Observe through inquiry.', philosophy: 'Questions reveal structure.', field: 'Inquiry Engine is a question-first system for investigating problems and revealing their underlying shape.', url: '#', status: 'forming', accent: '#7fcbff', glyph: '◎', group: 'instruments' },
   { id: 'reality-capture', title: 'Reality Capture', lens: 'Observe evidence.', philosophy: 'Capture before interpretation.', field: 'Reality Capture is a document capture and observation archive for saving evidence, notes, and real-world material before interpretation.', url: 'https://reality.icynatural.now', status: 'live', accent: '#cfe7ff', glyph: '✒', group: 'instruments' },
   { id: 'semantic-archaeology', title: 'Semantic Archaeology', lens: 'Observe words through time.', philosophy: 'Every word is a fossil.', field: 'Semantic Archaeology explores words through their histories, roots, semantic changes, contexts, and uses across fields. It treats language as something that can be excavated rather than reduced to a single dictionary definition.', url: 'https://language.icynatural.now', status: 'live', accent: '#e8c07a', glyph: '☰', group: 'instruments' },

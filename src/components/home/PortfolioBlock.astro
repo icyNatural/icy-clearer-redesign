@@ -1,0 +1,202 @@
+---
+// PortfolioBlock — creative portfolio object, not a boring professional section
+
+interface Props {
+  block: import('../../data/home').PortfolioConfig;
+}
+
+const { title, description, href, external, accent, glyph, stats = [] } = Astro.props.block;
+---
+
+<style is:global>
+  .portfolio-block {
+    --accent: #bfe4ff;
+    position: relative;
+    isolation: isolate;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: clamp(12px, 2vw, 22px);
+    padding: clamp(18px, 3vw, 28px);
+    border: 1px solid color-mix(in srgb, var(--accent) 22%, transparent);
+    border-radius: 14px;
+    background:
+      radial-gradient(ellipse at 20% 20%, color-mix(in srgb, var(--accent) 10%, transparent), transparent 45%),
+      radial-gradient(ellipse at 80% 80%, color-mix(in srgb, var(--accent) 6%, transparent), transparent 40%),
+      linear-gradient(180deg, rgba(8, 12, 20, 0.95), rgba(6, 9, 15, 1));
+    box-shadow:
+      0 16px 50px rgba(0, 0, 0, 0.4),
+      inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    overflow: hidden;
+  }
+  .portfolio-block::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(255,255,255,.02), transparent 30%, transparent 70%, rgba(255,255,255,.01));
+    pointer-events: none;
+  }
+
+  .portfolio-block__header {
+    position: relative;
+    z-index: 1;
+    display: contents;
+  }
+
+  .portfolio-block__glyph {
+    flex-shrink: 0;
+    display: grid;
+    place-items: center;
+    width: clamp(44px, 6vw, 60px);
+    height: clamp(44px, 6vw, 60px);
+    border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+    border-radius: 50%;
+    background: radial-gradient(circle, color-mix(in srgb, var(--accent) 14%, transparent), transparent 65%);
+    color: var(--accent);
+    font-size: clamp(1.3rem, 2vw, 1.8rem);
+    box-shadow: 0 0 30px color-mix(in srgb, var(--accent) 20%, transparent);
+  }
+
+  .portfolio-block__title-group {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .portfolio-block__eyebrow {
+    margin: 0 0 6px;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.52rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(207, 231, 255, 0.6);
+  }
+
+  .portfolio-block__title {
+    margin: 0;
+    font-family: "IM FELL English", "EB Garamond", serif;
+    font-size: clamp(1.45rem, 2.5vw, 2.15rem);
+    font-weight: 400;
+    line-height: 1.05;
+    color: #fff;
+  }
+
+  .portfolio-block__desc {
+    position: relative;
+    z-index: 1;
+    grid-column: 2 / 3;
+    margin: -8px 0 0;
+    max-width: 52ch;
+    font-size: clamp(0.82rem, 1.1vw, 0.98rem);
+    line-height: 1.4;
+    color: rgba(238, 233, 220, 0.78);
+  }
+
+  .portfolio-block__stats {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-column: 2 / 3;
+    grid-template-columns: repeat(2, auto);
+    justify-content: start;
+    gap: 14px;
+    padding-top: 4px;
+  }
+
+  .portfolio-block__stat {
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
+    gap: 5px;
+  }
+
+  .portfolio-block__stat-value {
+    font-family: "IM FELL English", "EB Garamond", serif;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.1;
+    color: #fff;
+  }
+
+  .portfolio-block__stat-label {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.5rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(207, 231, 255, 0.55);
+  }
+
+  .portfolio-block__cta {
+    position: relative;
+    z-index: 1;
+    grid-column: 3;
+    grid-row: 1 / span 3;
+    margin-top: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 16px;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.58rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: #fff;
+    text-decoration: none;
+    border: 1px solid var(--accent);
+    border-radius: 999px;
+    background: var(--accent);
+    transition: background 0.3s ease, border-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease;
+  }
+  .portfolio-block__cta:hover,
+  .portfolio-block__cta:focus-visible {
+    background: transparent;
+    color: var(--accent);
+    box-shadow: 0 0 30px color-mix(in srgb, var(--accent) 35%, transparent);
+    transform: translateY(-2px);
+  }
+  .portfolio-block__cta:active {
+    transform: translateY(0) scale(0.98);
+  }
+  .portfolio-block__cta:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+  .portfolio-block__cta span {
+    transition: transform 0.2s ease;
+  }
+  .portfolio-block__cta:hover span {
+    transform: translateX(4px);
+  }
+  @media (max-width: 640px) {
+    .portfolio-block { grid-template-columns: auto 1fr; }
+    .portfolio-block__desc { grid-column: 1 / -1; margin-top: 0; }
+    .portfolio-block__stats { display: none; }
+    .portfolio-block__cta { grid-column: 1 / -1; grid-row: auto; justify-content: center; }
+  }
+</style>
+
+<article class="portfolio-block" style={`--accent: ${accent};`}>
+  <header class="portfolio-block__header">
+    <span class="portfolio-block__glyph" aria-hidden="true">{glyph}</span>
+    <div class="portfolio-block__title-group">
+      <p class="portfolio-block__eyebrow">Living archive</p>
+      <h2 class="portfolio-block__title" id="portfolio-title">{title}</h2>
+    </div>
+  </header>
+
+  <p class="portfolio-block__desc">{description}</p>
+
+  {stats.length > 0 && (
+    <div class="portfolio-block__stats" aria-label="Portfolio stats">
+      {stats.map((stat) => (
+        <div class="portfolio-block__stat">
+          <span class="portfolio-block__stat-value">{stat.value}</span>
+          <span class="portfolio-block__stat-label">{stat.label}</span>
+        </div>
+      ))}
+    </div>
+  )}
+
+  <a class="portfolio-block__cta" href={href} target={external ? '_blank' : undefined} rel={external ? 'noopener' : undefined}>
+    Open portfolio <span aria-hidden="true">{external ? '↗' : '→'}</span>
+  </a>
+</article>

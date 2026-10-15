@@ -1,0 +1,178 @@
+---
+// WorldDoorway — strong visual doorway into the WORLD experience
+
+interface Props {
+  block: import('../../data/home').WorldDoorwayConfig;
+}
+
+const { title, description, href, accent, glyph } = Astro.props.block;
+---
+
+<style is:global>
+  .world-doorway {
+    --accent: #cfe7ff;
+    position: relative;
+    isolation: isolate;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: clamp(14px, 2vw, 24px);
+    padding: clamp(18px, 3vw, 28px);
+    border: 1px solid color-mix(in srgb, var(--accent) 25%, transparent);
+    border-radius: 14px;
+    background:
+      radial-gradient(ellipse at 50% 0%, color-mix(in srgb, var(--accent) 14%, transparent), transparent 55%),
+      radial-gradient(ellipse at 50% 100%, color-mix(in srgb, var(--accent) 8%, transparent), transparent 50%),
+      linear-gradient(180deg, rgba(10, 15, 26, 0.95), rgba(6, 9, 15, 1));
+    box-shadow:
+      0 0 60px color-mix(in srgb, var(--accent) 10%, transparent),
+      inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    overflow: hidden;
+    text-decoration: none;
+    color: inherit;
+  }
+  .world-doorway::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 22px;
+    background: linear-gradient(180deg, rgba(255,255,255,.03), transparent 40%, transparent 60%, rgba(255,255,255,.02));
+    pointer-events: none;
+  }
+  .world-doorway:hover,
+  .world-doorway:focus-visible {
+    border-color: var(--accent);
+    box-shadow:
+      0 0 80px color-mix(in srgb, var(--accent) 20%, transparent),
+      0 20px 60px rgba(0, 0, 0, 0.4),
+      inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  }
+  .world-doorway:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 4px;
+  }
+
+  .world-doorway__glyph {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    place-items: center;
+    width: clamp(48px, 7vw, 68px);
+    height: clamp(48px, 7vw, 68px);
+    border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
+    border-radius: 50%;
+    background: radial-gradient(circle, color-mix(in srgb, var(--accent) 18%, transparent), transparent 62%);
+    color: var(--accent);
+    font-size: clamp(1.5rem, 3vw, 2.2rem);
+    box-shadow:
+      0 0 50px color-mix(in srgb, var(--accent) 25%, transparent),
+      inset 0 0 40px color-mix(in srgb, var(--accent) 12%, transparent);
+    animation: doorway-pulse 4s ease-in-out infinite;
+  }
+  @keyframes doorway-pulse {
+    0%, 100% { transform: scale(1); box-shadow: 0 0 50px color-mix(in srgb, var(--accent) 25%, transparent), inset 0 0 40px color-mix(in srgb, var(--accent) 12%, transparent); }
+    50% { transform: scale(1.04); box-shadow: 0 0 80px color-mix(in srgb, var(--accent) 35%, transparent), inset 0 0 50px color-mix(in srgb, var(--accent) 20%, transparent); }
+  }
+
+  .world-doorway__content {
+    position: relative;
+    z-index: 1;
+    margin-top: 0;
+    text-align: left;
+    max-width: 36ch;
+  }
+
+  .world-doorway__title {
+    margin: 0 0 5px;
+    font-family: "IM FELL English", "EB Garamond", serif;
+    font-size: clamp(1.55rem, 3vw, 2.35rem);
+    font-weight: 400;
+    line-height: 1.05;
+    color: #fff;
+    text-shadow: 0 2px 24px rgba(0, 0, 0, 0.5);
+  }
+
+  .world-doorway__desc {
+    margin: 0;
+    font-family: "JetBrains Mono", monospace;
+    font-size: clamp(0.62rem, 1vw, 0.76rem);
+    line-height: 1.4;
+    color: rgba(238, 233, 220, 0.72);
+  }
+
+  .world-doorway__enter {
+    position: relative;
+    z-index: 1;
+    margin-top: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 16px;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.58rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--accent);
+    border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent);
+    border-radius: 999px;
+    background: rgba(207, 231, 255, 0.08);
+    transition: background 0.3s ease, border-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+  }
+  .world-doorway:hover .world-doorway__enter,
+  .world-doorway:focus-visible .world-doorway__enter {
+    background: color-mix(in srgb, var(--accent) 18%, transparent);
+    border-color: var(--accent);
+    color: #fff;
+    box-shadow: 0 0 24px color-mix(in srgb, var(--accent) 30%, transparent);
+  }
+  .world-doorway__enter span {
+    transition: transform 0.25s ease;
+  }
+  .world-doorway:hover .world-doorway__enter span {
+    transform: translateX(4px);
+  }
+
+  .world-doorway__orbit {
+    position: absolute;
+    inset: 10px;
+    border: 1px dashed color-mix(in srgb, var(--accent) 15%, transparent);
+    border-radius: 50%;
+    opacity: 0.4;
+    animation: orbit-spin 60s linear infinite;
+    pointer-events: none;
+  }
+  .world-doorway__orbit::before,
+  .world-doorway__orbit::after {
+    content: "";
+    position: absolute;
+    inset: clamp(20px, 4vw, 40px);
+    border: 1px dotted color-mix(in srgb, var(--accent) 10%, transparent);
+    border-radius: 50%;
+    animation: orbit-spin 90s linear infinite reverse;
+  }
+  @keyframes orbit-spin {
+    to { transform: rotate(360deg); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .world-doorway__glyph { animation: none; }
+    .world-doorway__orbit,
+    .world-doorway__orbit::before,
+    .world-doorway__orbit::after { animation: none; }
+  }
+  @media (max-width: 640px) {
+    .world-doorway { grid-template-columns: auto 1fr; }
+    .world-doorway__enter { grid-column: 1 / -1; justify-content: center; }
+    .world-doorway__orbit { display: none; }
+  }
+</style>
+
+<a class="world-doorway" href={href} style={`--accent: ${accent};`} aria-label={`Enter ${title}`}>
+  <div class="world-doorway__orbit" aria-hidden="true"></div>
+  <span class="world-doorway__glyph" aria-hidden="true">{glyph}</span>
+  <div class="world-doorway__content">
+    <h2 class="world-doorway__title" id="world-doorway-title">{title}</h2>
+    <p class="world-doorway__desc">{description}</p>
+    <span class="world-doorway__enter">Enter <span aria-hidden="true">→</span></span>
+  </div>
+</a>

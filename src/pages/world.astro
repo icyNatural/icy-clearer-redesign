@@ -1,0 +1,357 @@
+---
+import "../styles/foundation.css";
+import "../styles/home-world.css";
+import { artifacts, lenses } from "../data/projects";
+
+const HIDDEN_IDS = new Set([
+  "hoop-focus",
+  "sample", "beat", "timeline", "icy-natural", "language", "martial",
+  "phases", "motion", "symbol", "livingcycles", "reality", "formation",
+  "humanity", "woah", "scenario-states", "inquiry-engine",
+]);
+
+const statusLabel: Record<string, string> = {
+  live: "Live", forming: "Forming", lab: "In the lab", soon: "Awaited",
+  archived: "Archived", signal: "Signal",
+};
+
+type WorldNode = {
+  id: string; title: string; philosophy: string; field: string; route: string;
+  status: string; accent: string; glyph: string; group: string; atmosphere: string;
+  x: number; y: number; external: boolean;
+};
+
+const positions = [
+  [18, 22], [43, 17], [72, 25], [84, 52], [66, 72],
+  [37, 76], [14, 61], [50, 46], [28, 43], [76, 43],
+];
+
+const atmosphereById = new Map(artifacts.map((item) => [item.id, item.atmosphere]));
+const atmosphereByRoute = new Map(artifacts.map((item) => [item.route, item.atmosphere]));
+const externalById = new Map(artifacts.map((item) => [item.id, item.external]));
+const externalByRoute = new Map(artifacts.map((item) => [item.route, item.external]));
+
+const nodes: WorldNode[] = lenses
+  .filter((lens) => !HIDDEN_IDS.has(lens.id))
+  .map((lens, index) => ({
+    id: lens.id,
+    title: lens.title,
+    philosophy: lens.philosophy,
+    field: lens.field,
+    route: lens.url,
+    status: lens.status,
+    accent: lens.accent,
+    glyph: lens.glyph,
+    group: lens.group,
+    atmosphere: atmosphereById.get(lens.id) ?? atmosphereByRoute.get(lens.url) ?? "void",
+    x: positions[index % positions.length][0],
+    y: positions[index % positions.length][1],
+    external: externalById.get(lens.id) ?? externalByRoute.get(lens.url) ?? lens.url.startsWith("http"),
+  }));
+
+const nodeById = new Map(nodes.map((node) => [node.id, node]));
+const nodeByRoute = new Map(nodes.map((node) => [node.route, node]));
+const resolveNode = (id: string) => {
+  if (nodeById.has(id)) return nodeById.get(id);
+  const artifact = artifacts.find((item) => item.id === id);
+  return artifact ? nodeByRoute.get(artifact.route) : undefined;
+};
+
+const edges: { a: WorldNode; b: WorldNode }[] = [];
+const seenEdges = new Set<string>();
+artifacts.forEach((artifact) => {
+  artifact.connections?.forEach((connection) => {
+    const a = resolveNode(artifact.id);
+    const b = resolveNode(connection);
+    if (!a || !b || a.id === b.id) return;
+    const key = [a.id, b.id].sort().join("|");
+    if (seenEdges.has(key)) return;
+    seenEdges.add(key);
+    edges.push({ a, b });
+  });
+});
+
+const relatedIds = (id: string) => edges
+  .filter(({ a, b }) => a.id === id || b.id === id)
+  .map(({ a, b }) => a.id === id ? b.id : a.id);
+
+const workingObjects = nodes;
+const HIDDEN_INSTRUMENT_IDS = new Set(["inquiry-engine", "scenario-states", "hoop-focus", "icy-clear-os"]);
+const conceptModules = import.meta.glob("../pages/{models,modes,system,doctrines}/*.md", { eager: true });
+const conceptRows = Object.entries(conceptModules)
+  .map(([path, mod]) => {
+    const parts = path.split("/");
+    const dir = parts[parts.length - 2];
+    const slug = parts[parts.length - 1].replace(/\.md$/, "");
+    const fm = ((mod as { frontmatter?: Record<string, string> }).frontmatter ?? {});
+    const kind = dir === "system" ? "System" : dir === "doctrines" ? "Doctrine" : dir === "modes" ? "Mode" : "Model";
+    return { title: fm.title ?? slug, kind, status: fm.status ?? "", href: `/${dir}/${slug}.html` };
+  })
+  .sort((a, b) => a.kind.localeCompare(b.kind) || a.title.localeCompare(b.title));
+
+const instrumentRows = lenses
+  .filter((lens) => lens.group === "instruments" && !HIDDEN_INSTRUMENT_IDS.has(lens.id))
+  .map((lens) => ({
+    title: lens.title, kind: "Instrument", status: statusLabel[lens.status] ?? lens.status,
+    href: lens.url, external: externalById.get(lens.id) ?? externalByRoute.get(lens.url) ?? lens.url.startsWith("http"),
+  }));
+
+const defaultNode = nodes.find((node) => node.id === "photogression") ?? nodes[0];
+const today = new Date();
+const dayLabel = today.toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric" }).toUpperCase();
+---
+
+<html lang="en" data-mode="world" data-atmosphere="void">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Icy Clearer — See clearly. Become slowly.</title>
+  <meta name="description" content="Systems, technical work, visual experiments, and living creative projects by Icy." />
+  <meta name="theme-color" content="#06090f" />
+  <meta property="og:title" content="Icy Clearer — See clearly. Become slowly." />
+  <meta property="og:description" content="A living world of systems, technical work, visual experiments, and creative projects." />
+  <meta property="og:type" content="website" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="alternate icon" href="/favicon.ico" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=IM+FELL+English:ital@0;1&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet" />
+  <script is:inline>document.documentElement.classList.add('js');</script>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<div class="environment" aria-hidden="true">
+  <div class="environment__light environment__light--a"></div>
+  <div class="environment__light environment__light--b"></div>
+  <div class="environment__horizon"></div>
+  <div class="environment__grid"></div>
+  <div class="environment__grain"></div>
+</div>
+
+<header class="world-head">
+  <a class="identity" href="/" aria-label="Icy Clearer home">
+    <span class="identity__mark" aria-hidden="true">✦</span>
+    <span><strong>Icy Clearer</strong><small>Personal operating environment</small></span>
+  </a>
+  <div class="world-state" aria-label="Current state">
+    <span class="world-state__pulse" aria-hidden="true"></span>
+    <span>Field build {dayLabel}</span><span class="world-state__mode">World online</span>
+  </div>
+</header>
+
+<main id="main" class="world" tabindex="-1">
+  <section class="territory territory--world is-active" id="world" data-territory="world" aria-labelledby="world-title" tabindex="-1">
+    <div class="world-intro">
+      <p class="eyebrow">Systems · images · games · sound · experiments</p>
+      <h1 id="world-title"><span>See clearly.</span> <em>Become slowly.</em></h1>
+      <p class="world-intro__line">A living presentation of what I build, study, photograph, model, and make.</p>
+      <p class="world-intro__instruction"><span aria-hidden="true">◎</span> Focus an object. The world will move around it.</p>
+    </div>
+
+    <div class="atlas-shell" id="atlas-shell">
+      <svg class="atlas-lines" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+        <defs><filter id="line-glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation=".35" result="blur" /><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+        {edges.map(({ a, b }) => <line class="atlas-line" data-a={a.id} data-b={b.id} x1={a.x} y1={a.y} x2={b.x} y2={b.y} />)}
+      </svg>
+      <div class="orbit orbit--outer" aria-hidden="true"></div><div class="orbit orbit--inner" aria-hidden="true"></div>
+      <span class="axis-label axis-label--x" aria-hidden="true">creative field</span><span class="axis-label axis-label--y" aria-hidden="true">working systems</span>
+
+      {nodes.map((node, index) => (
+        <button
+          class="world-node"
+          type="button" data-node={node.id} data-title={node.title} data-philosophy={node.philosophy}
+          data-field={node.field} data-status={statusLabel[node.status] ?? node.status}
+          data-group={node.group === "observatory" ? "Project" : "Instrument"} data-route={node.route}
+          data-external={node.external ? "true" : "false"} data-accent={node.accent}
+          data-atmosphere={node.atmosphere} data-related={relatedIds(node.id).join(",")}
+          data-x={node.x} data-y={node.y}
+          aria-pressed="false" aria-controls="focus-dossier"
+          style={`--x:${node.x}%;--y:${node.y}%;--accent:${node.accent};--delay:${index * -0.7}s`}
+        >
+          <span class="world-node__halo" aria-hidden="true"></span><span class="world-node__glyph" aria-hidden="true">{node.glyph}</span>
+          <span class="world-node__label">{node.title}</span><span class="world-node__state">{statusLabel[node.status] ?? node.status}</span>
+        </button>
+      ))}
+    </div>
+
+    {defaultNode && (
+      <aside class="dossier" id="focus-dossier" aria-live="polite" aria-hidden="true" inert style={`--accent:${defaultNode.accent}`}>
+        <button class="dossier__close" type="button" data-clear-focus aria-label="Close project details"><span aria-hidden="true">×</span></button>
+        <a class="dossier__signal" data-dossier-glyph-link href={defaultNode.route} target={defaultNode.external ? "_blank" : undefined} rel={defaultNode.external ? "noopener" : undefined} aria-label={`Open ${defaultNode.title}`}><span aria-hidden="true">{defaultNode.glyph}</span></a>
+        <div class="dossier__meta"><span data-dossier-group>{defaultNode.group === "observatory" ? "Project" : "Instrument"}</span><span>·</span><span data-dossier-status>{statusLabel[defaultNode.status] ?? defaultNode.status}</span></div>
+        <h2 data-dossier-title>{defaultNode.title}</h2>
+        <p class="dossier__philosophy" data-dossier-philosophy>{defaultNode.philosophy}</p>
+        <p class="dossier__field" id="dossier-field-note" data-dossier-field>{defaultNode.field}</p>
+        <div class="dossier__relations" data-dossier-relations>{relatedIds(defaultNode.id).length ? `Connected · ${relatedIds(defaultNode.id).map((id) => nodeById.get(id)?.title).filter(Boolean).join(" · ")}` : "Independent object"}</div>
+        <div class="dossier__actions">
+          <a class="dossier__enter" data-dossier-link href={defaultNode.route} target={defaultNode.external ? "_blank" : undefined} rel={defaultNode.external ? "noopener" : undefined}>Enter <span data-link-mark aria-hidden="true">{defaultNode.external ? "↗" : "→"}</span></a>
+          <button class="dossier__more" type="button" data-more aria-controls="dossier-field-note" aria-expanded="false"><span aria-hidden="true">＋</span> Tap · field note</button>
+        </div>
+      </aside>
+    )}
+
+    <noscript><nav class="no-script-index" aria-label="Project links">{nodes.map((node) => <a href={node.route}>{node.glyph} {node.title}</a>)}</nav></noscript>
+  </section>
+
+  <section class="territory territory--objects" id="objects" data-territory="objects" aria-labelledby="objects-title" tabindex="-1">
+    <header class="territory-heading"><p class="eyebrow">Things you can hold</p><h2 id="objects-title">Working objects</h2><p>The same systems shown through their own interface language.</p></header>
+    <div class="object-deck-guide" aria-hidden="true">
+      <span class="object-deck-guide__instruction">Swipe <b>→</b></span>
+      <span class="object-deck-guide__count"><b data-object-current>01</b> / {String(workingObjects.length).padStart(2, "0")}</span>
+      <span class="object-deck-guide__marks">{workingObjects.map((_, index) => <i class={index === 0 ? "is-current" : ""} data-object-mark={index}></i>)}</span>
+    </div>
+    <div class="object-deck-wrap">
+    <div class="object-deck" data-object-deck>
+      {workingObjects.map((object, index) => {
+        return (
+          <article class={`object object--${object.atmosphere}`} style={`--accent:${object.accent};--object-index:${index}`}>
+            <div class="object__visual" aria-hidden="true"><span class="object__glyph">{object.glyph}</span><span class="object__ring object__ring--a"></span><span class="object__ring object__ring--b"></span><span class="object__scan"></span></div>
+            <div class="object__copy"><p class="object__meta">{object.group === "observatory" ? "Project" : "Instrument"} · {statusLabel[object.status]}</p><h3>{object.title}</h3><p>{object.field}</p><a href={object.route} target={object.external ? "_blank" : undefined} rel={object.external ? "noopener" : undefined}>Open {object.title} <span aria-hidden="true">{object.external ? "↗" : "→"}</span></a></div>
+          </article>
+        );
+      })}
+    </div>
+    </div>
+  </section>
+
+  <section class="territory territory--registry" id="registry" data-territory="registry" aria-labelledby="registry-title" tabindex="-1">
+    <header class="territory-heading"><p class="eyebrow">Direct access</p><h2 id="registry-title">Instruments + ICY CLEAR</h2><p>A conventional route list when you already know where you want to go.</p></header>
+    <div class="registry-grid">
+      <section class="registry-group" aria-labelledby="registry-instruments"><h3 id="registry-instruments">Instruments</h3><ul>
+        {instrumentRows.map((row) => <li>{row.href === "#" ? <span>{row.title}</span> : <a href={row.href} target={row.external ? "_blank" : undefined} rel={row.external ? "noopener" : undefined}>{row.title}</a>}<small>{row.status}</small><em>{row.kind}</em></li>)}
+      </ul></section>
+      <section class="registry-group" aria-labelledby="registry-clear"><h3 id="registry-clear">ICY CLEAR</h3><ul>
+        {conceptRows.map((row) => <li><a href={row.href}>{row.title}</a><small>{row.status}</small><em>{row.kind}</em></li>)}
+      </ul></section>
+    </div>
+    <nav class="environment-links" aria-label="Other Icy environments"><a href="/natural.html">Icy Natural <span aria-hidden="true">→</span></a><a href="/worlds.html">Two Worlds <span aria-hidden="true">→</span></a></nav>
+  </section>
+</main>
+
+<nav class="territory-dock" aria-label="Move through Icy Clearer">
+  <a class="dock-key is-active" data-mode="world" aria-current="page" href="#world"><span aria-hidden="true">◎</span><small>World</small></a>
+  <a class="dock-key" data-mode="objects" href="#objects"><span aria-hidden="true">◇</span><small>Objects</small></a>
+  <a class="dock-key" data-mode="registry" href="#registry"><span aria-hidden="true">☰</span><small>Routes</small></a>
+  <a class="dock-key dock-key--clear" href="/clear.html"><span aria-hidden="true">❄</span><small>Clear</small></a>
+</nav>
+
+<footer class="world-foot"><span>See clearly. Become slowly.</span><a href="/natural.html">Icy Natural</a><a href="/worlds.html">Two Worlds</a></footer>
+
+<script is:inline>
+  (function () {
+    var root = document.documentElement;
+    var shell = document.getElementById('atlas-shell');
+    var nodeButtons = Array.from(document.querySelectorAll('[data-node]'));
+    var lines = Array.from(document.querySelectorAll('.atlas-line'));
+    var dockKeys = Array.from(document.querySelectorAll('.dock-key[data-mode]'));
+    var territories = Array.from(document.querySelectorAll('[data-territory]'));
+    var dossier = document.getElementById('focus-dossier');
+    var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var activeId = '';
+    var objectDeck = document.querySelector('[data-object-deck]');
+    var objectDeckHinted = false;
+
+    function namesFor(ids) {
+      return ids.map(function (id) { return nodeButtons.find(function (node) { return node.dataset.node === id; })?.dataset.title; }).filter(Boolean);
+    }
+    function focusNode(node) {
+      if (!node || !dossier) return;
+      activeId = node.dataset.node || '';
+      var related = (node.dataset.related || '').split(',').filter(Boolean);
+      root.dataset.atmosphere = node.dataset.atmosphere || 'void';
+      root.style.setProperty('--active-accent', node.dataset.accent || '#cfe7ff');
+      nodeButtons.forEach(function (item) {
+        var id = item.dataset.node || ''; var active = id === activeId;
+        item.classList.toggle('is-active', active); item.classList.toggle('is-related', related.includes(id)); item.classList.toggle('is-muted', !active && !related.includes(id));
+        item.setAttribute('aria-pressed', active ? 'true' : 'false');
+      });
+      lines.forEach(function (line) { line.classList.toggle('is-active', line.dataset.a === activeId || line.dataset.b === activeId); });
+      dossier.style.setProperty('--accent', node.dataset.accent || '#cfe7ff');
+      dossier.querySelector('[data-dossier-title]').textContent = node.dataset.title || '';
+      dossier.querySelector('[data-dossier-philosophy]').textContent = node.dataset.philosophy || '';
+      dossier.querySelector('[data-dossier-field]').textContent = node.dataset.field || '';
+      dossier.querySelector('[data-dossier-group]').textContent = node.dataset.group || '';
+      dossier.querySelector('[data-dossier-status]').textContent = node.dataset.status || '';
+      var glyph = dossier.querySelector('.dossier__signal span'); if (glyph) glyph.textContent = node.querySelector('.world-node__glyph')?.textContent || '✦';
+      var relationCopy = namesFor(related); dossier.querySelector('[data-dossier-relations]').textContent = relationCopy.length ? 'Connected · ' + relationCopy.join(' · ') : 'Independent object';
+      var link = dossier.querySelector('[data-dossier-link]'); link.setAttribute('href', node.dataset.route || '#');
+      var glyphLink = dossier.querySelector('[data-dossier-glyph-link]'); glyphLink.setAttribute('href', node.dataset.route || '#'); glyphLink.setAttribute('aria-label', 'Open ' + (node.dataset.title || 'project'));
+      var external = node.dataset.external === 'true';
+      if (external) {
+        link.setAttribute('target', '_blank'); link.setAttribute('rel', 'noopener'); link.setAttribute('aria-label', 'Enter ' + (node.dataset.title || '') + ' — opens in a new tab');
+        glyphLink.setAttribute('target', '_blank'); glyphLink.setAttribute('rel', 'noopener'); glyphLink.setAttribute('aria-label', 'Open ' + (node.dataset.title || 'project') + ' — opens in a new tab');
+      } else {
+        link.removeAttribute('target'); link.removeAttribute('rel'); link.removeAttribute('aria-label');
+        glyphLink.removeAttribute('target'); glyphLink.removeAttribute('rel');
+      }
+      dossier.querySelector('[data-link-mark]').textContent = external ? '↗' : '→';
+      dossier.classList.add('is-visible'); dossier.classList.remove('is-expanded'); dossier.removeAttribute('inert'); dossier.setAttribute('aria-hidden', 'false');
+      dossier.querySelector('[data-more]').setAttribute('aria-expanded', 'false');
+    }
+    function clearFocus() {
+      activeId = ''; root.dataset.atmosphere = 'void';
+      nodeButtons.forEach(function (node) { node.classList.remove('is-active', 'is-related', 'is-muted'); node.setAttribute('aria-pressed', 'false'); });
+      lines.forEach(function (line) { line.classList.remove('is-active'); });
+      if (dossier) { dossier.classList.remove('is-visible', 'is-expanded'); dossier.setAttribute('inert', ''); dossier.setAttribute('aria-hidden', 'true'); dossier.querySelector('[data-more]').setAttribute('aria-expanded', 'false'); }
+    }
+    nodeButtons.forEach(function (node, index) {
+      node.addEventListener('click', function () { focusNode(node); });
+      node.addEventListener('keydown', function (event) {
+        if (!['ArrowRight', 'ArrowDown', 'ArrowLeft', 'ArrowUp'].includes(event.key)) return;
+        event.preventDefault();
+        var x = Number(node.dataset.x || 0), y = Number(node.dataset.y || 0);
+        var candidates = nodeButtons.filter(function (candidate) {
+          if (candidate === node) return false;
+          var cx = Number(candidate.dataset.x || 0), cy = Number(candidate.dataset.y || 0);
+          return event.key === 'ArrowRight' ? cx > x : event.key === 'ArrowLeft' ? cx < x : event.key === 'ArrowDown' ? cy > y : cy < y;
+        });
+        candidates.sort(function (a, b) {
+          var ax = Number(a.dataset.x || 0) - x, ay = Number(a.dataset.y || 0) - y;
+          var bx = Number(b.dataset.x || 0) - x, by = Number(b.dataset.y || 0) - y;
+          return Math.hypot(ax, ay) - Math.hypot(bx, by);
+        });
+        var next = candidates[0] || nodeButtons[(index + 1) % nodeButtons.length]; next.focus(); focusNode(next);
+      });
+    });
+    document.querySelector('[data-clear-focus]')?.addEventListener('click', clearFocus);
+    document.querySelector('[data-more]')?.addEventListener('click', function (event) { var expanded = dossier?.classList.toggle('is-expanded') || false; event.currentTarget.setAttribute('aria-expanded', expanded ? 'true' : 'false'); });
+    document.addEventListener('keydown', function (event) { if (event.key === 'Escape') clearFocus(); });
+    document.querySelector('[data-territory="world"]')?.addEventListener('click', function (event) {
+      if (!dossier?.classList.contains('is-visible')) return;
+      if (event.target.closest('#focus-dossier') || event.target.closest('[data-node]')) return;
+      clearFocus();
+    });
+    function setMode(mode) {
+      root.dataset.mode = mode;
+      territories.forEach(function (territory) { var active = territory.dataset.territory === mode; territory.classList.toggle('is-active', active); territory.setAttribute('aria-hidden', active ? 'false' : 'true'); });
+      dockKeys.forEach(function (key) { var active = key.dataset.mode === mode; key.classList.toggle('is-active', active); if (active) key.setAttribute('aria-current', 'page'); else key.removeAttribute('aria-current'); });
+      if (!reduceMotion) document.querySelector('[data-territory="' + mode + '"]')?.animate([{ opacity: 0, transform: 'translateY(12px) scale(.992)' }, { opacity: 1, transform: 'translateY(0) scale(1)' }], { duration: 420, easing: 'cubic-bezier(.22,1,.36,1)' });
+      if (mode === 'objects' && objectDeck && !objectDeckHinted && !reduceMotion) {
+        objectDeckHinted = true; objectDeck.classList.add('is-hinting');
+        window.setTimeout(function () { objectDeck.classList.remove('is-hinting'); }, 1100);
+      }
+    }
+    dockKeys.forEach(function (key) { key.addEventListener('click', function (event) { event.preventDefault(); var mode = key.dataset.mode || 'world'; setMode(mode); window.history.replaceState(null, '', '#' + mode); document.querySelector('[data-territory="' + mode + '"]')?.focus({ preventScroll: true }); }); });
+    if (objectDeck) {
+      var objectCards = Array.from(objectDeck.querySelectorAll('.object'));
+      var objectMarks = Array.from(document.querySelectorAll('[data-object-mark]'));
+      var objectCurrent = document.querySelector('[data-object-current]');
+      var updateObjectPosition = function () {
+        var deckLeft = objectDeck.getBoundingClientRect().left;
+        var nearest = 0, nearestDistance = Infinity;
+        objectCards.forEach(function (card, index) { var distance = Math.abs(card.getBoundingClientRect().left - deckLeft); if (distance < nearestDistance) { nearest = index; nearestDistance = distance; } });
+        if (objectCurrent) objectCurrent.textContent = String(nearest + 1).padStart(2, '0');
+        objectMarks.forEach(function (mark, index) { mark.classList.toggle('is-current', index === nearest); });
+      };
+      objectDeck.addEventListener('scroll', updateObjectPosition, { passive: true });
+      updateObjectPosition();
+    }
+    if (shell && !reduceMotion && window.matchMedia('(pointer:fine)').matches) {
+      shell.addEventListener('pointermove', function (event) { var rect = shell.getBoundingClientRect(); root.style.setProperty('--pointer-x', String((event.clientX - rect.left) / rect.width - .5)); root.style.setProperty('--pointer-y', String((event.clientY - rect.top) / rect.height - .5)); });
+      shell.addEventListener('pointerleave', function () { root.style.setProperty('--pointer-x', '0'); root.style.setProperty('--pointer-y', '0'); });
+    }
+  })();
+</script>
+</body>
+</html>
