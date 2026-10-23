@@ -1,0 +1,61 @@
+---
+import type { IntroItem } from "../../data/intro";
+import authored from '../../data/media/home.json';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+
+interface Props {
+  media: IntroItem;
+}
+
+const overrides = import.meta.env.DEV && import.meta.env.MODE === 'author' ? JSON.parse(readFileSync(resolve(process.cwd(), 'src/data/media/home.json'), 'utf8')) : authored;
+const saved = overrides.find((item: any) => item.id === `intro-${Astro.props.media.id}`) as any;
+const original = Astro.props.media;
+const replaced = saved && saved.src !== (original.src || original.poster || '/intro/primary.jpg');
+const media = saved && !saved.deleted ? { ...original, ...(replaced ? { kind: saved.kind === 'video' ? 'motion' : 'photo', src: saved.src, present: true } : {}), alt: saved.label || original.alt, label: saved.label || original.label } : original;
+const eager = media.priority !== undefined && media.priority >= 90;
+const ghostLabel = media.label ?? "PHOTO";
+---
+
+{media.kind === "highlight" && media.present ? (
+  <div
+    class="clip"
+    data-clip
+    data-video-id={media.videoId}
+    data-title={media.title}
+  >
+    <img class="clip__img" src={media.poster} alt={media.alt} loading="eager" decoding="async" />
+    <span class="clip__tint" aria-hidden="true"></span>
+    <span class="clip__badge">{media.label}</span>
+    <span class="clip__play" aria-hidden="true">▶</span>
+    <button class="clip__hit" type="button" aria-label={`Play ${media.title}, muted`}></button>
+  </div>
+) : media.present && media.kind === "motion" ? (
+  <figure class="media media--motion">
+    <video src={media.src} aria-label={media.alt} autoplay muted loop playsinline preload="metadata"></video>
+  </figure>
+) : media.present ? (
+  <figure class={`media media--${media.kind}`}>
+    <img
+      src={media.src}
+      alt={media.alt}
+      loading={eager ? "eager" : "lazy"}
+      decoding="async"
+      fetchpriority={eager ? "high" : "auto"}
+    />
+    {media.kind === "object" && media.label ? (
+      <figcaption class="media__chip">{media.label}</figcaption>
+    ) : null}
+  </figure>
+) : (
+  <div
+    class={`ghost${ghostLabel === "PORTRAIT" ? " ghost--figure" : ""}`}
+    role="img"
+    aria-label={`${ghostLabel} — photo to come`}
+  >
+    <span class="ghost__form" aria-hidden="true"></span>
+    <span class="ghost__label">{ghostLabel}</span>
+  </div>
+)}
+
+{saved?.href && <a class="room-piece__link" href={saved.href} aria-label={saved.label || 'Open media'}></a>}

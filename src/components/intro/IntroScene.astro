@@ -1,0 +1,50 @@
+---
+import "../../styles/intro.css";
+import MediaRoom from "../MediaRoom.astro";
+---
+
+<main class="intro" data-intro>
+  <div class="intro__paper" aria-hidden="true"></div>
+  <header class="intro__top">
+    <a class="intro__handle" href="https://www.instagram.com/icyclearer/" target="_blank" rel="noopener noreferrer">@icyclearer</a>
+  </header>
+  <!-- Starter pieces are data, not fixed editorial slots. The entire field is editable. -->
+  <MediaRoom room="home" overlay />
+  <h1 class="intro__accessible-title">Icy Clearer</h1>
+  <a class="intro__portal" href="/world.html" data-enter aria-label="Enter App World">
+    <span class="intro__portal-art" aria-hidden="true">
+      <span class="intro__window-depth"></span>
+      <span class="intro__window-glass"><span class="intro__window-light"></span></span>
+      <span class="intro__window-sill"></span>
+    </span>
+    <span class="intro__portal-caption"><span>See for yourself. Enter</span><span aria-hidden="true">→</span></span>
+  </a>
+  <div class="intro__veil" aria-hidden="true"></div>
+</main>
+
+<script is:inline>
+  (() => {
+    const root = document.querySelector('[data-intro]');
+    const enter = root?.querySelector('[data-enter]');
+    if (!root || !enter) return;
+    let leaving = false;
+    enter.addEventListener('click', (event) => {
+      // Only this link participates: media controls and author drags stay native.
+      if (document.body.classList.contains('is-authoring')) {
+        event.preventDefault();
+        return;
+      }
+      if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      event.preventDefault();
+      if (leaving) return;
+      leaving = true;
+      root.classList.add('is-leaving');
+      window.setTimeout(() => window.location.assign(enter.href), 620);
+    });
+    window.addEventListener('pageshow', () => {
+      leaving = false;
+      root.classList.remove('is-leaving');
+    });
+  })();
+</script>

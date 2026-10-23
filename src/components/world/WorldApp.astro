@@ -1,7 +1,6 @@
 ---
-// WorldApp — the full WORLD interface as a single shared component.
-// Rendered by both `/` (homepage) and `/world.html` (compat route).
-// One source, no divergent implementations.
+// WorldApp — the WORLD interface as a single shared component.
+// Rendered by `/world.html`. The `/` route is the intro collage.
 
 import "../../styles/foundation.css";
 import "../../styles/home-world.css";
@@ -120,22 +119,17 @@ const dayLabel = today.toLocaleDateString("en-US", { month: "short", day: "2-dig
 <header class="world-head">
   <a class="identity" href="/" aria-label="Icy Clearer home">
     <span class="identity__mark" aria-hidden="true">✦</span>
-    <span><strong>Icy Clearer</strong><small>Personal operating environment</small></span>
+    <span><strong>Icy Clearer</strong><small>App World</small></span>
   </a>
   <div class="world-state" aria-label="Current state">
     <span class="world-state__pulse" aria-hidden="true"></span>
-    <span>Field build {dayLabel}</span><span class="world-state__mode">World online</span>
+    <span>Field build {dayLabel}</span><span class="world-state__mode">App World online</span>
   </div>
 </header>
 
 <main id="main" class="world" tabindex="-1">
   <section class="territory territory--world is-active" id="world" data-territory="world" aria-labelledby="world-title" tabindex="-1">
-    <div class="world-intro">
-      <p class="eyebrow">Systems · images · games · sound · experiments</p>
-      <h1 id="world-title"><span>See clearly.</span> <em>Become slowly.</em></h1>
-      <p class="world-intro__line">A living presentation of what I build, study, photograph, model, and make.</p>
-      <p class="world-intro__instruction"><span aria-hidden="true">◎</span> Focus an object. The world will move around it.</p>
-    </div>
+    <h1 class="sr-only" id="world-title">App World</h1>
 
     <div class="atlas-shell" id="atlas-shell">
       <svg class="atlas-lines" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
@@ -221,13 +215,11 @@ const dayLabel = today.toLocaleDateString("en-US", { month: "short", day: "2-dig
 </main>
 
 <nav class="territory-dock" aria-label="Move through Icy Clearer">
-  <a class="dock-key is-active" data-mode="world" aria-current="page" href="#world"><span aria-hidden="true">◎</span><small>World</small></a>
+  <a class="dock-key is-active" data-mode="world" aria-current="page" href="#world"><span aria-hidden="true">◎</span><small>App World</small></a>
   <a class="dock-key" data-mode="objects" href="#objects"><span aria-hidden="true">◇</span><small>Objects</small></a>
   <a class="dock-key" data-mode="registry" href="#registry"><span aria-hidden="true">☰</span><small>Routes</small></a>
   <a class="dock-key dock-key--clear" href="/clear.html"><span aria-hidden="true">❄</span><small>Clear</small></a>
 </nav>
-
-<footer class="world-foot"><span>See clearly. Become slowly.</span><a href="/natural.html">Icy Natural</a><a href="/worlds.html">Two Worlds</a></footer>
 
 <script is:inline>
   (function () {

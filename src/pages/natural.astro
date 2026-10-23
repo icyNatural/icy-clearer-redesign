@@ -1,5 +1,7 @@
 ---
 import "../styles/foundation.css";
+import MediaRoom from '../components/MediaRoom.astro';
+import NaturalObjects from '../components/NaturalObjects.astro';
 ---
 <html lang="en">
 <head>
@@ -20,23 +22,23 @@ import "../styles/foundation.css";
 
 <main id="main" class="natural-shell" tabindex="-1">
   <section class="nat-hero">
-    <span class="nat-eyebrow">World 02 · Forming</span>
-    <h1 class="nat-title">Icy<br/>Natural.</h1>
-    <p class="nat-line">Become, slowly.</p>
-    <p class="nat-sub">A living archive of interests, play, and personal curation. The room is being built. Nothing here is final — that is the point.</p>
+    <span class="nat-eyebrow" data-author-id="natural-eyebrow" data-native-text>World 02 · Forming</span>
+    <h1 class="nat-title" data-author-id="natural-title" data-native-text>Icy<br/>Natural.</h1>
+    <p class="nat-line" data-author-id="natural-line" data-native-text>Become, slowly.</p>
+    <p class="nat-sub" data-author-id="natural-description" data-native-text>A living archive of interests, play, and personal curation. The room is being built. Nothing here is final — that is the point.</p>
   </section>
 
   <section class="nat-section">
     <div class="nat-section-head">
-      <p class="nat-section-title">Interests</p>
-      <span>Seven rooms · forming</span>
+      <p class="nat-section-title" data-author-id="natural-interests" data-native-text>Interests</p>
+      <span data-author-id="natural-interest-note" data-native-text>Seven rooms · forming</span>
     </div>
     <div class="nat-grid">
       {['Basketball','Gaming','Music','Philosophy','Drawing','Clothing','Discovery'].map((name) => (
-        <div class="nat-card" data-name={name}>
-          <span class="nat-tag">Interest</span>
-          <h3>{name}</h3>
-          <p>Soon.</p>
+        <div class="nat-card" data-name={name} data-author-id={`natural-card-${name.toLowerCase()}`}>
+          <span class="nat-tag" data-native-text>Interest</span>
+          <h3 data-native-text>{name}</h3>
+          <p data-native-text>Soon.</p>
         </div>
       ))}
     </div>
@@ -44,8 +46,8 @@ import "../styles/foundation.css";
 
   <section class="nat-section">
     <div class="nat-section-head">
-      <p class="nat-section-title">Seeds</p>
-      <span>Thoughts in formation</span>
+      <p class="nat-section-title" data-author-id="natural-seeds" data-native-text>Seeds</p>
+      <span data-author-id="natural-seed-note" data-native-text>Thoughts in formation</span>
     </div>
     <div class="nat-seed-list">
       {[
@@ -55,21 +57,23 @@ import "../styles/foundation.css";
         'Make the Invisible Pattern Visible',
         'Not Viral. Valuable.',
         'Curate From Real Inclination',
-      ].map((seed) => (
-        <div class="nat-seed">
+      ].map((seed, index) => (
+        <div class="nat-seed" data-author-id={`natural-seed-${index}`}>
           <span class="nat-seed-dot" aria-hidden="true"></span>
-          <span class="nat-seed-title">{seed}</span>
-          <span class="nat-seed-status">Forming</span>
+          <span class="nat-seed-title" data-native-text>{seed}</span>
+          <span class="nat-seed-status" data-native-text>Forming</span>
         </div>
       ))}
     </div>
   </section>
 
   <section class="nat-switch">
-    <p>Looking for the systems side?</p>
-    <a class="switch-pill" href="/clear.html">Enter Icy Clear →</a>
+    <p data-author-id="natural-switch-note" data-native-text>Looking for the systems side?</p>
+    <a class="switch-pill" href="/clear.html" data-author-id="natural-switch" data-native-text>Enter Icy Clear →</a>
   </section>
 </main>
+<MediaRoom room="natural" overlay />
+<NaturalObjects />
 
 <style is:global>
   :root {

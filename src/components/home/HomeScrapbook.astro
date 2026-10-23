@@ -1,0 +1,28 @@
+---
+import MediaRoom from '../MediaRoom.astro';
+import '../../styles/home-scrapbook.css';
+---
+<main class="home-scrapbook" aria-label="Icy Clearer — a living archive">
+  <header class="scrap-top">
+    <a href="https://www.instagram.com/icyclearer/" target="_blank" rel="noopener noreferrer">@ICYCLEARER</a>
+    <details class="scrap-menu">
+      <summary aria-label="Open navigation"><span></span><span></span><span></span></summary>
+      <nav aria-label="Rooms"><a href="/world.html">App World</a><a href="/natural.html">Natural</a><a href="/clear.html">Clear</a><a href="/worlds.html">Two Worlds</a></nav>
+    </details>
+  </header>
+  <p class="scrap-archive">a living archive<br />of interests,<br />play, and<br />personal curation.</p>
+  <h1 class="scrap-title"><span>ICY</span><span>CLEARER</span></h1>
+  <div class="scrap-signature" aria-label="Chad">Chad<svg viewBox="0 0 240 48" aria-hidden="true"><path d="M3 39 Q100 8 232 5 M57 38 Q91 27 115 26" /></svg></div>
+  <section class="scrap-intro" aria-label="Welcome">
+    <h2>Become, slowly.</h2>
+    <p>A space for ideas, experiments,<br />media, and everything in between.<br />Nothing here is final — that is<br />the point.</p>
+  </section>
+  <div class="scrap-sky-note" aria-hidden="true">SKY<br />NOTES<span>⟶</span></div>
+  <div class="scrap-ideas" aria-hidden="true">Ideas<br />Sketches<br />Notes<br />Fragments<span>⟶</span></div>
+  <div class="scrap-portal-note" aria-hidden="true">EXPLORE<br />MORE<br />WORLDS<span>⟶</span></div>
+  <div class="scrap-floor" aria-hidden="true"></div>
+  <section class="scrap-interest-heading" aria-label="Interests">
+    <h2>Interests</h2><span>— SEVEN ROOMS <b aria-hidden="true">⟶</b></span>
+  </section>
+  <MediaRoom room="home" overlay />
+</main>

@@ -1,0 +1,18 @@
+---
+const { item } = Astro.props;
+const value = (field: string) => item.overrides?.[field] ?? item[field] ?? (field === 'label' || field === 'alt' ? item.metadata?.title : item.metadata?.[field]) ?? '';
+const title = value('title');
+const label = value('label');
+const alt = value('alt') || title;
+const poster = item.metadata?.thumbnail;
+const link = item.href || (item.kind === 'link' ? item.metadata?.canonicalUrl || item.source : undefined);
+---
+{item.kind === 'text' ? <div class={`source-text text-font-${item.font || 'sans'} text-color-${item.color || 'dark'}`} style={`font-size:${item.textSize || 32}px;text-align:${item.align || 'left'}`}>{item.text}</div> : item.kind === 'youtube' ? <div class="source-youtube" data-youtube={item.videoId}>
+  {poster && <img src={poster} alt={alt} loading="lazy" draggable="false" />}
+  <button class="source-play" type="button" aria-label={`Play ${title || 'YouTube video'}`} data-play-youtube={item.videoId}>▶</button>
+</div> : item.kind === 'video' ? <video src={item.src || item.source} aria-label={alt || 'Film'} controls playsinline preload="metadata" />
+: item.kind === 'image' ? <img src={item.src || item.source} alt={alt} loading="lazy" draggable="false" />
+: item.kind === 'placeholder' ? <div class="source-paper" aria-label="Empty photo mat"></div>
+: <div class="source-fragment">{(item.src || poster) && <img src={item.src || poster} alt={alt} loading="lazy" />}<span>{item.kind === 'unavailable' ? 'Media unavailable locally' : title || item.metadata?.providerName || 'Open link'}{item.kind === 'unavailable' && <small>Attach your own photo or film in Local Studio.</small>}</span></div>}
+{label && item.kind !== 'placeholder' && <figcaption>{label}</figcaption>}
+{link && <a class="room-piece__link" href={link} aria-label={title || label || 'Open media'}></a>}

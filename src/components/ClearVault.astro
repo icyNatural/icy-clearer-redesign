@@ -1,0 +1,118 @@
+---
+const nodes = [
+  ['perception', '01', 'PERCEPTION', 'Seeing before naming', '◎'],
+  ['systems', '02', 'SYSTEMS', 'Story vs system', '⋈'],
+  ['time', '03', 'TIME', 'Reaction → pattern', '⌁'],
+  ['evidence', '04', 'EVIDENCE', 'Separate the layers', '▱'],
+  ['coherence', '05', 'COHERENCE', 'Order under constraint', '∴'],
+];
+---
+<a class="vault-skip" href="#doctrine-index">Skip to doctrine index</a>
+<header class="vault-header">
+  <a href="/" aria-label="Return to Home">ICY <b>CLEAR</b><span class="vault-mini"> / ACCESS NODE</span></a>
+  <a href="#doctrine-index" class="index-trigger">INDEX <span aria-hidden="true">↗</span></a>
+</header>
+<div class="frame-architecture" aria-hidden="true"><span>02 / FRAME RECONFIGURED</span><i></i><i></i><i></i></div>
+<main class="vault-main" id="vault">
+  <section class="access-node" aria-labelledby="access-title">
+    <div class="access-coordinates" aria-hidden="true">CL / 00.000<br />FRAME: UNRESOLVED<br />SIGNAL: PRESENT</div>
+    <div class="access-orbit" aria-hidden="true"><i></i><i></i><i></i><span>∴</span><small>OBSERVE / QUESTION / REFRAME</small></div>
+    <p class="eyebrow">PRIVATE ARCHIVE / PUBLIC ACCESS</p>
+    <h1 id="access-title">Reality arrives.<br /><em>The frame is yours.</em></h1>
+    <p class="access-description">An encoded doctrine environment.<br />Five instruments for examining the structures<br class="desktop-break" /> between an event and what you believe.</p>
+    <a href="#doctrine-index" class="access-link">ACCESS DOCTRINE INDEX <span aria-hidden="true">↓</span></a>
+    <div class="access-foot"><span>NO PRESCRIBED SEQUENCE</span><span>05 OPEN NODES</span></div>
+  </section>
+
+  <nav id="doctrine-index" class="doctrine-index" aria-label="Doctrine index">
+    <div class="index-heading"><h2>DOCTRINE INDEX</h2><span>SELECT A FRAME</span></div>
+    {nodes.map(([id,n,label,description,symbol]) => <a href={`#${id}`} data-node-link={id}><span class="node-n">{n}</span><span class="node-name">{label}<small>{description}</small></span><span class="node-symbol" aria-hidden="true">{symbol}</span><span class="node-status" data-status-for={id}>OPEN ↗</span></a>)}
+  </nav>
+
+  <article class="doctrine perception" id="perception" aria-labelledby="perception-title">
+    <header class="doctrine-heading"><p class="eyebrow">CL—01 / PERCEPTION</p><a href="#doctrine-index">INDEX ↑</a><h2 id="perception-title">Before the name.</h2><p>The event does not arrive with a caption.</p></header>
+    <div class="perception-layout">
+      <div class="instrument ambiguity" data-ambiguity>
+        <div class="instrument-meta"><span>LIVE POSSIBILITY FIELD</span><output data-observe-state>OBSERVING</output></div>
+        <svg viewBox="0 0 340 330" role="img" aria-label="A changing ambiguous form surrounded by alternate interpretations">
+          <defs><pattern id="perception-grid" width="34" height="33" patternUnits="userSpaceOnUse"><path d="M34 0H0V33" fill="none" stroke="#8ec4d4" stroke-opacity=".1" /></pattern></defs>
+          <rect width="340" height="330" fill="url(#perception-grid)" />
+          <circle cx="170" cy="165" r="110" class="reticle" /><path d="M170 35V65M170 265V295M40 165H70M270 165H300" class="reticle" />
+          <path data-form-ghost class="form-ghost" /><path data-form class="ambiguous-form" />
+          <g class="alternates" data-alternates><text x="22" y="80">warning / .28</text><text x="228" y="75">organism / .24</text><text x="20" y="266">accident / .22</text><text x="230" y="266">signal / .26</text></g>
+          <text x="170" y="315" text-anchor="middle" class="svg-code" data-form-label>EVENT ≠ LABEL</text>
+        </svg>
+        <div class="commit-log" aria-live="polite" data-commit-log>No commitment recorded. Interpretations remain available.</div>
+      </div>
+      <div class="instrument-controls">
+        <p class="eyebrow">01 / INTERPRETATION INTERFACE</p>
+        <div class="control-row"><button type="button" data-freeze aria-pressed="false">Freeze signal</button><button type="button" data-release>Release label</button></div>
+        <form data-label-form><label for="event-label">GIVE THE EVENT A NAME</label><div class="label-entry"><input id="event-label" name="label" maxlength="40" placeholder="A threat? A signal?" autocomplete="off" required /><button type="submit">Apply label ↵</button></div></form>
+        <div class="possibility-meter"><span data-possibility-text>4 illustrative interpretations / unresolved</span><div><i></i><i></i><i></i><i></i></div></div>
+        <p class="axiom">The label<br />is not the event.</p>
+        <p class="doctrine-note">Sensation becomes perception; perception becomes interpretation. Naming is a commitment inside that chain—not proof that the chain has disappeared. Rename the form. Notice what changes, and what does not.</p>
+        <small class="simulation-note">Possibility weights are illustrative, not measured probabilities.</small>
+      </div>
+    </div>
+    <a class="source-model" href="/models/seeing-before-naming.html"><span>UNSEAL MODEL / M—01</span><strong>Seeing Before Naming ↗</strong></a>
+  </article>
+
+  <article class="doctrine systems" id="systems" data-frame="unresolved" aria-labelledby="systems-title">
+    <header class="doctrine-heading"><p class="eyebrow">CL—02 / SYSTEMS</p><a href="#doctrine-index">INDEX ↑</a><h2 id="systems-title">Choose what counts.</h2><p>Same event. Different frame.</p></header>
+    <p class="handoff-event"><span>INCIDENT / 08:42</span>“The handoff failed.”</p>
+    <div class="frame-fork" role="group" aria-label="Choose a frame for the failed handoff">
+      <button type="button" data-frame-choice="story" aria-pressed="false"><span>FRAME A / COMPRESS</span><strong>STORY</strong><small>Find the one responsible.</small></button>
+      <button type="button" data-frame-choice="system" aria-pressed="false"><span>FRAME B / EXPAND</span><strong>SYSTEM</strong><small>Expose the conditions.</small></button>
+    </div>
+    <div class="frame-space instrument" data-frame-space>
+      <div class="frame-unresolved"><span aria-hidden="true">⋈</span><p>One incident.<br />Two architectures of explanation.</p></div>
+      <div class="story-space" hidden><span class="eyebrow">CONTEXT SUPPRESSED / SINGLE CAUSE</span><div class="culprit"><span>ACTOR 02</span><strong>THE OPERATOR</strong><small>“They did not care enough.”</small></div><div class="story-certainty"><span>NARRATIVE CERTAINTY</span><b>HIGH</b><i></i></div><p>One person becomes the explanation. Capacity, incentives and missing signals fall out of view.</p></div>
+      <div class="system-space" hidden>
+        <svg viewBox="0 0 340 300" role="img" aria-label="Failed handoff linked to actors, incentives, capacity, timing, missing signals and a retry loop">
+          <g class="network-lines"><path d="M170 145L58 55L270 50L285 236L66 245L48 150L170 145L270 50M58 55L66 245L170 145L285 236M48 150L270 50M170 145Q290 125 285 236Q156 291 66 245" /></g>
+          <g class="network-nodes"><circle cx="170" cy="145" r="37" /><circle cx="58" cy="55" r="7" /><circle cx="270" cy="50" r="7" /><circle cx="285" cy="236" r="7" /><circle cx="66" cy="245" r="7" /><circle cx="48" cy="150" r="7" /></g>
+          <g class="network-labels"><text x="170" y="141" text-anchor="middle">FAILED</text><text x="170" y="157" text-anchor="middle">HANDOFF</text><text x="22" y="32">ACTORS</text><text x="223" y="27">INCENTIVES</text><text x="242" y="263">CAPACITY</text><text x="37" y="273">TIMING</text><text x="10" y="176">SIGNALS</text><text x="221" y="184">RETRY ↻</text></g>
+        </svg>
+        <div class="system-facts"><p><b>ACTORS</b> Two teams, different definitions of “done”.</p><p><b>CONSTRAINT</b> Queue exceeds available capacity.</p><p><b>FEEDBACK</b> No receipt signal. Retries deepen the queue.</p></div>
+      </div>
+    </div>
+    <p class="frame-verdict" aria-live="polite" data-frame-verdict>Choose a frame. The incident stays the same.</p>
+    <p class="doctrine-note">A system frame does not erase responsibility. It asks which relationships make the outcome repeat, even when the people change. Narrative confidence and causal understanding are not the same thing.</p>
+    <a class="source-model" href="/models/replace-stories-with-systems.html"><span>ACCESS DEEP VIEW / M—02</span><strong>Replace Stories With Systems ↗</strong></a>
+  </article>
+
+  <article class="doctrine time" id="time" aria-labelledby="time-title">
+    <header class="doctrine-heading"><p class="eyebrow">CL—03 / TIME</p><a href="#doctrine-index">INDEX ↑</a><h2 id="time-title">Change the interval.</h2><p>An event is a slice. A pattern requires duration.</p></header>
+    <div class="instrument time-instrument"><div class="instrument-meta"><output data-time-kind>ISOLATED REACTION</output><span data-time-count>1 EVENT</span></div><svg data-time-svg viewBox="0 0 360 280" role="img" aria-label="Signal trace expanding from one reaction into repeated cycles"><g data-time-guides></g><path data-time-trend class="time-trend" /><path data-time-path class="time-signal" /><g data-time-points></g><path d="M180 20V250" class="time-cursor" /><text x="180" y="270" text-anchor="middle" class="svg-code">OBSERVATION WINDOW</text></svg><div class="time-readout" aria-live="polite" data-time-readout>One event. No recurrence can yet be established.</div></div>
+    <div class="time-controls"><label for="time-window">TIME WINDOW <output data-window-output>1 event</output></label><input id="time-window" data-time-window type="range" min="1" max="120" value="1" /><div class="scale-labels"><span>REACTION</span><span>CYCLE</span><span>SYSTEM</span></div><label for="time-scrub">SCRUB THE RECORD <output data-scrub-output>T + 120</output></label><input id="time-scrub" data-time-scrub type="range" min="120" max="600" value="120" /></div>
+    <p class="doctrine-note">The record stays fixed as you change scale. Repetition exposes a cycle; cycles reveal a drift. A recurring outcome suggests a generating structure—not merely another isolated mistake. A pattern is a question about mechanism, not proof of one.</p>
+    <small class="simulation-note">Synthetic trace / repeating load spikes with a rising baseline. Not empirical evidence.</small>
+    <a class="source-model" href="/models/from-reaction-to-pattern.html"><span>READ SOURCE MODEL / M—03</span><strong>From Reaction to Pattern ↗</strong></a>
+  </article>
+
+  <article class="doctrine evidence" id="evidence" aria-labelledby="evidence-title">
+    <header class="doctrine-heading"><p class="eyebrow">CL—04 / EVIDENCE</p><a href="#doctrine-index">INDEX ↑</a><h2 id="evidence-title">What survives the peel?</h2><p>A claim can look solid while standing on air.</p></header>
+    <div class="evidence-switches" role="group" aria-label="Evidence overlays"><button data-evidence-toggle="observed" aria-pressed="true">Observed</button><button data-evidence-toggle="inferred" aria-pressed="true">Inferred</button><button data-evidence-toggle="speculative" aria-pressed="true">Speculative</button><button data-evidence-toggle="unknown" aria-pressed="true">Unknown</button></div>
+    <div class="intelligence-file instrument"><div class="file-heading"><span>FILE / HF—0842</span><span>ILLUSTRATIVE CASE</span></div>
+      <section data-evidence-layer="observed" class="file-layer observed"><h3>01 / OBSERVED <span>RECORD</span></h3><p>08:42 — request sent.<br />09:17 — no receipt recorded.<br />09:24 — request sent again.</p><div class="evidence-trace" aria-hidden="true">●─────────●──●</div><small>The log records transmissions. It does not record intent.</small></section>
+      <section data-evidence-layer="inferred" class="file-layer inferred"><h3>02 / INFERRED <span>CONDITIONAL</span></h3><p>The handoff may have stalled between teams.</p><details><summary>Expose assumption</summary><p>Assumes the receipt log is complete and both teams share the same definition of a handoff.</p></details></section>
+      <section data-evidence-layer="speculative" class="file-layer speculative"><h3>03 / SPECULATIVE <span>UNVERIFIED</span></h3><p>“They ignored it because they did not care.”</p><div class="confidence-band"><i></i></div><small>Intent added. No supporting observation in this file.</small></section>
+      <section data-evidence-layer="unknown" class="file-layer unknown"><h3>04 / UNKNOWN <span>NOT IN RECORD</span></h3><button type="button" data-redaction aria-expanded="false">EXPOSE MISSING INFORMATION <span aria-hidden="true">▰ ▰</span></button><p data-missing hidden>Was the receiver available? Was the alert delivered? Was a receipt recorded elsewhere? Unknown is a boundary, not a blank to fill with certainty.</p></section>
+    </div>
+    <label class="peel-label" for="evidence-peel">PEEL INTERPRETATION <output data-peel-output>0% / ALL LAYERS</output></label><input id="evidence-peel" data-peel type="range" min="0" max="100" value="0" />
+    <p class="evidence-verdict" aria-live="polite" data-evidence-verdict>3 interpretive layers over 1 observed record.</p>
+    <p class="doctrine-note">Observation constrains an explanation; it does not automatically select one. Keep the record, the inference and the speculation distinct. Missing evidence is not evidence of a preferred story.</p>
+    <a class="source-model" href="/models/seeing-before-naming.html"><span>UNSEAL EVIDENCE / CLAIMS</span><strong>Observation, Interpretation & Unknowns ↗</strong></a>
+  </article>
+
+  <article class="doctrine coherence" id="coherence" aria-labelledby="coherence-title">
+    <header class="doctrine-heading"><p class="eyebrow">CL—05 / COHERENCE</p><a href="#doctrine-index">INDEX ↑</a><h2 id="coherence-title">Order has conditions.</h2><p>Hold the field. Watch what a boundary makes possible.</p></header>
+    <div class="instrument coherence-instrument"><div class="instrument-meta"><output data-field-state>UNCONSTRAINED</output><span>LOCAL / GLOBAL</span></div><svg data-coherence-svg viewBox="0 0 360 320" role="img" aria-label="Particle field that locally organizes under a held constraint"><circle data-constraint-ring cx="180" cy="160" r="92" class="constraint-ring" /><g data-particles></g></svg><div class="field-caption">TOUCH + HOLD / MOVE THE CONSTRAINT</div></div>
+    <div class="field-controls"><button class="hold-constraint" type="button" data-hold aria-pressed="false">Hold to apply constraint</button><button type="button" data-lock aria-pressed="false">Latch constraint</button></div>
+    <label class="peel-label" for="constraint-strength">CONSTRAINT STRENGTH <output data-strength-output>65%</output></label><input id="constraint-strength" data-strength type="range" min="10" max="100" value="65" />
+    <div class="field-metrics" aria-live="off"><div><span>LOCAL COHERENCE</span><output data-coherence-value>0%</output><i><b data-order-bar></b></i></div><div><span>DISORDER INDEX</span><output data-entropy-value>100%</output><i><b data-disorder-bar></b></i></div></div>
+    <p class="doctrine-note">A constraint aligns a local region; it does not stop the rest of the field from drifting. Release it and order decays. Coherence is maintained by conditions and feedback—not by the wish to remain clear.</p><small class="simulation-note">Conceptual particle model. Indices describe simulated alignment, not thermodynamic entropy.</small>
+    <a class="source-model" href="/models/coherence-vs-entropy.html"><span>UNSEAL MODEL / M—04</span><strong>Coherence vs. Entropy ↗</strong></a>
+  </article>
+  <noscript><p class="no-script">The instruments need JavaScript. Every source model and the written archive below remain accessible.</p></noscript>
+</main>

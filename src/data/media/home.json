@@ -1,0 +1,291 @@
+[
+  {
+    "id": "home-sky",
+    "kind": "placeholder",
+    "group": "sky",
+    "desktop": {
+      "x": 56,
+      "y": 4,
+      "width": 26,
+      "height": 10
+    },
+    "mobile": {
+      "x": 56,
+      "y": 4,
+      "width": 26,
+      "height": 10
+    },
+    "rotation": -9,
+    "z": 3,
+    "shape": "rectangle",
+    "fit": "cover",
+    "overrides": {
+      "alt": "Sky media slot"
+    }
+  },
+  {
+    "id": "home-moments",
+    "kind": "placeholder",
+    "group": "moments",
+    "desktop": {
+      "x": 67,
+      "y": 18,
+      "width": 33,
+      "height": 20.5
+    },
+    "mobile": {
+      "x": 67,
+      "y": 18,
+      "width": 33,
+      "height": 20.5
+    },
+    "rotation": 10,
+    "z": 3,
+    "shape": "rectangle",
+    "fit": "cover",
+    "overrides": {
+      "alt": "Moments media slot"
+    }
+  },
+  {
+    "id": "home-games",
+    "kind": "placeholder",
+    "group": "games",
+    "desktop": {
+      "x": 8,
+      "y": 39.7,
+      "width": 45,
+      "height": 12.1
+    },
+    "mobile": {
+      "x": 8,
+      "y": 39.7,
+      "width": 45,
+      "height": 12.1
+    },
+    "rotation": -11,
+    "z": 5,
+    "shape": "rectangle",
+    "fit": "cover",
+    "overrides": {
+      "alt": "Games media slot"
+    }
+  },
+  {
+    "id": "home-sketch",
+    "kind": "placeholder",
+    "group": "sketch",
+    "desktop": {
+      "x": 6,
+      "y": 55.1,
+      "width": 29,
+      "height": 14.8
+    },
+    "mobile": {
+      "x": 6,
+      "y": 55.1,
+      "width": 29,
+      "height": 14.8
+    },
+    "rotation": -9,
+    "z": 6,
+    "shape": "rectangle",
+    "fit": "cover",
+    "overrides": {
+      "alt": "Sketch media slot"
+    }
+  },
+  {
+    "id": "home-portal",
+    "kind": "placeholder",
+    "group": "portal",
+    "desktop": {
+      "x": 53.5,
+      "y": 41,
+      "width": 34,
+      "height": 27.3
+    },
+    "mobile": {
+      "x": 53.5,
+      "y": 41,
+      "width": 34,
+      "height": 27.3
+    },
+    "rotation": 0,
+    "z": 3,
+    "shape": "arch",
+    "fit": "cover",
+    "href": "/world.html",
+    "overrides": {
+      "alt": "Portal media slot"
+    }
+  },
+  {
+    "id": "home-basketball",
+    "kind": "placeholder",
+    "group": "interest-basketball",
+    "desktop": {
+      "x": 5.3,
+      "y": 75.9,
+      "width": 28.5,
+      "height": 8.9
+    },
+    "mobile": {
+      "x": 5.3,
+      "y": 75.9,
+      "width": 28.5,
+      "height": 8.9
+    },
+    "rotation": 0,
+    "z": 3,
+    "shape": "rectangle",
+    "fit": "cover",
+    "overrides": {
+      "alt": "Basketball media slot"
+    }
+  },
+  {
+    "id": "home-gaming",
+    "kind": "placeholder",
+    "group": "interest-gaming",
+    "desktop": {
+      "x": 36,
+      "y": 75.9,
+      "width": 28.5,
+      "height": 8.9
+    },
+    "mobile": {
+      "x": 36,
+      "y": 75.9,
+      "width": 28.5,
+      "height": 8.9
+    },
+    "rotation": 0,
+    "z": 3,
+    "shape": "rectangle",
+    "fit": "cover",
+    "overrides": {
+      "alt": "Gaming media slot"
+    }
+  },
+  {
+    "id": "home-music",
+    "kind": "placeholder",
+    "group": "interest-music",
+    "desktop": {
+      "x": 66.8,
+      "y": 75.9,
+      "width": 28.5,
+      "height": 8.9
+    },
+    "mobile": {
+      "x": 66.8,
+      "y": 75.9,
+      "width": 28.5,
+      "height": 8.9
+    },
+    "rotation": 0,
+    "z": 3,
+    "shape": "rectangle",
+    "fit": "cover",
+    "overrides": {
+      "alt": "Music media slot"
+    }
+  },
+  {
+    "id": "home-philosophy",
+    "kind": "placeholder",
+    "group": "interest-philosophy",
+    "desktop": {
+      "x": 5.3,
+      "y": 86,
+      "width": 20.8,
+      "height": 8.9
+    },
+    "mobile": {
+      "x": 5.3,
+      "y": 86,
+      "width": 20.8,
+      "height": 8.9
+    },
+    "rotation": 0,
+    "z": 3,
+    "shape": "rectangle",
+    "fit": "cover",
+    "overrides": {
+      "alt": "Philosophy media slot"
+    }
+  },
+  {
+    "id": "home-drawing",
+    "kind": "placeholder",
+    "group": "interest-drawing",
+    "desktop": {
+      "x": 28.3,
+      "y": 86,
+      "width": 20.8,
+      "height": 8.9
+    },
+    "mobile": {
+      "x": 28.3,
+      "y": 86,
+      "width": 20.8,
+      "height": 8.9
+    },
+    "rotation": 0,
+    "z": 3,
+    "shape": "rectangle",
+    "fit": "cover",
+    "overrides": {
+      "alt": "Drawing media slot"
+    }
+  },
+  {
+    "id": "home-clothing",
+    "kind": "placeholder",
+    "group": "interest-clothing",
+    "desktop": {
+      "x": 51.3,
+      "y": 86,
+      "width": 20.8,
+      "height": 8.9
+    },
+    "mobile": {
+      "x": 51.3,
+      "y": 86,
+      "width": 20.8,
+      "height": 8.9
+    },
+    "rotation": 0,
+    "z": 3,
+    "shape": "rectangle",
+    "fit": "cover",
+    "overrides": {
+      "alt": "Clothing media slot"
+    }
+  },
+  {
+    "id": "home-discovery",
+    "kind": "placeholder",
+    "group": "interest-discovery",
+    "desktop": {
+      "x": 74.3,
+      "y": 86,
+      "width": 20.8,
+      "height": 8.9
+    },
+    "mobile": {
+      "x": 74.3,
+      "y": 86,
+      "width": 20.8,
+      "height": 8.9
+    },
+    "rotation": 0,
+    "z": 3,
+    "shape": "rectangle",
+    "fit": "cover",
+    "overrides": {
+      "alt": "Discovery media slot"
+    }
+  }
+]

@@ -1,36 +1,9 @@
 ---
-import "../styles/foundation.css";
-import "../styles/icy-os.css";
 
-const principles = [
-  {
-    n: "01",
-    domain: "Perception",
-    law: "See before naming.",
-    chain: "event → sensation → label",
-    gloss: "The label arrives fast and pretends to be the thing. Insert a gap.",
-    href: "/models/seeing-before-naming.html",
-    link: "Seeing Before Naming",
-  },
-  {
-    n: "02",
-    domain: "Systems",
-    law: "Look beneath the story.",
-    chain: "narrative → mechanism → feedback",
-    gloss: "A story explains. A mechanism predicts. Only one of them can be tested.",
-    href: "/models/replace-stories-with-systems.html",
-    link: "Replace Stories with Systems",
-  },
-  {
-    n: "03",
-    domain: "Return",
-    law: "Coherence is maintained.",
-    chain: "drift → notice → adjust → return",
-    gloss: "You do not stay clear. You get clear again, on a shorter interval.",
-    href: "/models/clear-again.html",
-    link: "Clear Again",
-  },
-];
+
+import "../styles/clear.css";
+import MediaRoom from '../components/MediaRoom.astro';
+import ClearVault from '../components/ClearVault.astro';
 
 // The written layer is read from the pages themselves — never listed by hand.
 const pieceModules = import.meta.glob("../pages/{models,modes,system,doctrines}/*.md", {
@@ -81,59 +54,53 @@ const numbered = (list: typeof pieces): Piece[] =>
     href: p.href,
   }));
 
-const models   = numbered(pieces.filter((p) => p.dir === "models"));
-const modes    = numbered(pieces.filter((p) => p.dir === "modes"));
-const systems  = numbered(pieces.filter((p) => p.dir === "system"));
+const models = numbered(pieces.filter((p) => p.dir === "models"));
+const modes = numbered(pieces.filter((p) => p.dir === "modes"));
+const systems = numbered(pieces.filter((p) => p.dir === "system"));
 const doctrines = numbered(pieces.filter((p) => p.dir === "doctrines"));
 
 const paths = [
   {
-    n: "R-01",
     intent: "I noticed something.",
     route: "Seeing Before Naming · Observation log",
     href: "/models/seeing-before-naming.html",
   },
   {
-    n: "R-02",
     intent: "I am reacting strongly.",
     route: "State modes · Energy Engine · Clear Again",
     href: "/modes/parasympathetic-lead-mode.html",
   },
   {
-    n: "R-03",
     intent: "I want to understand a pattern.",
     route: "Reaction to Pattern · Systems",
     href: "/models/from-reaction-to-pattern.html",
   },
   {
-    n: "R-04",
     intent: "I need to make a decision.",
     route: "Clear first, then decide · Trajectory",
     href: "/doctrines/clear-first-then-decide.html",
   },
   {
-    n: "R-05",
     intent: "I want to inspect my state.",
     route: "Energy Engine · Coherence vs Entropy",
     href: "https://phases.icynatural.now",
     external: true,
   },
   {
-    n: "R-06",
     intent: "I want to investigate an idea.",
     route: "Questions are seeking devices · Mind → system",
     href: "/doctrines/questions-are-seeking-devices.html",
   },
 ];
----
 
+---
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Icy Clear — See clearly before you explain.</title>
-  <meta name="description" content="A quiet perception system: three operating principles, then the written layer — models, modes, systems, doctrines — and routes by intent." />
-  <meta name="theme-color" content="#f2f6f9" />
+  <meta name="description" content="Five interactive instruments for seeing before explaining. Perception, systems, time, evidence and coherence — an encoded doctrine environment." />
+  <meta name="theme-color" content="#080e13" />
   <meta property="og:title" content="Icy Clear" />
   <meta property="og:description" content="See clearly before you explain." />
   <meta property="og:type" content="website" />
@@ -142,370 +109,126 @@ const paths = [
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400&family=IBM+Plex+Mono:wght@400&family=IBM+Plex+Sans:wght@400;500&display=swap" />
 </head>
 
-<body class="icy">
+<body class="clear-vault">
+<ClearVault />
+<div class="vault-archive">
+  <section class="index" id="index" data-sec="index" aria-labelledby="indexq">
+    <header class="ex__head">
+      <p class="eyebrow">SOURCE ARCHIVE / UNABRIDGED</p>
+      <h2 class="ex__q" id="indexq">The written record.</h2>
+    </header>
+    <p class="note index__note">Models, operating modes and doctrine. No unlock required.</p>
 
-<a class="skip-link" href="#main">Skip to content</a>
+    <div class="folds">
+      <details class="fold" id="models">
+        <summary class="fold__sum"><span class="label">Models</span><span class="idx">{models.length}</span></summary>
+        <div class="fold__body">
+          <ul class="rows rows--tight">
+            {models.map((m) => (
+              <li class="row-item">
+                <a class="row row--link" href={m.href}>
+                  <span class="row__n idx">{m.n}</span>
+                  <span class="row__body">
+                    <span class="label">{m.label}</span>
+                    <span class="d-md row__head">{m.title}</span>
+                    {m.chain && <span class="chain">{m.chain}</span>}
+                    <span class="read row__read">{m.read}</span>
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </details>
 
-<header class="head">
-  <a class="head__back" href="/">Icy</a>
-  <span class="head__title label">Icy Clear</span>
-</header>
+      <details class="fold" id="modes">
+        <summary class="fold__sum"><span class="label">Modes</span><span class="idx">{modes.length}</span></summary>
+        <div class="fold__body">
+          <ul class="rows rows--tight">
+            {modes.map((m) => (
+              <li class="row-item">
+                <a class="row row--link" href={m.href}>
+                  <span class="row__n idx">{m.n}</span>
+                  <span class="row__body">
+                    <span class="label">{m.label}</span>
+                    <span class="d-md row__head">{m.title}</span>
+                    {m.chain && <span class="chain">{m.chain}</span>}
+                    <span class="read row__read">{m.read}</span>
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </details>
 
-<main id="main" class="stack" tabindex="-1">
+      <details class="fold" id="systems">
+        <summary class="fold__sum"><span class="label">Systems</span><span class="idx">{systems.length}</span></summary>
+        <div class="fold__body">
+          <ul class="rows rows--tight">
+            {systems.map((s) => (
+              <li class="row-item">
+                <a class="row row--link" href={s.href}>
+                  <span class="row__n idx">{s.n}</span>
+                  <span class="row__body">
+                    <span class="label">{s.label}</span>
+                    <span class="d-md row__head">{s.title}</span>
+                    {s.chain && <span class="chain">{s.chain}</span>}
+                    <span class="read row__read">{s.read}</span>
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </details>
 
-  <section id="home" class="band band--entry" data-sec="home">
-    <img class="mark" src="/icy-logo.png" alt="" aria-hidden="true" />
-    <h1 class="d-xl hero__line">See clearly<br />before you explain.</h1>
-    <p class="note hero__gloss">Explanation is fast, cheap, and usually early. This is the layer that runs before it.</p>
-    <a class="enter" href="#principles">Enter <span aria-hidden="true">→</span></a>
-  </section>
+      <details class="fold" id="doctrines">
+        <summary class="fold__sum"><span class="label">Doctrines</span><span class="idx">{doctrines.length}</span></summary>
+        <div class="fold__body">
+          <ul class="rows rows--tight">
+            {doctrines.map((d) => (
+              <li class="row-item">
+                <a class="row row--link" href={d.href}>
+                  <span class="row__n idx">{d.n}</span>
+                  <span class="row__body">
+                    <span class="label">{d.label}</span>
+                    <span class="d-md row__head">{d.title}</span>
+                    {d.chain && <span class="chain">{d.chain}</span>}
+                    <span class="read row__read">{d.read}</span>
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </details>
 
-  <section id="principles" class="band" data-sec="principles">
-    <div class="band__head">
-      <span class="idx">01</span>
-      <h2 class="d-md">Principles</h2>
+      <details class="fold" id="paths">
+        <summary class="fold__sum"><span class="label">Paths by intent</span><span class="idx">{paths.length}</span></summary>
+        <div class="fold__body">
+          <ul class="paths">
+            {paths.map((p) => (
+              <li>
+                <a
+                  class="path"
+                  href={p.href}
+                  target={p.external ? "_blank" : undefined}
+                  rel={p.external ? "noopener" : undefined}
+                >
+                  <span class="path__intent">{p.intent}</span>
+                  <span class="path__route">{p.route}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </details>
     </div>
-
-    <ol class="rows">
-      {principles.map((p) => (
-        <li class="row-item">
-          <a class="row row--link" href={p.href}>
-            <span class="row__n idx">{p.n}</span>
-            <span class="row__body">
-              <span class="label">{p.domain}</span>
-              <span class="d-lg row__head">{p.law}</span>
-              <span class="chain">{p.chain}</span>
-              <span class="read row__read">{p.gloss}</span>
-              <span class="quiet-link">{p.link}</span>
-            </span>
-          </a>
-        </li>
-      ))}
-    </ol>
   </section>
-
-  <section id="models" class="band" data-sec="models">
-    <div class="band__head">
-      <span class="idx">02</span>
-      <h2 class="d-md">Models</h2>
-    </div>
-
-    <ul class="rows rows--tight">
-      {models.map((m) => (
-        <li class="row-item">
-          <a class="row row--link" href={m.href}>
-            <span class="row__n idx">{m.n}</span>
-            <span class="row__body">
-              <span class="label">{m.label}</span>
-              <span class="d-md row__head">{m.title}</span>
-              {m.chain && <span class="chain">{m.chain}</span>}
-              <span class="read row__read">{m.read}</span>
-            </span>
-          </a>
-        </li>
-      ))}
-    </ul>
-  </section>
-
-  <section id="modes" class="band" data-sec="modes">
-    <div class="band__head">
-      <span class="idx">03</span>
-      <h2 class="d-md">Modes</h2>
-    </div>
-
-    <ul class="rows rows--tight">
-      {modes.map((m) => (
-        <li class="row-item">
-          <a class="row row--link" href={m.href}>
-            <span class="row__n idx">{m.n}</span>
-            <span class="row__body">
-              <span class="label">{m.label}</span>
-              <span class="d-md row__head">{m.title}</span>
-              {m.chain && <span class="chain">{m.chain}</span>}
-              <span class="read row__read">{m.read}</span>
-            </span>
-          </a>
-        </li>
-      ))}
-    </ul>
-  </section>
-
-  <section id="systems" class="band" data-sec="systems">
-    <div class="band__head">
-      <span class="idx">04</span>
-      <h2 class="d-md">Systems</h2>
-    </div>
-
-    <ul class="rows rows--tight">
-      {systems.map((s) => (
-        <li class="row-item">
-          <a class="row row--link" href={s.href}>
-            <span class="row__n idx">{s.n}</span>
-            <span class="row__body">
-              <span class="label">{s.label}</span>
-              <span class="d-md row__head">{s.title}</span>
-              {s.chain && <span class="chain">{s.chain}</span>}
-              <span class="read row__read">{s.read}</span>
-            </span>
-          </a>
-        </li>
-      ))}
-    </ul>
-  </section>
-
-  <section id="doctrines" class="band" data-sec="doctrines">
-    <div class="band__head">
-      <span class="idx">05</span>
-      <h2 class="d-md">Doctrines</h2>
-    </div>
-
-    <ul class="rows rows--tight">
-      {doctrines.map((d) => (
-        <li class="row-item">
-          <a class="row row--link" href={d.href}>
-            <span class="row__n idx">{d.n}</span>
-            <span class="row__body">
-              <span class="label">{d.label}</span>
-              <span class="d-md row__head">{d.title}</span>
-              {d.chain && <span class="chain">{d.chain}</span>}
-              <span class="read row__read">{d.read}</span>
-            </span>
-          </a>
-        </li>
-      ))}
-    </ul>
-  </section>
-
-  <section id="paths" class="band" data-sec="paths">
-    <div class="band__head">
-      <span class="idx">06</span>
-      <h2 class="d-md">Paths</h2>
-    </div>
-
-    <ul class="paths">
-      {paths.map((p) => (
-        <li>
-          <a
-            class="path"
-            href={p.href}
-            target={p.external ? "_blank" : undefined}
-            rel={p.external ? "noopener" : undefined}
-          >
-            <span class="path__intent">{p.intent}</span>
-            <span class="path__route">{p.route}</span>
-          </a>
-        </li>
-      ))}
-    </ul>
-  </section>
-
-
-  <footer class="colophon">
-    <span class="idx">Icy Clear</span>
-    <span class="idx">See clearly before you explain.</span>
-  </footer>
-</main>
-
-<nav class="nav" aria-label="Sections">
-  <a href="#home" data-sec="home" class="nav__key is-active">Home</a>
-  <a href="#principles" data-sec="principles" class="nav__key">Principles</a>
-  <a href="#models" data-sec="models" class="nav__key">Models</a>
-  <a href="#modes" data-sec="modes" class="nav__key">Modes</a>
-  <a href="#systems" data-sec="systems" class="nav__key">Systems</a>
-  <a href="#doctrines" data-sec="doctrines" class="nav__key">Doctrines</a>
-  <a href="#paths" data-sec="paths" class="nav__key">Paths</a>
-</nav>
-
-<style is:global>
-  /* ── header ── */
-  .head {
-    position: sticky; top: 0; z-index: 60;
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 12px max(18px, env(safe-area-inset-left));
-    background: color-mix(in oklab, var(--srf-1) 82%, transparent);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-  }
-  .head__back {
-    font-family: var(--face-data); font-size: var(--t-label);
-    letter-spacing: 0.14em; text-transform: uppercase;
-    color: var(--ink-mute); text-decoration: none;
-  }
-  .head__back:hover { color: var(--ink); }
-  .head__title { color: var(--ink); letter-spacing: 0.22em; }
-
-  /* ── layout ── */
-  .stack {
-    width: min(760px, 100%);
-    margin: 0 auto;
-    padding: 0 max(20px, env(safe-area-inset-left)) calc(88px + env(safe-area-inset-bottom));
-  }
-  .band { padding: var(--s6) 0; scroll-margin-top: 56px; }
-  .band + .band { border-top: 1px solid var(--hair); }
-
-  .band__head {
-    display: flex; align-items: baseline; gap: var(--s3);
-    margin-bottom: var(--s5);
-  }
-  .band__head h2 { color: var(--ink); }
-
-  /* ── entry ── */
-  .band--entry { padding-top: var(--s6); padding-bottom: var(--s7); }
-  .mark {
-    display: block; width: 46px; height: 46px; object-fit: contain;
-    margin: 0 0 var(--s5); opacity: 0.9;
-  }
-  .hero__line { max-width: 20ch; }
-  .hero__gloss { max-width: 42ch; margin: var(--s4) 0 0; }
-
-  .enter {
-    display: inline-flex; align-items: center; gap: 8px;
-    margin-top: var(--s5);
-    font-family: var(--face-data); font-size: var(--t-meta);
-    letter-spacing: 0.12em; text-transform: uppercase;
-    color: var(--sig); text-decoration: none;
-    padding-bottom: 6px; border-bottom: 1px solid var(--hair-strong);
-    transition: border-color .3s ease, color .3s ease;
-  }
-  .enter span { transition: transform .3s ease; }
-  .enter:hover { border-color: var(--sig-soft); }
-  .enter:hover span { transform: translateX(4px); }
-
-  /* ── rows ── */
-  .rows { list-style: none; margin: 0; padding: 0; }
-  .row-item + .row-item { border-top: 1px solid var(--hair); }
-  .row {
-    display: grid; grid-template-columns: 1fr; gap: var(--s2);
-    padding: var(--s5) 0;
-    color: inherit; text-decoration: none;
-    -webkit-tap-highlight-color: transparent;
-    transition: background-color .2s ease, opacity .2s ease;
-  }
-  .row-item:first-child .row { padding-top: 0; }
-  .row-item:last-child .row { padding-bottom: 0; }
-  .rows--tight .row { padding: var(--s4) 0; }
-
-  /* full-bleed tap surface without visible borders */
-  .row--link {
-    margin: 0 calc(-1 * var(--s3));
-    padding-left: var(--s3); padding-right: var(--s3);
-    min-height: 56px;
-    border-radius: 4px;
-  }
-  .row--link:hover { background: color-mix(in oklab, var(--sig) 5%, transparent); }
-  .row--link:active { background: color-mix(in oklab, var(--sig) 9%, transparent); }
-  .row--link:focus-visible {
-    outline: 1px solid var(--sig-soft); outline-offset: 2px;
-  }
-  .row--link:hover .row__head { color: var(--sig); }
-  .row--link:hover .quiet-link { color: var(--sig); border-color: var(--sig-soft); }
-
-  .row__n { align-self: start; }
-  .row__body { display: grid; gap: var(--s2); justify-items: start; }
-  .row__head { display: block; color: var(--ink); transition: color .25s ease; }
-  .row__read { max-width: 52ch; margin: 0; }
-
-
-  .chain {
-    margin: 0;
-    font-family: var(--face-data); font-size: var(--t-label);
-    letter-spacing: 0.06em; color: var(--ink-faint);
-  }
-
-  /* ── paths ── */
-  .paths { list-style: none; margin: 0; padding: 0; }
-  .paths li + li { border-top: 1px solid var(--hair); }
-  .path {
-    display: grid; gap: 4px;
-    padding: var(--s3) var(--s3);
-    margin: 0 calc(-1 * var(--s3));
-    min-height: 56px; align-content: center;
-    border-radius: 4px;
-    text-decoration: none;
-    -webkit-tap-highlight-color: transparent;
-    transition: background-color .2s ease;
-  }
-  .path__intent {
-    font-family: var(--face-display); font-size: var(--t-read);
-    color: var(--ink); transition: color .25s ease;
-  }
-  .path:hover { background: color-mix(in oklab, var(--sig) 5%, transparent); }
-  .path:active { background: color-mix(in oklab, var(--sig) 9%, transparent); }
-  .path:focus-visible { outline: 1px solid var(--sig-soft); outline-offset: 2px; }
-  .path:hover .path__intent { color: var(--sig); }
-
-  .path__route {
-    font-family: var(--face-data); font-size: var(--t-label);
-    letter-spacing: 0.06em; color: var(--ink-faint);
-  }
-
-  /* ── links ── */
-  .quiet-link {
-    font-family: var(--face-data); font-size: var(--t-label);
-    letter-spacing: 0.1em; color: var(--ink-mute); text-decoration: none;
-    border-bottom: 1px solid var(--hair); padding-bottom: 2px;
-  }
-  .quiet-link:hover { color: var(--sig); border-color: var(--sig-soft); }
-
-  /* ── colophon ── */
-  .colophon {
-    display: flex; flex-wrap: wrap; gap: var(--s3);
-    justify-content: space-between;
-    padding: var(--s5) 0 var(--s6);
-    border-top: 1px solid var(--hair);
-  }
-
-  /* ── bottom nav ── */
-  .nav {
-    position: fixed; left: 0; right: 0; bottom: 0; z-index: 70;
-    display: flex; justify-content: center; gap: var(--s4);
-    padding: 12px max(16px, env(safe-area-inset-left)) calc(12px + env(safe-area-inset-bottom));
-    background: color-mix(in oklab, var(--srf-1) 86%, transparent);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border-top: 1px solid var(--hair);
-    /* seven sections do not fit on a phone — let the strip scroll instead of clipping */
-    overflow-x: auto;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-    overscroll-behavior-x: contain;
-  }
-  .nav::-webkit-scrollbar { display: none; }
-  .nav__key {
-    flex: 0 0 auto;
-    white-space: nowrap;
-    font-family: var(--face-data); font-size: var(--t-label);
-    letter-spacing: 0.1em; text-transform: uppercase;
-    color: var(--ink-faint); text-decoration: none;
-    padding: 4px 2px;
-    transition: color .25s ease;
-  }
-  .nav__key.is-active { color: var(--ink); }
-  .nav__key:focus-visible { outline: 1px solid var(--sig-soft); outline-offset: 3px; }
-  @media (min-width: 720px) {
-    .nav { justify-content: center; gap: var(--s5); }
-  }
-
-  @media (min-width: 720px) {
-    .row { grid-template-columns: 88px 1fr; gap: var(--s4); }
-    .band--entry { padding-top: var(--s7); }
-    .mark { width: 54px; height: 54px; }
-  }
-</style>
-
-<script>
-  const keys = Array.from(document.querySelectorAll(".nav__key"));
-  const setActive = (id) => {
-    keys.forEach((k) => k.classList.toggle("is-active", k.dataset.sec === id));
-  };
-  const io = new IntersectionObserver((entries) => {
-    const vis = entries
-      .filter((e) => e.isIntersecting)
-      .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-    if (vis?.target?.dataset?.sec) setActive(vis.target.dataset.sec);
-  }, { threshold: [0.15, 0.4, 0.7], rootMargin: "-15% 0px -55% 0px" });
-  document.querySelectorAll("[data-sec]").forEach((s) => io.observe(s));
-</script>
-
+</div>
+<footer class="vault-footer"><span>ICY CLEAR / END OF RECORD</span><a href="#doctrine-index">RETURN TO INDEX ↑</a></footer>
+<MediaRoom room="clear" overlay />
+<script>import "../scripts/clear-exhibits";</script>
 </body>
 </html>

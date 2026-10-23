@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "astro dev",
+    "edit": "node tools/astro.mjs dev --mode author --port 4321",
     "build": "astro build",
     "build:dev": "astro build",
     "preview": "astro preview",

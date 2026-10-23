@@ -1,0 +1,22 @@
+---
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+import raw from '../data/media/natural.json?raw';
+const author = import.meta.env.DEV && import.meta.env.MODE === 'author';
+const items = JSON.parse(author ? readFileSync(resolve(process.cwd(), 'src/data/media/natural.json'), 'utf8') : raw);
+---
+<script is:inline type="application/json" id="natural-object-state" set:html={JSON.stringify(items.filter((item: any) => item.kind === 'native' || item.id.startsWith('natural-'))).replace(/</g, '\\u003c')} />
+<script>
+  import { renderNaturalObjects } from '../scripts/natural-objects';
+  const items = JSON.parse(document.getElementById('natural-object-state')?.textContent || '[]');
+  renderNaturalObjects(items);
+  window.addEventListener('resize', () => {
+    if (!document.body.classList.contains('is-authoring')) renderNaturalObjects(items);
+  });
+</script>
+<style is:global>
+  /* This overlay never participates in Natural's existing document flow. */
+  body:has(.natural-shell) > .media-room--overlay { height: 100%; min-height: 100vh; }
+  body:has(.natural-shell) { position: relative; }
+  .is-authoring [data-author-id^="natural-"] { position: relative; }
+</style>

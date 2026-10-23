@@ -1,0 +1,45 @@
+/* HOME only. Coordinates follow the supplied 852 × 1846 mobile composition.
+   The media manifest owns each frame's independent mobile/desktop placement. */
+html:has(.home-scrapbook),body:has(.home-scrapbook){margin:0;padding:0;background:#f2ebde}
+.home-scrapbook,.home-scrapbook *{box-sizing:border-box}
+.home-scrapbook{position:relative;isolation:isolate;container-type:inline-size;width:100%;max-width:1100px;aspect-ratio:852/1846;margin:auto;overflow:clip;color:#182d28;font-family:'EB Garamond',Georgia,serif;background:radial-gradient(ellipse at 25% 18%,#fffaf0aa,transparent 48%),linear-gradient(122deg,transparent 20%,#a89f8b18 28%,transparent 36%,#fff9ed77 60%,transparent 80%),#f2ebde}
+.home-scrapbook::before{content:'';position:absolute;inset:0;pointer-events:none;z-index:0;opacity:.35;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 160 160' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Cpath fill='%23918468' opacity='.18' filter='url(%23n)' d='M0 0h160v160H0z'/%3E%3C/svg%3E")}
+.home-scrapbook a{color:inherit}.home-scrapbook a:focus-visible,.home-scrapbook summary:focus-visible{outline:2px solid #547e70;outline-offset:5px}
+.scrap-top{position:absolute;inset:1.5% 5.5% auto;z-index:12;display:flex;justify-content:space-between;align-items:start;font:2.3cqw 'JetBrains Mono',monospace;letter-spacing:.16em}
+.scrap-top>a{text-decoration:none}.scrap-menu{position:relative}.scrap-menu summary{list-style:none;cursor:pointer;width:4.8cqw;display:grid;gap:1.2cqw;justify-items:end}.scrap-menu summary::-webkit-details-marker{display:none}.scrap-menu summary span{display:block;height:1px;background:#304039;width:70%}.scrap-menu summary span:nth-child(2){width:100%}.scrap-menu nav{position:absolute;right:0;top:6cqw;width:36cqw;padding:3cqw;background:#f9f3e8;box-shadow:0 5px 25px #40351c30;display:grid;gap:2cqw;font-size:2.5cqw;letter-spacing:0}.scrap-menu nav a{padding:1cqw}
+.scrap-archive{position:absolute;left:5.6%;top:4.5%;margin:0;font:1.88cqw/1.38 'JetBrains Mono',monospace;letter-spacing:.07em;color:#5e625c}
+.scrap-title{position:absolute;left:5.1%;top:12.8%;margin:0;font-family:'Cormorant Garamond',Georgia,serif;font-weight:500;line-height:.78;letter-spacing:-.055em;z-index:5;pointer-events:none}.scrap-title span{display:block;font-size:18.2cqw}.scrap-title span+span{font-size:15.3cqw;line-height:.99}
+.scrap-signature{position:absolute;left:12.8%;top:24.3%;font:italic 5.8cqw 'Cormorant Garamond',Georgia,serif;font-weight:400;transform:rotate(-8deg);z-index:6}.scrap-signature svg{position:absolute;left:-3.5cqw;top:3.5cqw;width:27cqw;height:6cqw;fill:none;stroke:#37463e;stroke-width:1.5}
+.scrap-intro{position:absolute;left:5.6%;top:29.3%;z-index:5}.scrap-intro h2,.scrap-interest-heading h2{font-size:4.7cqw;line-height:1.1;font-weight:500;letter-spacing:-.035em;margin:0 0 1.5cqw}.scrap-intro p{font:2.13cqw/1.42 'JetBrains Mono',monospace;letter-spacing:.045em;color:#5c605a;margin:0}
+.scrap-sky-note,.scrap-portal-note{position:absolute;font:2cqw/1.5 'JetBrains Mono',monospace;letter-spacing:.12em;color:#5b625c}.scrap-sky-note{left:85.5%;top:6.3%}.scrap-sky-note span,.scrap-portal-note span{display:block;font:4.4cqw/1.8 Georgia,serif;letter-spacing:0}.scrap-portal-note{left:89.5%;top:52.4%;font-size:1.65cqw;letter-spacing:.08em}
+.scrap-ideas{position:absolute;left:35.5%;top:57.1%;width:15.7%;height:10.2%;z-index:4;padding:2.2cqw 1.3cqw;background:linear-gradient(125deg,#faf4e8,#e8dfcd);box-shadow:1cqw 1.5cqw 2cqw #64513722;font:italic 2.8cqw/1.28 'Cormorant Garamond',Georgia,serif;transform:rotate(-9deg);clip-path:polygon(0 2%,96% 0,100% 9%,98% 24%,100% 47%,97% 66%,100% 91%,92% 98%,70% 96%,50% 100%,30% 97%,4% 100%)}.scrap-ideas span{display:block;font:4cqw Georgia,serif}
+.scrap-floor{position:absolute;left:0;right:0;top:68.1%;height:7%;background:linear-gradient(166deg,#fffaf16e,#d5cbb940 38%,#fcf7edaa 70%,transparent);box-shadow:0 -1px 1px #fff8;z-index:1;pointer-events:none}
+.scrap-interest-heading{position:absolute;left:5.6%;right:5.6%;top:72.8%;display:flex;justify-content:space-between;align-items:center;z-index:8}.scrap-interest-heading h2{margin:0}.scrap-interest-heading>span{font:1.6cqw 'JetBrains Mono',monospace;letter-spacing:.08em;color:#73736a}.scrap-interest-heading b{font:4cqw Georgia,serif;font-weight:400;margin-left:1cqw}
+/* Material surrounds stay attached to each selectable, replaceable media frame. */
+.home-scrapbook .media-room{z-index:7;overflow:visible}
+.home-scrapbook .room-piece{filter:none;box-shadow:1cqw 1.6cqw 2.6cqw #57452f30;background:#e9e0d0;--media-fit:cover}
+.home-scrapbook .room-piece>.source-paper{background:linear-gradient(145deg,#d5d3c8,#e4e2d7 55%,#c3c6bd);box-shadow:inset 0 0 3cqw #665f4610}
+.home-scrapbook .room-piece>.source-paper::after{content:'ADD YOUR MEDIA';position:absolute;inset:0;display:grid;place-items:center;text-align:center;font:1.15cqw 'JetBrains Mono',monospace;letter-spacing:.12em;color:#767a70}
+.home-scrapbook .room-piece>img,.home-scrapbook .room-piece>video,.home-scrapbook .room-piece>.source-fragment,.home-scrapbook .room-piece>.source-youtube{border-radius:0;overflow:hidden}
+.home-scrapbook .room-piece img,.home-scrapbook .room-piece video{object-fit:var(--media-fit,cover)!important;object-position:var(--crop,50% 50%)!important}
+.home-scrapbook .room-piece[data-role] figcaption{display:none}
+.home-scrapbook [data-role=sky]{padding:2.3cqw;background:#f5eddf}
+.home-scrapbook [data-role=moments]{padding:2.5cqw 2.5cqw 10cqw;background:linear-gradient(120deg,#f4ecdf,#e9decd)}
+.home-scrapbook [data-role=moments]::after{content:'Moments\a Everywhere   ⟶';white-space:pre;position:absolute;bottom:2.4cqw;left:3cqw;font:italic 3.3cqw/1 'Cormorant Garamond',Georgia,serif;letter-spacing:.04em}
+.home-scrapbook [data-role=moments]::before,.home-scrapbook [data-role=sketch]::before{content:'';position:absolute;top:-1.6cqw;left:28%;width:36%;height:3cqw;background:#d8cdb787;box-shadow:0 1px 2px #776e4e13;transform:rotate(-3deg);z-index:2}
+.home-scrapbook [data-role=games]{padding:3.8cqw 2.4cqw 5.8cqw;background:#242521;border-radius:.9cqw!important}
+.home-scrapbook [data-role=games]::after{content:'Games                         ⟶';position:absolute;bottom:.9cqw;left:3cqw;color:#f5f0e4;font:italic 3.5cqw 'Cormorant Garamond',Georgia,serif;white-space:pre}
+.home-scrapbook [data-role=games]::before{content:'• • •';position:absolute;top:.8cqw;right:2cqw;color:#dfd5bd;font-size:1.5cqw}
+.home-scrapbook [data-role=sketch]{padding:2.4cqw;background:#f4ecdd}
+.home-scrapbook [data-role=portal]{padding:4.8cqw 3.4cqw 0 5.2cqw;border-radius:49% 49% 0 0;background:linear-gradient(108deg,#e8e1d2 4%,#b2afa4 18%,#f7efe0 30%,#c4baaa 65%,#e9dfcc 84%,#a39c8e 97%);box-shadow:inset .8cqw .3cqw 1.3cqw #fffc,1.8cqw 1.6cqw 2cqw #635d4d38,-2cqw 1.3cqw 1.2cqw #605c4826}
+.home-scrapbook [data-role=portal]>.source-paper,.home-scrapbook [data-role=portal]>.source-fragment,.home-scrapbook [data-role=portal]>.source-youtube,.home-scrapbook [data-role=portal]>img,.home-scrapbook [data-role=portal]>video{border-radius:48% 48% 0 0;box-shadow:inset 1.8cqw 1cqw 1.5cqw #323b3a55;background:linear-gradient(120deg,#999e95,#d1d2c3 55%,#b6bcb1)}
+.home-scrapbook [data-role^=interest-]{border-radius:2.2cqw!important;overflow:hidden;padding-bottom:5.8cqw;background:#4c5048;box-shadow:0 1.4cqw 2.8cqw #4b443324}
+.home-scrapbook [data-role^=interest-]::after{position:absolute;bottom:0;left:0;right:0;height:5.8cqw;padding:.9cqw 1.7cqw;content:var(--tile-label);color:#f8f3e9;font:italic 3cqw/1.2 'EB Garamond',Georgia,serif;background:linear-gradient(110deg,#263d3bc9,#67665bb0)}
+.home-scrapbook [data-role^=interest-]::before{content:'⟶';position:absolute;right:1.8cqw;bottom:1cqw;color:#ede9dd;font:3cqw Georgia,serif;z-index:2;pointer-events:none}
+.home-scrapbook [data-role=interest-basketball]{--tile-label:'Basketball'}.home-scrapbook [data-role=interest-gaming]{--tile-label:'Gaming'}.home-scrapbook [data-role=interest-music]{--tile-label:'Music'}.home-scrapbook [data-role=interest-philosophy]{--tile-label:'Philosophy'}.home-scrapbook [data-role=interest-drawing]{--tile-label:'Drawing'}.home-scrapbook [data-role=interest-clothing]{--tile-label:'Clothing'}.home-scrapbook [data-role=interest-discovery]{--tile-label:'Discovery'}
+.home-scrapbook [data-role^=interest-]:nth-last-child(-n+4)::after{font-size:2.7cqw}
+.is-authoring .home-scrapbook .room-piece::after,.is-authoring .home-scrapbook .room-piece::before{pointer-events:none}
+.is-authoring .home-scrapbook .author-add-spot{top:1%;left:35%;padding:1cqw;font-size:10px}
+.is-authoring:has(.home-scrapbook){padding-bottom:40dvh}
+@media(min-width:701px){.home-scrapbook{max-width:1100px}.scrap-top{font-size:1.8cqw}.scrap-menu nav{font-size:2cqw}}
+@media(prefers-reduced-motion:reduce){.home-scrapbook *{scroll-behavior:auto}}
