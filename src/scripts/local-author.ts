@@ -1,5 +1,6 @@
 import '../styles/local-author.css';
 import { applyNative, nativeTextNodes, naturalTemplate, renderNaturalObjects } from './natural-objects';
+import { homeContent, homeParts } from './home-scene';
 
 // This module is requested only by the dev-only author component branch.
 if (new URLSearchParams(location.search).get('edit') === '1') start();
@@ -100,6 +101,8 @@ function start() {
   function draw(item: any, el: HTMLElement) {
     if (item.kind === 'native') { applyNative(item, el); return; }
     el.replaceChildren();
+    if (room === 'home' && item.sceneStyle) { el.innerHTML = homeContent(item); return; }
+    if (room === 'home' && item.parts) el.insertAdjacentHTML('beforeend', homeParts(item));
     if (item.kind === 'text') {
       const text = document.createElement('div'); text.className = `source-text text-font-${item.font || 'sans'} text-color-${item.color || 'dark'}`;
       text.textContent = item.text || ''; text.style.fontSize = `${item.textSize || 32}px`; text.style.textAlign = item.align || 'left'; el.append(text); return;
@@ -173,11 +176,11 @@ function start() {
   function apply(item: any, el: HTMLElement) {
     if (item.kind === 'native') { applyNative(item, el); return; }
     // HOME's material surrounds follow their media through replace/duplicate/undo.
-    if (room === 'home') { el.dataset.role = item.group || ''; el.style.setProperty('--media-fit', item.fit || 'cover'); el.style.setProperty('--crop', item.objectPosition || '50% 50%'); }
+    if (room === 'home') { el.dataset.role = item.group || ''; el.dataset.sceneStyle = item.sceneStyle || ''; el.classList.toggle('home-scene-text', !!item.sceneStyle); el.style.setProperty('--media-fit', item.fit || 'cover'); el.style.setProperty('--crop', item.objectPosition || '50% 50%'); }
     const p = item[breakpoint] || item.desktop || item.mobile;
     if (p) for (const [key, value] of Object.entries({ left: p.x, top: p.y, width: p.width, height: p.height })) el.style.setProperty(key, `${value}%`, 'important');
     el.style.setProperty('transform', `rotate(${item.rotation || 0}deg)`, 'important');
-    el.style.setProperty('z-index', String(el === selected ? 1000 : (item.z || 1)), 'important');
+    el.style.setProperty('z-index', String(el === selected && room !== 'home' ? 1000 : (item.z || 1)), 'important');
     el.style.animation = 'none';
     const inside = el.querySelector<HTMLElement>('.piece__in'); if (inside) inside.style.setProperty('transform', 'none', 'important');
     const radius = ({ rectangle: '2px', arch: '48% 48% 2px 2px', round: '50%', organic: '43% 57% 61% 39% / 56% 37% 63% 44%' } as any)[item.shape] || '2px';
@@ -198,6 +201,17 @@ function start() {
     const crop = (item.objectPosition || '50% 50%').split(' ').map(parseFloat);
     for (const [field, entry] of Object.entries({ size: item[breakpoint].width, shape: item.shape || 'rectangle', rotation: item.rotation || 0, cropX: crop[0], cropY: crop[1], source: item.source || item.src || '', title:value(item,'title'),description:value(item,'description'),alt:value(item,'alt'),label:value(item,'label'), href: item.href || '', group: item.group || '', fit:item.fit || 'cover', text:item.text || '', textSize:item.textSize || 32, font:item.font || 'sans', color:item.color || 'dark', align:item.align || 'left' })) panel.querySelector<HTMLInputElement>(`[data-field="${field}"]`)!.value = String(entry);
     panel.querySelector<HTMLElement>('.author-text-controls')!.hidden = item.kind !== 'text';
+    panel.querySelectorAll<HTMLElement>('.author-text-controls > label:not(:first-child), .author-text-controls > .author-row').forEach(control => { control.hidden = !!item.sceneStyle; });
+    panel.querySelector('.author-part-controls')?.remove();
+    if (room === 'home' && item.parts) {
+      const controls = document.createElement('div'); controls.className = 'author-part-controls';
+      item.parts.forEach((part: string, index: number) => {
+        const label = document.createElement('label'); label.textContent = `Group caption / arrow ${index + 1}`;
+        const input = document.createElement('textarea'); input.maxLength = 500; input.dataset.partIndex = String(index); input.value = part;
+        label.append(input); controls.append(label);
+      });
+      panel.querySelector('.author-selection')!.prepend(controls);
+    }
     panel.querySelector('.author-native-controls')?.remove();
     if (item.kind === 'native') {
       const controls = document.createElement('div'); controls.className = 'author-native-controls';
@@ -209,7 +223,7 @@ function start() {
       panel.querySelector('.author-selection')!.prepend(controls);
     }
     panel.querySelectorAll<HTMLElement>('.author-selection > label, .author-selection > .author-row').forEach(control => { control.hidden = item.kind === 'native'; });
-    panel.querySelector<HTMLButtonElement>('[data-action="replace"]')!.hidden = item.kind === 'native';
+    panel.querySelector<HTMLButtonElement>('[data-action="replace"]')!.hidden = item.kind === 'native' || !!item.sceneStyle;
     for (const field of ['title','description','alt','label']) panel.querySelector<HTMLElement>(`[data-auto="${field}"]`)!.dataset.active = String(item.overrides?.[field] === undefined);
     status(`${item.id} · ${breakpoint}${dirty ? ' · unsaved' : ''}`);
   }
@@ -267,6 +281,7 @@ function start() {
   });
   panel.addEventListener('input', event => {
     if (!selected) return; const input = event.target as HTMLInputElement; const item = current(); const p = item[breakpoint]; const field = input.dataset.field;
+    if (room === 'home' && input.dataset.partIndex !== undefined) { item.parts[Number(input.dataset.partIndex)] = input.value; draw(item, selected); apply(item, selected); mark(); return; }
     if (item.kind === 'native' && input.dataset.nativeIndex !== undefined) {
       item.nativeText ||= nativeTextNodes(selected).map(node => node.innerText);
       item.nativeText[Number(input.dataset.nativeIndex)] = input.value;

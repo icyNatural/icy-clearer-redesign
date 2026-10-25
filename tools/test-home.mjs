@@ -7,6 +7,8 @@ const { chromium } = require(process.env.PLAYWRIGHT_PATH || 'playwright');
 const manifest = resolve('src/data/media/home.json');
 const folder = resolve('public/media/home');
 const backup = await readFile(manifest);
+const scene = JSON.parse(backup);
+const count = scene.filter(item => !item.deleted).length;
 const files = new Set(await readdir(folder));
 const browser = await chromium.launch({headless:true});
 const page = await browser.newPage({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
@@ -24,7 +26,7 @@ try {
     await page.goto('http://localhost:4321/');
     await page.evaluate(() => document.fonts.ready);
     assert.equal(await page.locator('.author-panel').count(),0);
-    assert.equal(await page.locator('.room-piece').count(),12);
+    assert.equal(await page.locator('.room-piece').count(),count);
     assert.equal(await page.locator('[data-role^="interest-"]').count(),7);
     assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth),`overflow at ${width}`);
     const geometry = await page.evaluate(() => {
@@ -37,7 +39,7 @@ try {
     await page.addStyleTag({content:'astro-dev-toolbar{display:none!important}'});
     await page.screenshot({path:resolve(output,`home-${width}.png`),fullPage:true});
   }
-  console.log('PASS composition geometry, twelve neutral slots, seven tiles, clean normal mode, no overflow: 360/390/430/852/1440');
+  console.log('PASS composition geometry, complete scene, seven tiles, clean normal mode, no overflow: 360/390/430/852/1440');
   await page.setViewportSize({width:390,height:844});
   await page.goto('http://localhost:4321/?edit=1');
   await page.locator('.author-panel').waitFor();
@@ -49,7 +51,17 @@ try {
     await page.touchscreen.tap(Math.min(380,b.x+b.width/2),Math.max(5,b.y+b.height/2));
     assert.ok(await el.evaluate(el=>el.classList.contains('author-selected')),`${item.id} selectable at ${JSON.stringify(b)}`);
   }
-  console.log('PASS all twelve media regions selectable by mobile tap');
+  console.log('PASS all existing scene objects selectable by mobile tap');
+  // Edit compound-object parts without separating the caption from its frame.
+  await slot('moments').click({force:true});
+  await page.locator('[data-part-index="0"]').fill('Edited moments');
+  assert.equal(await slot('moments').locator('[data-part="0"]').textContent(),'Edited moments');
+  await slot('intro-body').click({force:true});
+  await page.locator('[data-field="text"]').fill('Shared editable body copy.');
+  assert.equal(await slot('intro-body').locator('p').textContent(),'Shared editable body copy.');
+  await slot('portal').click({force:true});
+  await page.locator('[data-field="href"]').fill('/clear.html');
+  await page.locator('[data-field="href"]').dispatchEvent('input');
   await slot('sky').evaluate(el=>el.scrollIntoView({block:'center'}));
   await slot('sky').click();
   const before=await slot('sky').boundingBox();
@@ -61,7 +73,7 @@ try {
   const chooserPromise=page.waitForEvent('filechooser');await button('file').click();
   await (await chooserPromise).setFiles({name:'home-test.png',mimeType:'image/png',buffer:Buffer.from(png,'base64')});
   await slot('sky').locator('img').waitFor();
-  assert.equal(await page.locator('.room-piece').count(),12);
+  assert.equal(await page.locator('.room-piece').count(),count);
   assert.equal(await slot('sky').getAttribute('data-role'),'sky');
   await page.locator('[data-field="fit"]').selectOption('contain');
   assert.equal(await slot('sky').locator('img').evaluate(el=>getComputedStyle(el).objectFit),'contain');
@@ -87,16 +99,25 @@ try {
     },{event,png});
     await page.waitForTimeout(500);
   }
-  assert.equal(await page.locator('.room-piece').count(),14);
+  assert.equal(await page.locator('.room-piece').count(),count+2);
   const saved=page.waitForResponse(r=>r.url().endsWith('/__author/save'));
   await button('save').click();const response=await saved;assert.equal(response.status(),200,await response.text());
   await page.waitForTimeout(1500);await page.reload();await slot('sky').locator('img').waitFor();
   const data=JSON.parse(await readFile(manifest,'utf8'));assert.equal(data.find(i=>i.id==='home-sky').kind,'image');
   assert.equal(data.find(i=>i.id==='home-sky').rotation,-7);
   assert.equal(data.find(i=>i.id==='home-sky').objectPosition,'35% 60%');
+  assert.equal(data.find(i=>i.id==='home-intro-body').text,'Shared editable body copy.');
+  assert.equal(data.find(i=>i.id==='home-moments').parts[0],'Edited moments');
+  assert.equal(data.find(i=>i.id==='home-portal').href,'/clear.html');
+  assert.deepEqual(data.find(i=>i.id==='home-sky').desktop,scene.find(i=>i.id==='home-sky').desktop);
+  assert.notDeepEqual(data.find(i=>i.id==='home-sky').mobile,scene.find(i=>i.id==='home-sky').mobile);
+  await page.setViewportSize({width:1100,height:900});
+  await page.reload();
+  assert.equal(await slot('intro-body').locator('p').textContent(),'Shared editable body copy.');
+  console.log('PASS grouped captions, shared text/link edits, saved mobile placement independent of desktop');
   await page.goto('http://localhost:4321/');await slot('sky').locator('img').waitFor();
   assert.equal(await page.locator('.author-panel,.author-selected,.author-handle').count(),0);
-  assert.equal(await slot('portal').locator('a').getAttribute('href'),'/world.html');
+  assert.equal(await slot('portal').locator('a').getAttribute('href'),'/clear.html');
   assert.deepEqual(errors,[]);
   console.log('PASS drag, undo/redo, Replace → FILE upload, FIT/FILL, tilt, layers, duplicate material, paste/drop, save, refresh restoration, clean normal mode, portal link');
   console.log(`Screenshots: ${output}`);

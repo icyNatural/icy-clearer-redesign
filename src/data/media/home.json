@@ -59,7 +59,11 @@
     "metadata": {
       "aspect": 1.005893909626719
     },
-    "objectPosition": "70% 50%"
+    "objectPosition": "70% 50%",
+    "parts": [
+      "Moments",
+      "Everywhere   ⟶"
+    ]
   },
   {
     "id": "home-games",
@@ -95,7 +99,10 @@
       "fetchedAt": "2026-10-24T17:14:43.524Z",
       "status": "ok"
     },
-    "videoId": "68PbSDhCrxI"
+    "videoId": "68PbSDhCrxI",
+    "parts": [
+      "Games                         ⟶"
+    ]
   },
   {
     "id": "home-sketch",
@@ -179,7 +186,11 @@
       "fetchedAt": "2026-10-25T06:36:44.428Z",
       "status": "ok"
     },
-    "href": "/media/home/life/64675-basketball.mp4"
+    "href": "/media/home/life/64675-basketball.mp4",
+    "parts": [
+      "Basketball",
+      "⟶"
+    ]
   },
   {
     "id": "home-gaming",
@@ -215,7 +226,11 @@
       "fetchedAt": "2026-10-24T17:30:06.409Z",
       "status": "ok"
     },
-    "videoId": "6JL4DZIalNg"
+    "videoId": "6JL4DZIalNg",
+    "parts": [
+      "Gaming",
+      "⟶"
+    ]
   },
   {
     "id": "home-music",
@@ -239,7 +254,11 @@
     "fit": "cover",
     "overrides": {
       "alt": "Music media slot"
-    }
+    },
+    "parts": [
+      "Music",
+      "⟶"
+    ]
   },
   {
     "id": "home-philosophy",
@@ -263,7 +282,11 @@
     "fit": "cover",
     "overrides": {
       "alt": "Philosophy media slot"
-    }
+    },
+    "parts": [
+      "Philosophy",
+      "⟶"
+    ]
   },
   {
     "id": "home-drawing",
@@ -287,7 +310,11 @@
     "fit": "cover",
     "overrides": {
       "alt": "Drawing media slot"
-    }
+    },
+    "parts": [
+      "Drawing",
+      "⟶"
+    ]
   },
   {
     "id": "home-clothing",
@@ -311,7 +338,11 @@
     "fit": "cover",
     "overrides": {
       "alt": "Clothing media slot"
-    }
+    },
+    "parts": [
+      "Clothing",
+      "⟶"
+    ]
   },
   {
     "id": "home-discovery",
@@ -347,6 +378,264 @@
       "fetchedAt": "2026-10-24T17:38:11.487Z",
       "status": "ok"
     },
-    "videoId": "VkznK-2KCBs"
+    "videoId": "VkznK-2KCBs",
+    "parts": [
+      "Discovery",
+      "⟶"
+    ]
+  },
+  {
+    "id": "home-handle",
+    "kind": "text",
+    "sceneStyle": "handle",
+    "text": "@ICYCLEARER",
+    "textSize": 32,
+    "font": "serif",
+    "color": "dark",
+    "align": "left",
+    "desktop": {
+      "x": 5.5,
+      "y": 1.5,
+      "width": 24,
+      "height": 1.5
+    },
+    "mobile": {
+      "x": 5.5,
+      "y": 1.5,
+      "width": 24,
+      "height": 1.5
+    },
+    "rotation": 0,
+    "z": 1,
+    "href": "https://www.instagram.com/icyclearer/"
+  },
+  {
+    "id": "home-archive",
+    "kind": "text",
+    "sceneStyle": "archive",
+    "text": "a living archive\nof interests,\nplay, and\npersonal curation.",
+    "textSize": 32,
+    "font": "serif",
+    "color": "dark",
+    "align": "left",
+    "desktop": {
+      "x": 5.6,
+      "y": 4.5,
+      "width": 25,
+      "height": 5
+    },
+    "mobile": {
+      "x": 5.6,
+      "y": 4.5,
+      "width": 25,
+      "height": 5
+    },
+    "rotation": 0,
+    "z": 1
+  },
+  {
+    "id": "home-title",
+    "kind": "text",
+    "sceneStyle": "title",
+    "text": "ICY\nCLEARER",
+    "textSize": 32,
+    "font": "serif",
+    "color": "dark",
+    "align": "left",
+    "desktop": {
+      "x": 5.1,
+      "y": 12.8,
+      "width": 66,
+      "height": 13.6
+    },
+    "mobile": {
+      "x": 5.1,
+      "y": 12.8,
+      "width": 66,
+      "height": 13.6
+    },
+    "rotation": 0,
+    "z": 1
+  },
+  {
+    "id": "home-signature",
+    "kind": "text",
+    "sceneStyle": "signature",
+    "text": "Chad",
+    "textSize": 32,
+    "font": "serif",
+    "color": "dark",
+    "align": "left",
+    "desktop": {
+      "x": 12.8,
+      "y": 24.3,
+      "width": 11.1,
+      "height": 3.23
+    },
+    "mobile": {
+      "x": 12.8,
+      "y": 24.3,
+      "width": 11.1,
+      "height": 3.23
+    },
+    "rotation": -8,
+    "z": 1
+  },
+  {
+    "id": "home-intro-heading",
+    "kind": "text",
+    "sceneStyle": "intro-heading",
+    "text": "Become, slowly.",
+    "textSize": 32,
+    "font": "serif",
+    "color": "dark",
+    "align": "left",
+    "desktop": {
+      "x": 5.6,
+      "y": 29.3,
+      "width": 45.4,
+      "height": 2.4
+    },
+    "mobile": {
+      "x": 5.6,
+      "y": 29.3,
+      "width": 45.4,
+      "height": 2.4
+    },
+    "rotation": 0,
+    "z": 1
+  },
+  {
+    "id": "home-intro-body",
+    "kind": "text",
+    "sceneStyle": "intro-body",
+    "text": "A space for ideas, experiments,\nmedia, and everything in between.\nNothing here is final — that is\nthe point.",
+    "textSize": 32,
+    "font": "serif",
+    "color": "dark",
+    "align": "left",
+    "desktop": {
+      "x": 5.6,
+      "y": 32.4,
+      "width": 46,
+      "height": 5.6
+    },
+    "mobile": {
+      "x": 5.6,
+      "y": 32.4,
+      "width": 46,
+      "height": 5.6
+    },
+    "rotation": 0,
+    "z": 1
+  },
+  {
+    "id": "home-sky-note",
+    "kind": "text",
+    "sceneStyle": "sky-note",
+    "text": "SKY\nNOTES",
+    "textSize": 32,
+    "font": "serif",
+    "color": "dark",
+    "align": "left",
+    "desktop": {
+      "x": 85.5,
+      "y": 6.3,
+      "width": 7.2,
+      "height": 6.5
+    },
+    "mobile": {
+      "x": 85.5,
+      "y": 6.3,
+      "width": 7.2,
+      "height": 6.5
+    },
+    "rotation": 0,
+    "z": 1,
+    "parts": [
+      "⟶"
+    ]
+  },
+  {
+    "id": "home-ideas",
+    "kind": "text",
+    "sceneStyle": "ideas",
+    "text": "Ideas\nSketches\nNotes\nFragments",
+    "textSize": 32,
+    "font": "serif",
+    "color": "dark",
+    "align": "left",
+    "desktop": {
+      "x": 35.5,
+      "y": 57.1,
+      "width": 15.7,
+      "height": 10.2
+    },
+    "mobile": {
+      "x": 35.5,
+      "y": 57.1,
+      "width": 15.7,
+      "height": 10.2
+    },
+    "rotation": -9,
+    "z": 1,
+    "parts": [
+      "⟶"
+    ]
+  },
+  {
+    "id": "home-portal-note",
+    "kind": "text",
+    "sceneStyle": "portal-note",
+    "text": "EXPLORE\nMORE\nWORLDS",
+    "textSize": 32,
+    "font": "serif",
+    "color": "dark",
+    "align": "left",
+    "desktop": {
+      "x": 89.5,
+      "y": 52.4,
+      "width": 8,
+      "height": 7.2
+    },
+    "mobile": {
+      "x": 89.5,
+      "y": 52.4,
+      "width": 8,
+      "height": 7.2
+    },
+    "rotation": 0,
+    "z": 1,
+    "parts": [
+      "⟶"
+    ]
+  },
+  {
+    "id": "home-interest-heading",
+    "kind": "text",
+    "sceneStyle": "interest-heading",
+    "text": "Interests",
+    "textSize": 32,
+    "font": "serif",
+    "color": "dark",
+    "align": "left",
+    "desktop": {
+      "x": 5.6,
+      "y": 72.8,
+      "width": 88.8,
+      "height": 2.4
+    },
+    "mobile": {
+      "x": 5.6,
+      "y": 72.8,
+      "width": 88.8,
+      "height": 2.4
+    },
+    "rotation": 0,
+    "z": 1,
+    "parts": [
+      "— SEVEN ROOMS ",
+      "⟶"
+    ]
   }
 ]
