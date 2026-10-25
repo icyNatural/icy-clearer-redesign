@@ -43,3 +43,10 @@ html:has(.home-scrapbook),body:has(.home-scrapbook){margin:0;padding:0;backgroun
 .is-authoring:has(.home-scrapbook){padding-bottom:40dvh}
 @media(min-width:701px){.home-scrapbook{max-width:1100px}.scrap-top{font-size:1.8cqw}.scrap-menu nav{font-size:2cqw}}
 @media(prefers-reduced-motion:reduce){.home-scrapbook *{scroll-behavior:auto}}
+/* ICY_REAL_LAKE */
+main.home-scrapbook {
+  background-image: linear-gradient(rgba(242,235,222,.72), rgba(242,235,222,.62)), url("/media/home/life/19781-lake-poster.jpg");
+  background-size: cover;
+  background-position: center, 82% center;
+  background-repeat: no-repeat;
+}

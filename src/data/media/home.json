@@ -1,7 +1,6 @@
 [
   {
     "id": "home-sky",
-    "kind": "placeholder",
     "group": "sky",
     "desktop": {
       "x": 56,
@@ -20,12 +19,19 @@
     "shape": "rectangle",
     "fit": "cover",
     "overrides": {
-      "alt": "Sky media slot"
-    }
+      "title": "Sunset over the lake",
+      "alt": "Golden sunset breaking through clouds above the lake, photographed by Chad"
+    },
+    "src": "/media/home/495c5c57c786ffbd5693.jpg",
+    "kind": "image",
+    "source": "/media/home/495c5c57c786ffbd5693.jpg",
+    "metadata": {
+      "aspect": 0.5625
+    },
+    "objectPosition": "50% 70%"
   },
   {
     "id": "home-moments",
-    "kind": "placeholder",
     "group": "moments",
     "desktop": {
       "x": 67,
@@ -44,12 +50,19 @@
     "shape": "rectangle",
     "fit": "cover",
     "overrides": {
-      "alt": "Moments media slot"
-    }
+      "title": "Chad",
+      "alt": "Chad with long locs, a foreground hand gesture, and a blue icy eye design"
+    },
+    "src": "/media/home/3ce9fe37253a56e5da49.jpg",
+    "kind": "image",
+    "source": "/media/home/3ce9fe37253a56e5da49.jpg",
+    "metadata": {
+      "aspect": 1.005893909626719
+    },
+    "objectPosition": "70% 50%"
   },
   {
     "id": "home-games",
-    "kind": "placeholder",
     "group": "games",
     "desktop": {
       "x": 8,
@@ -68,8 +81,21 @@
     "shape": "rectangle",
     "fit": "cover",
     "overrides": {
-      "alt": "Games media slot"
-    }
+      "alt": "Naraka: Bladepoint gameplay from iDoAutographs F2 Yoto main by Cee Ham"
+    },
+    "source": "https://www.youtube.com/watch?v=68PbSDhCrxI",
+    "kind": "youtube",
+    "provider": "youtube",
+    "metadata": {
+      "title": "iDoAutographs F2 Yoto main",
+      "author": "Cee Ham",
+      "thumbnail": "/media/home/remote/46cefb7ee268b204a61ed60388ecd534.jpg",
+      "canonicalUrl": "https://www.youtube.com/watch?v=68PbSDhCrxI",
+      "aspect": 1.7699115044247788,
+      "fetchedAt": "2026-10-24T17:14:43.524Z",
+      "status": "ok"
+    },
+    "videoId": "68PbSDhCrxI"
   },
   {
     "id": "home-sketch",
@@ -122,7 +148,6 @@
   },
   {
     "id": "home-basketball",
-    "kind": "placeholder",
     "group": "interest-basketball",
     "desktop": {
       "x": 5.3,
@@ -141,12 +166,23 @@
     "shape": "rectangle",
     "fit": "cover",
     "overrides": {
-      "alt": "Basketball media slot"
-    }
+      "title": "Hesi pull pretty asf",
+      "alt": "Indoor basketball action from Hesi pull pretty asf"
+    },
+    "source": "/media/home/life/64675-basketball-poster.jpg",
+    "src": "/media/home/life/64675-basketball-poster.jpg",
+    "kind": "image",
+    "provider": "local",
+    "metadata": {
+      "contentType": "image/jpeg",
+      "aspect": 0.5625,
+      "fetchedAt": "2026-10-25T06:36:44.428Z",
+      "status": "ok"
+    },
+    "href": "/media/home/life/64675-basketball.mp4"
   },
   {
     "id": "home-gaming",
-    "kind": "placeholder",
     "group": "interest-gaming",
     "desktop": {
       "x": 36,
@@ -165,8 +201,21 @@
     "shape": "rectangle",
     "fit": "cover",
     "overrides": {
-      "alt": "Gaming media slot"
-    }
+      "alt": "Venom gameplay in Marvel Rivals from venom 1v6 survivability by Cee Ham"
+    },
+    "source": "https://www.youtube.com/watch?v=6JL4DZIalNg",
+    "kind": "youtube",
+    "provider": "youtube",
+    "metadata": {
+      "title": "venom 1v6 survivability",
+      "author": "Cee Ham",
+      "thumbnail": "/media/home/remote/b96a3ce09a91f64fb057c69936ac503b.jpg",
+      "canonicalUrl": "https://www.youtube.com/watch?v=6JL4DZIalNg",
+      "aspect": 1.7699115044247788,
+      "fetchedAt": "2026-10-24T17:30:06.409Z",
+      "status": "ok"
+    },
+    "videoId": "6JL4DZIalNg"
   },
   {
     "id": "home-music",
@@ -266,7 +315,6 @@
   },
   {
     "id": "home-discovery",
-    "kind": "placeholder",
     "group": "interest-discovery",
     "desktop": {
       "x": 74.3,
@@ -285,7 +333,20 @@
     "shape": "rectangle",
     "fit": "cover",
     "overrides": {
-      "alt": "Discovery media slot"
-    }
+      "alt": "A squirrel eating beside a tree in He need sum lemon pepper seasoning by Cee Ham"
+    },
+    "source": "https://www.youtube.com/shorts/VkznK-2KCBs",
+    "kind": "youtube",
+    "provider": "youtube",
+    "metadata": {
+      "title": "He need sum lemon pepper seasoning",
+      "author": "Cee Ham",
+      "thumbnail": "/media/home/remote/e1dfea4c8c00ed7ab4a73b7e4d5f0e3a.jpg",
+      "canonicalUrl": "https://www.youtube.com/watch?v=VkznK-2KCBs",
+      "aspect": 0.5625,
+      "fetchedAt": "2026-10-24T17:38:11.487Z",
+      "status": "ok"
+    },
+    "videoId": "VkznK-2KCBs"
   }
 ]
