@@ -4,6 +4,7 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import '../styles/media-room.css';
 import MediaAsset from './MediaAsset.astro';
+import AuthorStartup from './AuthorStartup.astro';
 import { homeContent, homeParts, homeWorld, homeEntrance } from '../scripts/home-scene';
 interface Props { room: 'home' | 'natural' | 'clear' | 'worlds'; overlay?: boolean; }
 const { room, overlay = false } = Astro.props;
@@ -42,5 +43,5 @@ const existingRules = items.filter((item: any) => item.id.startsWith('intro-')).
     host.replaceChildren(frame);
   });
 </script>
-{author && <script is:inline type="module" src="/src/scripts/local-author.ts"></script>}
 {author && <script is:inline type="application/json" data-author-manifest={room} set:html={JSON.stringify(items).replace(/</g, '\\u003c')}></script>}
+<AuthorStartup />

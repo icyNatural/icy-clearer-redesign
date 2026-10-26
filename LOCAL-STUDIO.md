@@ -83,3 +83,15 @@ To edit from a phone on your trusted LAN, run `npm run edit -- --host 0.0.0.0` a
 Visitors can open photos in an accessible large-image dialog with next/previous, Close, Escape and browser Back. Optional links are shown inside detail instead of hijacking the photo tap. Normal pages have no Studio chrome; production does not load the authoring module even with `?edit=1`.
 
 Regression: `node tools/test-moments.mjs` against a running author server (`MOMENTS_TEST_ORIGIN` overrides the origin). It uses an available Playwright install or `PLAYWRIGHT_PATH`, backs up/restores Moments data/uploads, and verifies uploads/paste/drop, editing, save/reload, stream flow, mobile widths, detail controls and protected room files. Photogression remains context only: no API, IndexedDB, browser-storage sync or cloud integration.
+
+## Phone / Tailscale startup diagnostics
+
+Keep using `npm run edit -- --host 0.0.0.0 --port 4321 --force`. Open the laptop's Tailscale address with `?edit=1`. Requests remain relative to the page origin; localhost and the laptop's Tailscale address can each write to their own same-origin endpoints. External origins are still rejected. Do not expose the server publicly.
+
+Author startup now yields a page frame before loading Studio. A small **Local Studio** status appears during startup and disappears on success. If startup fails or the editor module takes more than 12 seconds, it remains visible. Tap it for the current stage, elapsed timings, browser errors, completed resource requests, origin, object/node counts and paint timings. The stages distinguish HTML received, editor module loading, editor initialization and ready. A network failure before HTML arrives cannot be diagnosed by an in-page script; capture the phone's browser Network log in that case. Completed resource timing is not a list of still-pending requests.
+
+HTTP Tailscale is not a secure browser context. Scene IDs use `crypto.getRandomValues`, which works there, rather than `crypto.randomUUID`, which was unavailable there and broke adding/duplicating media. This does not change endpoint permissions or require HTTPS.
+
+`node tools/test-author-network.mjs` checks both origins, desktop/mobile emulation, first paint before initialization, module failure/stall recovery, broken HMR, same-origin security and production-output isolation. `AUTHOR_TEST_ORIGINS` overrides the comma-separated origins. It discovers an existing Playwright installation like the Moments test; it installs nothing. Run `npm run build` first for its production scan. Use `MOMENTS_TEST_ORIGIN=http://100.118.199.50:4321` with the Moments regression to exercise actual writes and persistence, with data backup/restoration.
+
+Desktop browser touch/mobile emulation does **not** validate a physical phone's browser engine, Tailscale tunnel, memory limits or native photo-gallery picker. Those require testing on the phone. See `AUTHOR-NETWORK-DIAGNOSIS.md` for the measured findings and remaining limitation.

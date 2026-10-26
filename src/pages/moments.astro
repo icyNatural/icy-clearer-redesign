@@ -3,6 +3,7 @@ import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import rawManifest from '../data/media/moments.json?raw';
+import AuthorStartup from '../components/AuthorStartup.astro';
 import '../styles/media-room.css';
 import '../styles/moments.css';
 const author = import.meta.env.DEV && import.meta.env.MODE === 'author';
@@ -44,7 +45,7 @@ const placement = (p: any, prefix: string) => `--${prefix}x:${p?.x ?? 4}%;--${pr
     </dialog>
     <script is:inline type="application/json" data-moments-content set:html={JSON.stringify(items).replace(/</g, '\\u003c')}></script>
     <script src="../scripts/moments.ts"></script>
-    {author && <script is:inline type="module" src="/src/scripts/local-author.ts"></script>}
     {author && <script is:inline type="application/json" data-author-manifest="moments" set:html={JSON.stringify(items).replace(/</g, '\\u003c')}></script>}
+    <AuthorStartup />
   </body>
 </html>

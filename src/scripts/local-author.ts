@@ -3,9 +3,15 @@ import { applyNative, nativeTextNodes, naturalTemplate, renderNaturalObjects } f
 import { homeContent, homeParts, homeWorld, homeEntrance } from './home-scene';
 import { layoutMoments } from './moments-layout';
 
-// This module is requested only by the dev-only author component branch.
-if (new URLSearchParams(location.search).get('edit') === '1') start();
-function start() {
+// IDs identify scene objects, not credentials. getRandomValues also works on
+// HTTP LAN/Tailscale origins where the secure-context-only randomUUID does not.
+function mediaId() {
+  const bytes = crypto.getRandomValues(new Uint8Array(16));
+  return `media-${Array.from(bytes, byte => byte.toString(16).padStart(2, '0')).join('')}`;
+}
+// Invoked by the dev-only bootstrap after the underlying page's first frame.
+export function start() {
+  if (new URLSearchParams(location.search).get('edit') !== '1' || document.querySelector('.author-panel')) return;
   const canvas = document.querySelector<HTMLElement>('[data-media-room]');
   if (!canvas) return;
   const room = canvas.dataset.mediaRoom!;
@@ -137,7 +143,7 @@ function start() {
       if (homeWorld(item) && (media.src || media.source) !== (item.src || item.source)) delete item.previewImages;
       for (const key of ['src','source','provider','videoId','metadata','kind','title','description','alt','label','displaySrc','pixelWidth','pixelHeight']) delete item[key];
     }
-    else { item = { id: `media-${crypto.randomUUID()}`, desktop: { x:10,y:10,width:35,height:30 }, mobile: { x:5,y:8,width:85,height:23 }, z:3,shape:'rectangle' }; items.push(item); el = document.createElement('figure'); el.className = 'room-piece'; el.dataset.authorId = item.id; canvas.append(el); }
+    else { item = { id: mediaId(), desktop: { x:10,y:10,width:35,height:30 }, mobile: { x:5,y:8,width:85,height:23 }, z:3,shape:'rectangle' }; items.push(item); el = document.createElement('figure'); el.className = 'room-piece'; el.dataset.authorId = item.id; canvas.append(el); }
     Object.assign(item, media);
     el.dataset.authorId = item.id;
     if (isNew && media.metadata?.aspect && !media.desktop) {
@@ -348,7 +354,7 @@ function start() {
     if (action === 'undo' || action === 'redo') { restoreHistory(action === 'undo' ? -1 : 1); return; }
     if (action === 'text') { replacing = false; insertion = visibleCenter(); install({kind:'text',text:'Your words',textSize:32,font:'sans',color:'dark',align:'left'}); insertion = null; panel.querySelector<HTMLTextAreaElement>('[data-field="text"]')!.focus(); }
     if (action === 'duplicate' && selected) {
-      const copy = structuredClone(current()); copy.id = `media-${crypto.randomUUID()}`;
+      const copy = structuredClone(current()); copy.id = mediaId();
       for (const key of ['desktop','mobile']) if (copy[key]) { const p = copy[key]; p.x = clamp(p.x + 2, 0, copy.kind === 'native' ? 100 : 100 - p.width); p.y = clamp(p.y + 2, 0, copy.kind === 'native' ? 100 : 100 - p.height); }
       replacing = false; insertion = null; install(copy);
     }

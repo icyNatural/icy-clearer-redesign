@@ -1,0 +1,64 @@
+---
+// Never emit this bootstrap (or its module URL) into a production document.
+const author = import.meta.env.DEV && import.meta.env.MODE === 'author';
+---
+{author && <script is:inline>
+(() => {
+  if (new URLSearchParams(location.search).get('edit') !== '1') return;
+  const started = performance.now();
+  const trace = window.__icyAuthorStartup = { stage: 'HTML received', events: [] };
+  const status = document.createElement('details');
+  status.dataset.authorStartup = '';
+  status.style.cssText = 'position:fixed;left:8px;bottom:8px;z-index:2147483647;max-width:calc(100vw - 16px);max-height:28vh;overflow:auto;box-sizing:border-box;padding:8px;background:#f5f5ed;color:#252c2e;border:1px solid #777;font:12px/1.4 system-ui;overflow-wrap:anywhere';
+  const summary = document.createElement('summary');
+  summary.style.cssText = 'cursor:pointer;min-height:28px';
+  const output = document.createElement('pre');
+  output.style.cssText = 'white-space:pre-wrap;max-width:100%;font:11px/1.4 monospace';
+  status.append(summary, output);
+  document.body.append(status);
+  const snapshot = () => {
+    output.textContent = JSON.stringify({ origin: location.origin, path: location.pathname, secureContext: isSecureContext, readyState: document.readyState, ...trace,
+      paint: performance.getEntriesByType('paint').map(({name,startTime}) => ({name,ms:Math.round(startTime)})),
+      resources: performance.getEntriesByType('resource').map(({name,duration,transferSize}) => ({url:name,ms:Math.round(duration),bytes:transferSize})),
+      objects: document.querySelectorAll('[data-author-id]').length,
+      nodes: document.querySelectorAll('*').length
+    }, null, 2);
+  };
+  const stage = (message) => {
+    trace.stage = message;
+    trace.events.push({ ms: Math.round(performance.now() - started), message });
+    summary.textContent = `Local Studio: ${message} · tap for diagnostics`;
+    performance.mark(`icy-author:${message}`);
+    snapshot();
+  };
+  status.addEventListener('toggle', snapshot);
+  window.addEventListener('error', event => {
+    trace.events.push({ms:Math.round(performance.now()-started),error:event.message || `Resource failed: ${event.target?.src || event.target?.href || 'unknown'}`});
+    snapshot();
+  }, true);
+  window.addEventListener('unhandledrejection', event => {
+    trace.events.push({ms:Math.round(performance.now()-started),error:String(event.reason)});
+    snapshot();
+  });
+  stage('HTML received; waiting for page paint');
+  // A classic inline bootstrap is independent of Vite's module graph. Yield a
+  // frame before requesting Studio; do not wait for load, fonts, media or HMR.
+  requestAnimationFrame(() => requestAnimationFrame(() => setTimeout(async () => {
+    stage('loading editor module');
+    const timer = setTimeout(() => stage('editor module still loading; page remains usable'), 12000);
+    try {
+      const editor = await import('/src/scripts/local-author.ts');
+      clearTimeout(timer);
+      stage('initializing editor');
+      editor.start();
+      if (!document.querySelector('.author-panel')) throw new Error('No editor canvas/panel found.');
+      stage('ready');
+      status.hidden = true;
+    } catch (error) {
+      clearTimeout(timer);
+      stage(`startup failed: ${error.message || error}`);
+      console.error('[Local Studio startup]', error);
+    }
+  }, 0)));
+})();
+</script>}
