@@ -2,6 +2,7 @@
    The media manifest owns each frame's independent mobile/desktop placement. */
 html:has(.home-scrapbook),body:has(.home-scrapbook){margin:0;padding:0;background:#f2ebde}
 .home-scrapbook,.home-scrapbook *{box-sizing:border-box}
+html:has(.home-scrapbook) astro-dev-toolbar{display:none}
 .home-scrapbook{position:relative;isolation:isolate;container-type:inline-size;width:100%;max-width:1100px;aspect-ratio:852/1846;margin:auto;overflow:clip;color:#182d28;font-family:'EB Garamond',Georgia,serif;background:radial-gradient(ellipse at 25% 18%,#fffaf0aa,transparent 48%),linear-gradient(122deg,transparent 20%,#a89f8b18 28%,transparent 36%,#fff9ed77 60%,transparent 80%),#f2ebde}
 .home-scrapbook::before{content:'';position:absolute;inset:0;pointer-events:none;z-index:0;opacity:.35;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 160 160' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Cpath fill='%23918468' opacity='.18' filter='url(%23n)' d='M0 0h160v160H0z'/%3E%3C/svg%3E")}
 .home-scrapbook a{color:inherit}.home-scrapbook a:focus-visible,.home-scrapbook summary:focus-visible{outline:2px solid #547e70;outline-offset:5px}
@@ -67,3 +68,41 @@ main.home-scrapbook {
 [data-role^=interest-]>.scene-caption span+span{position:absolute;right:1.8cqw;bottom:1cqw;color:#ede9dd;font:3cqw Georgia,serif}
 [data-role^=interest-]:is([data-role=interest-philosophy],[data-role=interest-drawing],[data-role=interest-clothing],[data-role=interest-discovery])>.scene-caption{font-size:2.7cqw}
 @media(min-width:701px){.scrap-handle{font-size:1.8cqw}}
+
+/* Three thresholds share the media scene, including its saved frames/layers.
+   Orbital/encoded signals are structural CSS, never substitute photographs. */
+.home-scrapbook .home-world-entrance{display:grid;grid-template-rows:58% minmax(0,1fr);padding:0;background:#f5eddf;overflow:hidden;border:1px solid #ded4c2;box-shadow:.5cqw 1.1cqw 2cqw #57452f28}
+.home-world-entrance .world-preview{position:relative;min-width:0;min-height:0;overflow:hidden;background:#dce0d4}
+.home-world-entrance .world-preview img,.home-world-entrance .world-preview video{width:100%;height:100%;min-width:0;min-height:0;border-radius:0;object-fit:var(--media-fit,cover);object-position:var(--crop,50% 50%)}
+.home-world-entrance .world-preview--collage{display:grid;grid-template:repeat(2,minmax(0,1fr))/repeat(2,minmax(0,1fr));gap:.35cqw;padding:.45cqw;background:#ece4d5}
+.world-preview--collage .world-preview__primary{grid-column:1/-1}
+.home-scrapbook .room-piece.home-world-entrance>.world-entrance__caption{position:relative;inset:auto;display:flex;flex-direction:column;justify-content:center;gap:1cqw;min-width:0;max-width:none;margin:0;padding:2cqw 2.2cqw 3.3cqw;background:none;color:#203831;white-space:normal;font:inherit}
+.world-entrance__caption h3{margin:0;font:500 clamp(20px,3.3cqw,36px)/1.05 'Cormorant Garamond',Georgia,serif;letter-spacing:-.025em;overflow-wrap:anywhere}
+.world-entrance__caption p{margin:0;font:clamp(11px,1.5cqw,16px)/1.55 'JetBrains Mono',monospace;color:#5b655b;overflow-wrap:anywhere;text-wrap:balance}
+.world-entrance__arrow{position:absolute;right:2.1cqw;bottom:.65cqw;font:3.7cqw Georgia,serif;line-height:1}
+.world-entrance__link{z-index:2}
+.world-entrance__link:focus-visible{outline:3px solid #315d4e;outline-offset:-5px;background:#fff2}
+.world-signal{position:absolute;inset:0;overflow:hidden;background:radial-gradient(ellipse at 35% 35%,#eef2e6,#b8c7b8)}
+.world-signal__text{position:absolute;inset:1.5cqw;display:flex;flex-direction:column;justify-content:space-between;gap:1cqw;color:#35524b;font:clamp(9px,1cqw,12px)/1.5 'JetBrains Mono',monospace;letter-spacing:.08em}
+.world-orbit{position:absolute;left:50%;top:50%;width:73%;aspect-ratio:1;border:1px solid #65847677;border-radius:50%;transform:translate(-50%,-50%)}
+.world-orbit--two{width:90%;height:39%;aspect-ratio:auto;transform:translate(-50%,-50%) rotate(-33deg)}
+.world-orbit--three{width:38%;height:90%;aspect-ratio:auto;transform:translate(-50%,-50%) rotate(-33deg)}
+.world-orbit__core{position:absolute;left:50%;top:50%;width:13%;aspect-ratio:1;border-radius:50%;background:#3f635c;box-shadow:0 0 0 .9cqw #e8eddf,0 0 0 1cqw #6a887c;transform:translate(-50%,-50%)}
+[data-role=world-clear] .world-signal{background:repeating-linear-gradient(0deg,transparent 0 2.2cqw,#71837116 2.2cqw calc(2.2cqw + 1px)),linear-gradient(135deg,#f4ecdb,#d9d6c5)}
+[data-role=world-clear] .world-orbit,[data-role=world-clear] .world-orbit__core{display:none}
+[data-role=world-clear] .world-signal__text{inset:3cqw 1.7cqw;justify-content:center;gap:2cqw;border-left:1px solid #49695766;padding-left:1.3cqw;color:#394c3f;letter-spacing:.015em}
+.is-authoring .home-world-entrance>.author-handle{z-index:5}
+@media(max-width:700px){
+  /* Extend only the foyer's lower area. home.json rebases the original mobile
+     y/height by 1846/2560, preserving the personal collage in actual pixels. */
+  .home-scrapbook{aspect-ratio:852/2560}
+  .scrap-floor{top:49.106484%;height:5.047656%}
+  .home-scrapbook .home-world-entrance{grid-template: minmax(0,1fr)/39% minmax(0,1fr);box-shadow:.6cqw 1.2cqw 2.4cqw #57452f25}
+  .home-scrapbook .room-piece.home-world-entrance>.world-entrance__caption{padding:3.1cqw 3.3cqw 5cqw;gap:2cqw}
+  .world-entrance__caption h3{font-size:clamp(20px,5.6cqw,25px)}
+  .world-entrance__caption p{font-size:clamp(11px,2.8cqw,13px);line-height:1.5}
+  .world-entrance__arrow{right:3cqw;bottom:1.2cqw;font-size:5.2cqw}
+  .home-world-entrance .world-preview--collage{gap:.7cqw;padding:.8cqw}
+  .world-signal__text{inset:2cqw;font-size:8px;letter-spacing:0}
+  [data-role=world-clear] .world-signal__text{inset:2.5cqw 1.6cqw;padding-left:1.5cqw;gap:3cqw;font-size:8px}
+}

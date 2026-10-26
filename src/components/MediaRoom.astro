@@ -4,7 +4,7 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import '../styles/media-room.css';
 import MediaAsset from './MediaAsset.astro';
-import { homeContent, homeParts } from '../scripts/home-scene';
+import { homeContent, homeParts, homeWorld, homeEntrance } from '../scripts/home-scene';
 interface Props { room: 'home' | 'natural' | 'clear' | 'worlds'; overlay?: boolean; }
 const { room, overlay = false } = Astro.props;
 const manifests = import.meta.glob('../data/media/*.json', { query: '?raw', import: 'default', eager: true });
@@ -21,8 +21,8 @@ const existingRules = items.filter((item: any) => item.id.startsWith('intro-')).
 <style is:inline set:html={shapeRules}></style>
 <div class:list={['media-room', { 'media-room--overlay': overlay }]} data-media-room={room} data-revision={author ? createHash('sha256').update(raw).digest('hex') : undefined}>
   {items.filter((item: any) => !item.deleted && item.kind !== 'native' && !item.id.startsWith('intro-')).map((item: any) => (
-    <figure class:list={[`room-piece room-shape-${item.shape ?? 'rectangle'}`, { 'home-scene-text': room === 'home' && item.sceneStyle }]} data-scene-style={room === 'home' ? item.sceneStyle : undefined} data-role={item.group} data-author-id={item.id} style={style(item)}>
-      {room === 'home' && item.sceneStyle ? <Fragment set:html={homeContent(item)} /> : <MediaAsset item={item} />}
+    <figure class:list={[`room-piece room-shape-${item.shape ?? 'rectangle'}`, { 'home-scene-text': room === 'home' && item.sceneStyle, 'home-world-entrance': room === 'home' && homeWorld(item) }]} data-scene-style={room === 'home' ? item.sceneStyle : undefined} data-role={item.group} data-author-id={item.id} style={style(item)}>
+      {room === 'home' && homeWorld(item) ? <Fragment set:html={homeEntrance(item)} /> : room === 'home' && item.sceneStyle ? <Fragment set:html={homeContent(item)} /> : <MediaAsset item={item} />}
       {room === 'home' && <Fragment set:html={homeParts(item)} />}
     </figure>
   ))}

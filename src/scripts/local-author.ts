@@ -1,6 +1,6 @@
 import '../styles/local-author.css';
 import { applyNative, nativeTextNodes, naturalTemplate, renderNaturalObjects } from './natural-objects';
-import { homeContent, homeParts } from './home-scene';
+import { homeContent, homeParts, homeWorld, homeEntrance } from './home-scene';
 
 // This module is requested only by the dev-only author component branch.
 if (new URLSearchParams(location.search).get('edit') === '1') start();
@@ -101,6 +101,7 @@ function start() {
   function draw(item: any, el: HTMLElement) {
     if (item.kind === 'native') { applyNative(item, el); return; }
     el.replaceChildren();
+    if (room === 'home' && homeWorld(item)) { el.innerHTML = homeEntrance(item); return; }
     if (room === 'home' && item.sceneStyle) { el.innerHTML = homeContent(item); return; }
     if (room === 'home' && item.parts) el.insertAdjacentHTML('beforeend', homeParts(item));
     if (item.kind === 'text') {
@@ -125,7 +126,13 @@ function start() {
     }
     const isNew = !(replacing && selected);
     let item: any; let el: HTMLElement;
-    if (replacing && selected) { item = current(); el = selected; for (const key of ['src','source','provider','videoId','metadata','kind','title','description','alt','label']) delete item[key]; }
+    if (replacing && selected) {
+      item = current(); el = selected;
+      // Replace the entire preview using the existing media workflow. Caption,
+      // destination and placement remain independent of the replacement source.
+      if (homeWorld(item) && (media.src || media.source) !== (item.src || item.source)) delete item.previewImages;
+      for (const key of ['src','source','provider','videoId','metadata','kind','title','description','alt','label']) delete item[key];
+    }
     else { item = { id: `media-${crypto.randomUUID()}`, desktop: { x:10,y:10,width:35,height:30 }, mobile: { x:5,y:8,width:85,height:23 }, z:3,shape:'rectangle' }; items.push(item); el = document.createElement('figure'); el.className = 'room-piece'; el.dataset.authorId = item.id; canvas.append(el); }
     Object.assign(item, media);
     el.dataset.authorId = item.id;
@@ -176,7 +183,7 @@ function start() {
   function apply(item: any, el: HTMLElement) {
     if (item.kind === 'native') { applyNative(item, el); return; }
     // HOME's material surrounds follow their media through replace/duplicate/undo.
-    if (room === 'home') { el.dataset.role = item.group || ''; el.dataset.sceneStyle = item.sceneStyle || ''; el.classList.toggle('home-scene-text', !!item.sceneStyle); el.style.setProperty('--media-fit', item.fit || 'cover'); el.style.setProperty('--crop', item.objectPosition || '50% 50%'); }
+    if (room === 'home') { el.dataset.role = item.group || ''; el.dataset.sceneStyle = item.sceneStyle || ''; el.classList.toggle('home-scene-text', !!item.sceneStyle); el.classList.toggle('home-world-entrance', !!homeWorld(item)); el.style.setProperty('--media-fit', item.fit || 'cover'); el.style.setProperty('--crop', item.objectPosition || '50% 50%'); }
     const p = item[breakpoint] || item.desktop || item.mobile;
     if (p) for (const [key, value] of Object.entries({ left: p.x, top: p.y, width: p.width, height: p.height })) el.style.setProperty(key, `${value}%`, 'important');
     el.style.setProperty('transform', `rotate(${item.rotation || 0}deg)`, 'important');
@@ -206,7 +213,7 @@ function start() {
     if (room === 'home' && item.parts) {
       const controls = document.createElement('div'); controls.className = 'author-part-controls';
       item.parts.forEach((part: string, index: number) => {
-        const label = document.createElement('label'); label.textContent = `Group caption / arrow ${index + 1}`;
+        const label = document.createElement('label'); label.textContent = homeWorld(item) ? `Preview text ${index + 1}` : `Group caption / arrow ${index + 1}`;
         const input = document.createElement('textarea'); input.maxLength = 500; input.dataset.partIndex = String(index); input.value = part;
         label.append(input); controls.append(label);
       });
@@ -300,6 +307,7 @@ function start() {
     else if (field === 'cropX' || field === 'cropY') item.objectPosition = `${panel.querySelector<HTMLInputElement>('[data-field="cropX"]')!.value}% ${panel.querySelector<HTMLInputElement>('[data-field="cropY"]')!.value}%`;
     else if (field === 'rotation') item.rotation = +input.value;
     else if (field && field !== 'aspect') item[field] = input.value;
+    if (field === 'group' && room === 'home') draw(item, selected);
     if (field === 'label') { const media = selected.querySelector('img'); media?.setAttribute('alt', input.value); let caption = selected.querySelector('figcaption'); if (!caption && input.value) { caption = document.createElement('figcaption'); selected.append(caption); } if (caption) caption.textContent = input.value; }
     apply(item, selected); mark();
   });

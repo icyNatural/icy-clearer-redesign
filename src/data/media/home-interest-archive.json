@@ -1,0 +1,233 @@
+[
+  {
+    "id": "home-basketball",
+    "group": "interest-basketball",
+    "desktop": {
+      "x": 5.3,
+      "y": 75.9,
+      "width": 28.5,
+      "height": 8.9
+    },
+    "mobile": {
+      "x": 5.3,
+      "y": 75.9,
+      "width": 28.5,
+      "height": 8.9
+    },
+    "rotation": 0,
+    "z": 3,
+    "shape": "rectangle",
+    "fit": "cover",
+    "overrides": {
+      "title": "Hesi pull pretty asf",
+      "alt": "Indoor basketball action from Hesi pull pretty asf"
+    },
+    "source": "/media/home/life/64675-basketball-poster.jpg",
+    "src": "/media/home/life/64675-basketball-poster.jpg",
+    "kind": "image",
+    "provider": "local",
+    "metadata": {
+      "contentType": "image/jpeg",
+      "aspect": 0.5625,
+      "fetchedAt": "2026-10-25T06:36:44.428Z",
+      "status": "ok"
+    },
+    "href": "/media/home/life/64675-basketball.mp4",
+    "parts": [
+      "Basketball",
+      "⟶"
+    ]
+  },
+  {
+    "id": "home-gaming",
+    "group": "interest-gaming",
+    "desktop": {
+      "x": 36,
+      "y": 75.9,
+      "width": 28.5,
+      "height": 8.9
+    },
+    "mobile": {
+      "x": 36,
+      "y": 75.9,
+      "width": 28.5,
+      "height": 8.9
+    },
+    "rotation": 0,
+    "z": 3,
+    "shape": "rectangle",
+    "fit": "cover",
+    "overrides": {
+      "alt": "Venom gameplay in Marvel Rivals from venom 1v6 survivability by Cee Ham"
+    },
+    "source": "https://www.youtube.com/watch?v=6JL4DZIalNg",
+    "kind": "youtube",
+    "provider": "youtube",
+    "metadata": {
+      "title": "venom 1v6 survivability",
+      "author": "Cee Ham",
+      "thumbnail": "/media/home/remote/b96a3ce09a91f64fb057c69936ac503b.jpg",
+      "canonicalUrl": "https://www.youtube.com/watch?v=6JL4DZIalNg",
+      "aspect": 1.7699115044247788,
+      "fetchedAt": "2026-10-24T17:30:06.409Z",
+      "status": "ok"
+    },
+    "videoId": "6JL4DZIalNg",
+    "parts": [
+      "Gaming",
+      "⟶"
+    ]
+  },
+  {
+    "id": "home-music",
+    "kind": "placeholder",
+    "group": "interest-music",
+    "desktop": {
+      "x": 66.8,
+      "y": 75.9,
+      "width": 28.5,
+      "height": 8.9
+    },
+    "mobile": {
+      "x": 66.8,
+      "y": 75.9,
+      "width": 28.5,
+      "height": 8.9
+    },
+    "rotation": 0,
+    "z": 3,
+    "shape": "rectangle",
+    "fit": "cover",
+    "overrides": {
+      "alt": "Music media slot"
+    },
+    "parts": [
+      "Music",
+      "⟶"
+    ]
+  },
+  {
+    "id": "home-philosophy",
+    "kind": "placeholder",
+    "group": "interest-philosophy",
+    "desktop": {
+      "x": 5.3,
+      "y": 86,
+      "width": 20.8,
+      "height": 8.9
+    },
+    "mobile": {
+      "x": 5.3,
+      "y": 86,
+      "width": 20.8,
+      "height": 8.9
+    },
+    "rotation": 0,
+    "z": 3,
+    "shape": "rectangle",
+    "fit": "cover",
+    "overrides": {
+      "alt": "Philosophy media slot"
+    },
+    "parts": [
+      "Philosophy",
+      "⟶"
+    ]
+  },
+  {
+    "id": "home-drawing",
+    "kind": "placeholder",
+    "group": "interest-drawing",
+    "desktop": {
+      "x": 28.3,
+      "y": 86,
+      "width": 20.8,
+      "height": 8.9
+    },
+    "mobile": {
+      "x": 28.3,
+      "y": 86,
+      "width": 20.8,
+      "height": 8.9
+    },
+    "rotation": 0,
+    "z": 3,
+    "shape": "rectangle",
+    "fit": "cover",
+    "overrides": {
+      "alt": "Drawing media slot"
+    },
+    "parts": [
+      "Drawing",
+      "⟶"
+    ]
+  },
+  {
+    "id": "home-clothing",
+    "kind": "placeholder",
+    "group": "interest-clothing",
+    "desktop": {
+      "x": 51.3,
+      "y": 86,
+      "width": 20.8,
+      "height": 8.9
+    },
+    "mobile": {
+      "x": 51.3,
+      "y": 86,
+      "width": 20.8,
+      "height": 8.9
+    },
+    "rotation": 0,
+    "z": 3,
+    "shape": "rectangle",
+    "fit": "cover",
+    "overrides": {
+      "alt": "Clothing media slot"
+    },
+    "parts": [
+      "Clothing",
+      "⟶"
+    ]
+  },
+  {
+    "id": "home-discovery",
+    "group": "interest-discovery",
+    "desktop": {
+      "x": 74.3,
+      "y": 86,
+      "width": 20.8,
+      "height": 8.9
+    },
+    "mobile": {
+      "x": 74.3,
+      "y": 86,
+      "width": 20.8,
+      "height": 8.9
+    },
+    "rotation": 0,
+    "z": 3,
+    "shape": "rectangle",
+    "fit": "cover",
+    "overrides": {
+      "alt": "A squirrel eating beside a tree in He need sum lemon pepper seasoning by Cee Ham"
+    },
+    "source": "https://www.youtube.com/shorts/VkznK-2KCBs",
+    "kind": "youtube",
+    "provider": "youtube",
+    "metadata": {
+      "title": "He need sum lemon pepper seasoning",
+      "author": "Cee Ham",
+      "thumbnail": "/media/home/remote/e1dfea4c8c00ed7ab4a73b7e4d5f0e3a.jpg",
+      "canonicalUrl": "https://www.youtube.com/watch?v=VkznK-2KCBs",
+      "aspect": 0.5625,
+      "fetchedAt": "2026-10-24T17:38:11.487Z",
+      "status": "ok"
+    },
+    "videoId": "VkznK-2KCBs",
+    "parts": [
+      "Discovery",
+      "⟶"
+    ]
+  }
+]

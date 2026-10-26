@@ -18,6 +18,13 @@ export function validate(items) {
     ids.add(item.id);
     if (item.sceneStyle !== undefined && (!homeTextStyles.includes(item.sceneStyle) || item.kind !== 'text')) throw new Error('Invalid HOME text style.');
     if (item.parts !== undefined && (!Array.isArray(item.parts) || item.parts.length > 10 || item.parts.some(part => typeof part !== 'string' || part.length > 500))) throw new Error('Invalid group captions.');
+    if (item.previewImages !== undefined) {
+      if (!Array.isArray(item.previewImages) || item.previewImages.length > 2) throw new Error('Invalid HOME entrance previews.');
+      item.previewImages = item.previewImages.map(preview => {
+        if (!preview || typeof preview.src !== 'string' || (!safeLocal(preview.src) && !safeHttp(preview.src)) || typeof preview.alt !== 'string' || preview.alt.length > 500) throw new Error('Invalid entrance preview media.');
+        return { src: preview.src, alt: cleanText(preview.alt, 500) };
+      });
+    }
     if (item.deleted === true) continue;
     if (item.kind === 'native') {
       if (typeof item.nativeId !== 'string' || !/^natural-[\w-]+$/.test(item.nativeId)) throw new Error('Invalid Natural object.');
@@ -78,7 +85,7 @@ export function validate(items) {
   return items.map(item => {
     if (item.deleted === true) return { id: item.id, deleted: true };
     if (item.kind === 'native') return { id: item.id, kind: 'native', nativeId: item.nativeId, nativeText: item.nativeText, desktop: item.desktop, mobile: item.mobile, z: item.z };
-    const result = Object.fromEntries(Object.entries(item).filter(([key]) => ['id','src','source','provider','videoId','metadata','overrides','kind','desktop','mobile','shape','objectPosition','rotation','z','label','href','group','deleted','fit','text','textSize','font','color','align','sceneStyle','parts'].includes(key)));
+    const result = Object.fromEntries(Object.entries(item).filter(([key]) => ['id','src','source','provider','videoId','metadata','overrides','kind','desktop','mobile','shape','objectPosition','rotation','z','label','href','group','deleted','fit','text','textSize','font','color','align','sceneStyle','parts','previewImages'].includes(key)));
     for (const key of ['desktop', 'mobile']) if (result[key]) result[key] = Object.fromEntries(['x', 'y', 'width', 'height'].map(k => [k, result[key][k]]));
     for (const key of ['label', 'group']) if (result[key] !== undefined) result[key] = cleanText(result[key], 200);
     return result;
@@ -124,7 +131,7 @@ export function localAuthor() {
           if (req.url === '/__author/save') {
             if (busy) return send(409, { error: 'A save is already in progress. Try again.' });
             const items = validate(body.items);
-            if (body.room !== 'home' && items.some(item => item.sceneStyle || item.parts)) throw new Error('HOME composition belongs to HOME only.');
+            if (body.room !== 'home' && items.some(item => item.sceneStyle || item.parts || item.previewImages)) throw new Error('HOME composition belongs to HOME only.');
             if (body.room !== 'natural' && items.some(item => item.kind === 'native')) throw new Error('Native objects belong to Natural only.');
             const file = resolve(root, 'src/data/media', `${body.room}.json`);
             busy = true;
