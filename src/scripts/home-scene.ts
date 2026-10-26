@@ -16,13 +16,23 @@ export function homeReflectionSources(home: any[], moments: any[]) {
   return { water: '/media/home/life/19781-lake-poster.jpg', organic: image(organic), gaming: game?.metadata?.thumbnail || '' };
 }
 export const homeMirror = (item: any) => item.group === 'portal' && !item.sceneStyle;
+// Every resolved signal leads to an existing world. Shared by the rendered
+// mirror and its interaction; this is not another scene or route system.
+export const homeMirrorWorlds = [
+  { signal: 'moments', name: 'Moments', href: '/moments.html' },
+  { signal: 'natural', name: 'Natural', href: '/natural.html' },
+  { signal: 'apps', name: 'App World', href: '/world.html' },
+  { signal: 'clear', name: 'Clear', href: '/clear.html' },
+  { signal: 'gaming', name: 'Gaming', href: '/gaming/' },
+] as const;
+export const homeMirrorIdleLabel = 'Living portal — reveal a world. Activate again to enter.';
 export function homeMirrorContent(item: any, reflections: ReturnType<typeof homeReflectionSources>) {
   const water = item.kind === 'image' ? item.src || item.source || reflections.water : reflections.water;
   const photo = (src: string, name: string) => src ? `<img class="living-mirror__photo living-mirror__photo--${name}" src="${escape(src)}" alt="" loading="lazy" decoding="async" draggable="false" />` : '';
   const tag = item.href ? 'a' : 'button';
   // The reticle is a fragment of CLEAR's perception instrument; the three
   // orbits are the same geometry used by the HOME App World entrance.
-  return `<${tag} class="living-mirror" data-living-mirror${item.href ? ` href="${escape(item.href)}"` : ' type="button"'} aria-label="${escape(value(item, 'label') || 'Reveal a reflection from Icy Clearer')}" data-running="false" data-reflection="moments"><span class="living-mirror__depth" aria-hidden="true">${photo(water, 'water')}${photo(reflections.organic, 'organic')}${photo(reflections.gaming, 'gaming')}<span class="living-mirror__geometry living-mirror__geometry--apps"><i class="world-orbit world-orbit--one"></i><i class="world-orbit world-orbit--two"></i><i class="world-orbit world-orbit--three"></i><i class="world-orbit__core"></i></span><svg class="living-mirror__geometry living-mirror__geometry--clear" viewBox="0 0 340 330" fill="none"><circle cx="170" cy="165" r="110" /><path d="M170 35V65M170 265V295M40 165H70M270 165H300" /><circle cx="170" cy="165" r="46" /><path d="M164 154h12m-20 18h12m8 0h12" /></svg></span><span class="living-mirror__silver" aria-hidden="true"></span><span class="living-mirror__glint" aria-hidden="true"></span><span class="living-mirror__readout" aria-hidden="true"></span><span class="living-mirror__announcement" role="status" aria-live="polite"></span></${tag}>`;
+  return `<${tag} class="living-mirror" data-living-mirror${item.href ? ` href="${escape(item.href)}"` : ' type="button"'} aria-label="${escape(homeMirrorIdleLabel)}" data-running="false" data-reflection="moments"><span class="living-mirror__depth" aria-hidden="true">${photo(water, 'water')}${photo(reflections.organic, 'organic')}${photo(reflections.gaming, 'gaming')}<span class="living-mirror__geometry living-mirror__geometry--apps"><i class="world-orbit world-orbit--one"></i><i class="world-orbit world-orbit--two"></i><i class="world-orbit world-orbit--three"></i><i class="world-orbit__core"></i></span><svg class="living-mirror__geometry living-mirror__geometry--clear" viewBox="0 0 340 330" fill="none"><circle cx="170" cy="165" r="110" /><path d="M170 35V65M170 265V295M40 165H70M270 165H300" /><circle cx="170" cy="165" r="46" /><path d="M164 154h12m-20 18h12m8 0h12" /></svg></span><span class="living-mirror__silver" aria-hidden="true"></span><span class="living-mirror__glint" aria-hidden="true"></span><span class="living-mirror__readout" aria-hidden="true"></span><span class="living-mirror__announcement" role="status" aria-live="polite" aria-atomic="true"></span></${tag}>`;
 }
 
 // An entrance is an ordinary media scene object with a HOME presentation preset.
