@@ -2,16 +2,22 @@
 import "../styles/foundation.css";
 import MediaRoom from '../components/MediaRoom.astro';
 import NaturalObjects from '../components/NaturalObjects.astro';
+import NaturalPlay from '../components/NaturalPlay.astro';
+import manifest from '../data/media/natural.json?raw';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+const raw = import.meta.env.DEV && import.meta.env.MODE === 'author' ? readFileSync(resolve(process.cwd(), 'src/data/media/natural.json'), 'utf8') : manifest;
+const items = JSON.parse(raw);
 ---
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Icy Natural — Still Forming</title>
-  <meta name="description" content="The personal layer of Icy. Play, curation, thought-seeds, and discovery. Coming soon." />
+  <meta name="description" content="The personal layer of Icy. Gaming, basketball, play, curation, and thought-seeds." />
   <meta name="theme-color" content="#d8e8d0" />
   <meta property="og:title" content="Icy Natural" />
-  <meta property="og:description" content="Become, slowly. Coming soon." />
+  <meta property="og:description" content="Become, slowly. Gaming, basketball, and a living collection of play." />
   <meta property="og:type" content="website" />
 </head>
 <body>
@@ -28,6 +34,8 @@ import NaturalObjects from '../components/NaturalObjects.astro';
     <p class="nat-sub" data-author-id="natural-description" data-native-text>A living archive of interests, play, and personal curation. The room is being built. Nothing here is final — that is the point.</p>
   </section>
 
+  <NaturalPlay items={items} />
+
   <section class="nat-section">
     <div class="nat-section-head">
       <p class="nat-section-title" data-author-id="natural-interests" data-native-text>Interests</p>
@@ -35,10 +43,11 @@ import NaturalObjects from '../components/NaturalObjects.astro';
     </div>
     <div class="nat-grid">
       {['Basketball','Gaming','Music','Philosophy','Drawing','Clothing','Discovery'].map((name) => (
-        <div class="nat-card" data-name={name} data-author-id={`natural-card-${name.toLowerCase()}`}>
+        <div class:list={['nat-card',{'nat-card--live':['Gaming','Basketball'].includes(name)}]} data-name={name} data-author-id={`natural-card-${name.toLowerCase()}`}>
           <span class="nat-tag" data-native-text>Interest</span>
           <h3 data-native-text>{name}</h3>
-          <p data-native-text>Soon.</p>
+          <p data-native-text>{['Gaming','Basketball'].includes(name) ? 'Explore PLAY →' : 'Soon.'}</p>
+          {['Gaming','Basketball'].includes(name) && <a class="nat-card-link" href={`#${name.toLowerCase()}`} aria-label={`Explore ${name}`}></a>}
         </div>
       ))}
     </div>

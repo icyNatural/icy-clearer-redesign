@@ -1,0 +1,23 @@
+---
+import MediaAsset from './MediaAsset.astro';
+import { isPlay, playAspect } from '../scripts/natural-play';
+import '../styles/natural-play.css';
+const { items } = Astro.props;
+const value = (item: any, field: string) => item.overrides?.[field] ?? item[field] ?? item.metadata?.[field] ?? '';
+const placement = (p: any, prefix: string) => `--${prefix}x:${p?.x ?? 0}%;--${prefix}y:${p?.y ?? 0}%;--${prefix}w:${p?.width ?? 100}%;--${prefix}h:${p?.height ?? 100}%;`;
+const sections = [{id:'gaming',group:'play-gaming',name:'Gaming',note:'A few rounds. A few clips.'},{id:'basketball',group:'play-basketball',name:'Basketball',note:'On the court. In the moment.'},{id:'other-play',group:'play-other',name:'Other Play',note:'Room for the next thing.'}];
+---
+<section id="play" class="nat-play nat-section" aria-labelledby="play-title">
+  <header class="play-heading"><p class="nat-section-title">In motion / in play</p><h2 id="play-title">PLAY</h2><nav aria-label="Play collection"><a href="#gaming">Gaming ↓</a><a href="#basketball">Basketball ↓</a><a href="#other-play">Other Play ↓</a></nav></header>
+  {sections.map(section => <section id={section.id} class="play-collection" aria-labelledby={`${section.id}-title`}>
+    <header class="play-collection-head"><div><h3 id={`${section.id}-title`}>{section.name}</h3><p>{section.note}</p></div><button type="button" data-add-play={section.group}>+ ADD MEDIA</button></header>
+    <div class="play-stream" data-play-stream={section.group}>
+      {items.filter((item: any) => !item.deleted && isPlay(item) && item.group === section.group).sort((a: any,b: any) => (a.playOrder ?? 1000) - (b.playOrder ?? 1000)).map((item: any) => <article class:list={['play-slot',{'play-slot--wide':playAspect(item)>1.2}]} style={`--play-aspect:${playAspect(item)}`}>
+        <div class="play-frame"><figure class={`room-piece room-shape-${item.shape || 'rectangle'}`} data-author-id={item.id} data-play-media style={`${placement(item.desktop,'d')}${placement(item.mobile || item.desktop,'m')}--rotation:${item.rotation || 0}deg;--layer:${item.z ?? 1};--crop:${item.objectPosition || '50% 50%'};--media-fit:${item.fit || 'contain'};`}>
+          {item.kind === 'placeholder' ? <div class="source-paper">{value(item,'title') || 'ADD PLAY MOMENT'}</div> : <MediaAsset item={{...item, href:undefined}} deferred />}
+        </figure></div>
+        <div class="play-copy">{item.kind !== 'placeholder' && value(item,'title') && <h4>{value(item,'title')}</h4>}{value(item,'label') && <p>{value(item,'label')}</p>}{value(item,'description') && <p>{value(item,'description')}</p>}{item.metadata?.author && <small>{item.metadata.author}</small>}{item.kind === 'youtube' && <a href={item.source}>Open on YouTube ↗</a>}</div>
+      </article>)}
+    </div>
+  </section>)}
+</section>

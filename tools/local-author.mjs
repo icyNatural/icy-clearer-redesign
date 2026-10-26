@@ -26,6 +26,7 @@ export function validate(items, maximum = 100) {
       });
     }
     if (item.deleted === true) continue;
+    if (item.playOrder !== undefined && !bounded(item.playOrder, 0, 10000)) throw new Error('Invalid PLAY order.');
     if (item.featured !== undefined && typeof item.featured !== 'boolean') throw new Error('Invalid featured flag.');
     if (item.date !== undefined && (typeof item.date !== 'string' || (item.date !== '' && !/^\d{4}-\d{2}-\d{2}$/.test(item.date)))) throw new Error('Invalid photo date.');
     if (item.note !== undefined && (typeof item.note !== 'string' || item.note.length > 5000)) throw new Error('Keep notes under 5000 characters.');
@@ -92,6 +93,7 @@ export function validate(items, maximum = 100) {
     if (item.kind === 'native') return { id: item.id, kind: 'native', nativeId: item.nativeId, nativeText: item.nativeText, desktop: item.desktop, mobile: item.mobile, z: item.z };
     const result = Object.fromEntries(Object.entries(item).filter(([key]) => ['id','src','source','provider','videoId','metadata','overrides','kind','desktop','mobile','shape','objectPosition','rotation','z','label','href','group','deleted','fit','text','textSize','font','color','align','sceneStyle','parts','previewImages','featured','date','note','displaySrc','pixelWidth','pixelHeight'].includes(key)));
     if (result.note !== undefined) result.note = cleanText(result.note, 5000);
+    if (item.playOrder !== undefined) result.playOrder = item.playOrder;
     for (const key of ['desktop', 'mobile']) if (result[key]) result[key] = Object.fromEntries(['x', 'y', 'width', 'height'].map(k => [k, result[key][k]]));
     for (const key of ['label', 'group']) if (result[key] !== undefined) result[key] = cleanText(result[key], 200);
     return result;

@@ -1,1 +1,247 @@
-[]
+[
+  {
+    "id": "play-naraka",
+    "group": "play-gaming",
+    "desktop": {
+      "x": 0,
+      "y": 0,
+      "width": 100,
+      "height": 100
+    },
+    "mobile": {
+      "x": 0,
+      "y": 0,
+      "width": 100,
+      "height": 100
+    },
+    "fit": "contain",
+    "shape": "rectangle",
+    "z": 1,
+    "source": "https://www.youtube.com/watch?v=68PbSDhCrxI",
+    "kind": "youtube",
+    "provider": "youtube",
+    "metadata": {
+      "title": "iDoAutographs F2 Yoto main",
+      "author": "Cee Ham",
+      "thumbnail": "/media/natural/remote/46cefb7ee268b204a61ed60388ecd534.jpg",
+      "canonicalUrl": "https://www.youtube.com/watch?v=68PbSDhCrxI",
+      "aspect": 1.7699115044247788,
+      "fetchedAt": "2026-10-26T07:10:53.010Z",
+      "status": "ok"
+    },
+    "videoId": "68PbSDhCrxI",
+    "playOrder": 1
+  },
+  {
+    "id": "play-gears",
+    "group": "play-gaming",
+    "desktop": {
+      "x": 0,
+      "y": 0,
+      "width": 100,
+      "height": 100
+    },
+    "mobile": {
+      "x": 0,
+      "y": 0,
+      "width": 100,
+      "height": 100
+    },
+    "fit": "contain",
+    "shape": "rectangle",
+    "z": 1,
+    "source": "https://www.youtube.com/shorts/mdhgL77UL7Y",
+    "kind": "youtube",
+    "provider": "youtube",
+    "metadata": {
+      "title": "Whole Arsenal for the Whole Team  | Gears E Day",
+      "author": "Cee Ham",
+      "thumbnail": "/media/natural/remote/15b43be0b61845f0d9ac3a090233b7c2.jpg",
+      "canonicalUrl": "https://www.youtube.com/watch?v=mdhgL77UL7Y",
+      "aspect": 0.5625,
+      "fetchedAt": "2026-10-26T07:10:53.327Z",
+      "status": "ok"
+    },
+    "videoId": "mdhgL77UL7Y",
+    "playOrder": 2
+  },
+  {
+    "id": "play-supplied-short",
+    "group": "play-gaming",
+    "desktop": {
+      "x": 0,
+      "y": 0,
+      "width": 100,
+      "height": 100
+    },
+    "mobile": {
+      "x": 0,
+      "y": 0,
+      "width": 100,
+      "height": 100
+    },
+    "fit": "contain",
+    "shape": "rectangle",
+    "z": 1,
+    "source": "https://www.youtube.com/shorts/-Wu0ulE0Yps",
+    "kind": "youtube",
+    "provider": "youtube",
+    "metadata": {
+      "title": "I Can't Wait for Gears E-Day #gearseday #gaming",
+      "author": "Cee Ham",
+      "thumbnail": "/media/natural/remote/c34fe92d85d0a9bdc2652f3ea9c16056.jpg",
+      "canonicalUrl": "https://www.youtube.com/watch?v=-Wu0ulE0Yps",
+      "aspect": 0.5625,
+      "fetchedAt": "2026-10-26T07:10:53.577Z",
+      "status": "ok"
+    },
+    "videoId": "-Wu0ulE0Yps",
+    "playOrder": 3
+  },
+  {
+    "id": "play-marvel",
+    "group": "play-gaming",
+    "desktop": {
+      "x": 0,
+      "y": 0,
+      "width": 100,
+      "height": 100
+    },
+    "mobile": {
+      "x": 0,
+      "y": 0,
+      "width": 100,
+      "height": 100
+    },
+    "fit": "contain",
+    "shape": "rectangle",
+    "z": 1,
+    "source": "https://www.youtube.com/watch?v=6JL4DZIalNg",
+    "kind": "youtube",
+    "provider": "youtube",
+    "metadata": {
+      "title": "venom 1v6 survivability",
+      "author": "Cee Ham",
+      "thumbnail": "/media/natural/remote/b96a3ce09a91f64fb057c69936ac503b.jpg",
+      "canonicalUrl": "https://www.youtube.com/watch?v=6JL4DZIalNg",
+      "aspect": 1.7699115044247788,
+      "fetchedAt": "2026-10-26T07:10:54.155Z",
+      "status": "ok"
+    },
+    "videoId": "6JL4DZIalNg",
+    "playOrder": 4
+  },
+  {
+    "id": "play-hoop",
+    "group": "play-basketball",
+    "desktop": {
+      "x": 0,
+      "y": 0,
+      "width": 100,
+      "height": 100
+    },
+    "mobile": {
+      "x": 0,
+      "y": 0,
+      "width": 100,
+      "height": 100
+    },
+    "fit": "contain",
+    "shape": "rectangle",
+    "z": 1,
+    "kind": "video",
+    "provider": "local",
+    "src": "/media/home/life/64675-basketball.mp4",
+    "source": "/media/home/life/64675-basketball.mp4",
+    "metadata": {
+      "title": "Hesi pull pretty asf",
+      "thumbnail": "/media/home/life/64675-basketball-poster.jpg",
+      "contentType": "video/mp4",
+      "aspect": 0.5625,
+      "fetchedAt": "2026-10-25T06:36:44.428Z",
+      "status": "ok"
+    },
+    "playOrder": 1
+  },
+  {
+    "id": "play-hoop-slot",
+    "group": "play-basketball",
+    "desktop": {
+      "x": 0,
+      "y": 0,
+      "width": 100,
+      "height": 100
+    },
+    "mobile": {
+      "x": 0,
+      "y": 0,
+      "width": 100,
+      "height": 100
+    },
+    "fit": "contain",
+    "shape": "rectangle",
+    "z": 1,
+    "kind": "placeholder",
+    "metadata": {
+      "aspect": 0.5625
+    },
+    "overrides": {
+      "title": "ADD HOOP CLIP"
+    },
+    "playOrder": 2
+  },
+  {
+    "id": "play-photo-slot",
+    "group": "play-basketball",
+    "desktop": {
+      "x": 0,
+      "y": 0,
+      "width": 100,
+      "height": 100
+    },
+    "mobile": {
+      "x": 0,
+      "y": 0,
+      "width": 100,
+      "height": 100
+    },
+    "fit": "contain",
+    "shape": "rectangle",
+    "z": 1,
+    "kind": "placeholder",
+    "metadata": {
+      "aspect": 1.3333333333333333
+    },
+    "overrides": {
+      "title": "ADD PHOTO"
+    },
+    "playOrder": 3
+  },
+  {
+    "id": "play-other-slot",
+    "group": "play-other",
+    "desktop": {
+      "x": 0,
+      "y": 0,
+      "width": 100,
+      "height": 100
+    },
+    "mobile": {
+      "x": 0,
+      "y": 0,
+      "width": 100,
+      "height": 100
+    },
+    "fit": "contain",
+    "shape": "rectangle",
+    "z": 1,
+    "kind": "placeholder",
+    "metadata": {
+      "aspect": 1.3333333333333333
+    },
+    "overrides": {
+      "title": "ADD PLAY MOMENT"
+    },
+    "playOrder": 1
+  }
+]

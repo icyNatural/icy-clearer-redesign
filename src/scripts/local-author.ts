@@ -2,6 +2,7 @@ import '../styles/local-author.css';
 import { applyNative, nativeTextNodes, naturalTemplate, renderNaturalObjects } from './natural-objects';
 import { homeContent, homeParts, homeWorld, homeEntrance } from './home-scene';
 import { layoutMoments } from './moments-layout';
+import { isPlay, layoutPlay } from './natural-play';
 
 // IDs identify scene objects, not credentials. getRandomValues also works on
 // HTTP LAN/Tailscale origins where the secure-context-only randomUUID does not.
@@ -16,6 +17,8 @@ export function start() {
   if (!canvas) return;
   const room = canvas.dataset.mediaRoom!;
   const moments = room === 'moments';
+  const naturalPlay = room === 'natural' && !!document.querySelector('#play');
+  let playDestination = 'play-other';
   const source = document.querySelector(`[data-author-manifest="${room}"]`);
   let items: any[] = JSON.parse(source?.textContent || '[]');
   if (room === 'natural') renderNaturalObjects(items);
@@ -61,8 +64,18 @@ export function start() {
   addSpot.addEventListener('click', () => { if (saving || uploading) return; replacing = false; if (moments) { picker.multiple = true; picker.value = ''; picker.click(); } else openSource(); });
   canvas.append(addSpot);
   const status = (text: string) => { panel.querySelector('.author-status')!.textContent = text; };
-  const mark = () => { if (moments) layoutMoments(canvas, items); dirty = true; status(`Unsaved · ${breakpoint} layout`); };
+  const mark = () => { if (moments) layoutMoments(canvas, items); if (naturalPlay) layoutPlay(canvas, items); dirty = true; status(`Unsaved · ${breakpoint} layout`); };
   if (moments) layoutMoments(canvas, items);
+  if (naturalPlay) {
+    layoutPlay(canvas, items);
+    const order = document.createElement('label'); order.textContent = 'PLAY ORDER (lower first)';
+    const input = document.createElement('input'); input.type = 'number'; input.min = '0'; input.max = '10000'; input.dataset.field = 'playOrder'; order.append(input);
+    panel.querySelector('.author-selection')!.append(order);
+    document.querySelectorAll<HTMLElement>('[data-add-play]').forEach(button => button.addEventListener('click', () => {
+      if (saving || uploading) return;
+      playDestination = button.dataset.addPlay!; replacing = false; insertion = null; openSource();
+    }));
+  }
   function checkpoint() {
     const snapshot = JSON.stringify(items);
     if (snapshot === history[historyIndex]) return;
@@ -82,10 +95,11 @@ export function start() {
     const id = selected?.dataset.authorId;
     historyIndex = next; items = JSON.parse(history[historyIndex]);
     canvas.querySelectorAll('[data-author-id]').forEach(el => el.remove()); selected = null;
+    if (naturalPlay) document.querySelectorAll('.play-slot').forEach(el => el.remove());
     if (room === 'natural') renderNaturalObjects(items);
     for (const item of items.filter(i => !i.deleted && i.kind !== 'native')) {
       const el = document.createElement('figure'); el.className = 'room-piece'; el.dataset.authorId = item.id;
-      canvas.append(el); if (moments) layoutMoments(canvas, items); draw(item, el); apply(item, el);
+      canvas.append(el); if (moments) layoutMoments(canvas, items); if (naturalPlay) layoutPlay(canvas, items); draw(item, el); apply(item, el);
     }
     panel.querySelector<HTMLElement>('.author-selection')!.hidden = true;
     const elements = Array.from(document.querySelectorAll<HTMLElement>('[data-author-id]'));
@@ -97,7 +111,7 @@ export function start() {
   panel.addEventListener('focusin', () => { if (inputStart === null) inputStart = JSON.stringify(items); });
   panel.addEventListener('change', checkpointInput);
   panel.addEventListener('focusout', checkpointInput);
-  const container = (el: HTMLElement) => moments ? el.closest<HTMLElement>('.moment-slot') || canvas : el.closest('.piece') ? el.parentElement! : canvas;
+  const container = (el: HTMLElement) => el.closest<HTMLElement>('.play-frame') || (moments ? el.closest<HTMLElement>('.moment-slot') || canvas : el.closest('.piece') ? el.parentElement! : canvas);
   const current = () => items.find(i => i.id === selected?.dataset.authorId);
   const clamp = (n: number, min: number, max: number) => Math.max(min, Math.min(max, n));
   const value = (item: any, field: string) => item.overrides?.[field] ?? item[field] ?? ((field === 'label' || field === 'alt') ? item.metadata?.title : item.metadata?.[field]) ?? '';
@@ -120,9 +134,9 @@ export function start() {
     }
     const wrap = document.createElement('div'); wrap.className = item.kind === 'youtube' ? 'source-youtube' : item.kind === 'placeholder' ? 'source-paper' : 'source-fragment';
     wrap.style.borderRadius = 'inherit'; wrap.style.width = '100%'; wrap.style.height = '100%';
-    if (item.kind === 'video') { const video = document.createElement('video'); video.src = item.src || item.source; video.controls = true; video.playsInline = true; video.setAttribute('aria-label', value(item,'alt')); wrap.append(video); }
+    if (item.kind === 'video') { const video = document.createElement('video'); video.src = item.src || item.source; video.controls = true; video.playsInline = true; if (naturalPlay && isPlay(item)) { video.preload = 'none'; video.poster = item.metadata?.thumbnail || ''; } video.setAttribute('aria-label', value(item,'alt')); wrap.append(video); }
     else if (item.kind === 'image' || item.src || item.metadata?.thumbnail) { const img = document.createElement('img'); img.src = (moments && item.displaySrc) || item.src || item.metadata?.thumbnail || item.source; img.alt = value(item,'alt'); img.draggable = false; img.loading = 'lazy'; img.decoding = 'async'; wrap.append(img); }
-    if (item.kind === 'youtube') { const play = document.createElement('span'); play.className = 'source-play'; play.textContent = '▶'; wrap.append(play); }
+    if (item.kind === 'youtube') { const play = document.createElement('span'); play.className = 'source-play'; play.textContent = '▶'; if (naturalPlay && isPlay(item)) { play.dataset.playYoutube = item.videoId; wrap.dataset.youtube = item.videoId; } wrap.append(play); }
     if (item.kind === 'unavailable' || item.kind === 'link') { const text = document.createElement('span'); text.textContent = item.kind === 'unavailable' ? 'Media unavailable locally' : value(item,'title') || item.source; wrap.append(text); }
     el.append(wrap);
     if (value(item,'label') && item.kind !== 'placeholder') { const caption = document.createElement('figcaption'); caption.textContent = value(item,'label'); el.append(caption); }
@@ -138,6 +152,7 @@ export function start() {
     let item: any; let el: HTMLElement;
     if (replacing && selected) {
       item = current(); el = selected;
+      if (naturalPlay && isPlay(item) && item.kind === 'placeholder') delete item.overrides?.title;
       // Replace the entire preview using the existing media workflow. Caption,
       // destination and placement remain independent of the replacement source.
       if (homeWorld(item) && (media.src || media.source) !== (item.src || item.source)) delete item.previewImages;
@@ -145,6 +160,10 @@ export function start() {
     }
     else { item = { id: mediaId(), desktop: { x:10,y:10,width:35,height:30 }, mobile: { x:5,y:8,width:85,height:23 }, z:3,shape:'rectangle' }; items.push(item); el = document.createElement('figure'); el.className = 'room-piece'; el.dataset.authorId = item.id; canvas.append(el); }
     Object.assign(item, media);
+    if (naturalPlay && isNew && !media.desktop) {
+      item.group = playDestination;
+      item.playOrder = Math.min(10000, Math.max(0, ...items.filter(i => i !== item && isPlay(i)).map(i => i.playOrder || 0)) + 1);
+    }
     el.dataset.authorId = item.id;
     if (isNew && media.metadata?.aspect && !media.desktop) {
       item.fit = 'contain';
@@ -170,6 +189,10 @@ export function start() {
         item.desktop = {x:4,y:4,width:92,height:92}; item.mobile = {...item.desktop}; item.fit = 'contain';
       }
       layoutMoments(canvas, items);
+    }
+    if (naturalPlay && isPlay(item)) {
+      if (isNew && !media.desktop) { item.desktop = {x:0,y:0,width:100,height:100}; item.mobile = {...item.desktop}; item.fit = 'contain'; }
+      layoutPlay(canvas, items);
     }
     draw(item, el); select(el); apply(item,el); mark(); checkpoint();
     panel.querySelector<HTMLElement>('.author-source-flow')!.hidden = true;
@@ -219,6 +242,10 @@ export function start() {
     if (previous) { const oldItem = items.find(i => i.id === previous.dataset.authorId); if (oldItem) apply(oldItem, previous); }
     selected = el; selected.classList.add('author-selected'); selected.tabIndex = 0;
     const item = ensure(el); apply(item, el);
+    if (naturalPlay) {
+      if (isPlay(item)) playDestination = item.group;
+      panel.querySelector<HTMLInputElement>('[data-field="playOrder"]')!.value = String(item.playOrder ?? 1000);
+    }
     if (!el.querySelector('.author-handle')) { const handle = document.createElement('button'); handle.className = 'author-handle'; handle.setAttribute('aria-label', 'Drag to resize'); el.append(handle); }
     panel.querySelector<HTMLElement>('.author-selection')!.hidden = false;
     const crop = (item.objectPosition || '50% 50%').split(' ').map(parseFloat);
@@ -269,7 +296,7 @@ export function start() {
     const el = target.closest<HTMLElement>('[data-author-id]'); if (!el) return;
     // An unselected photo remains a native touch-scroll surface. Tap to select;
     // only the selected photo captures drag/resize gestures.
-    if (moments && event.pointerType === 'touch' && selected !== el) return;
+    if ((moments || (naturalPlay && el.closest('.play-slot'))) && event.pointerType === 'touch' && selected !== el) return;
     event.preventDefault(); event.stopImmediatePropagation();
     if (selected !== el) select(el);
     const item = ensure(el); const bounds = container(el).getBoundingClientRect();
@@ -319,6 +346,7 @@ export function start() {
       apply(item, selected); mark(); return;
     }
     if (!field || field === 'source') return;
+    if (naturalPlay && field === 'playOrder') { if (input.value === '') delete item.playOrder; else item.playOrder = clamp(+input.value,0,10000); mark(); return; }
     if (moments && ['date','note','featured'].includes(field)) {
       item[field] = field === 'featured' ? input.checked : input.value;
       if (field === 'featured' && input.checked) items.forEach(other => { if (other !== item) other.featured = false; });
@@ -358,7 +386,7 @@ export function start() {
       for (const key of ['desktop','mobile']) if (copy[key]) { const p = copy[key]; p.x = clamp(p.x + 2, 0, copy.kind === 'native' ? 100 : 100 - p.width); p.y = clamp(p.y + 2, 0, copy.kind === 'native' ? 100 : 100 - p.height); }
       replacing = false; insertion = null; install(copy);
     }
-    if (action === 'add' || action === 'replace') { insertion = null; replacing = action === 'replace'; openSource(); }
+    if (action === 'add' || action === 'replace') { insertion = null; replacing = action === 'replace'; if (naturalPlay && action === 'add') playDestination = isPlay(current() || {}) ? current().group : 'play-other'; openSource(); }
     if (action === 'file') { picker.multiple = !replacing; picker.value = ''; picker.click(); }
     if (action === 'url') { panel.querySelector<HTMLElement>('.author-url-flow')!.hidden = false; panel.querySelector<HTMLInputElement>('[data-source-url]')!.focus(); }
     if (action === 'cancel-source') panel.querySelector<HTMLElement>('.author-source-flow')!.hidden = true;

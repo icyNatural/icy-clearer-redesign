@@ -1,5 +1,5 @@
 ---
-const { item } = Astro.props;
+const { item, deferred = false } = Astro.props;
 const value = (field: string) => item.overrides?.[field] ?? item[field] ?? (field === 'label' || field === 'alt' ? item.metadata?.title : item.metadata?.[field]) ?? '';
 const title = value('title');
 const label = value('label');
@@ -10,7 +10,7 @@ const link = item.href || (item.kind === 'link' ? item.metadata?.canonicalUrl ||
 {item.kind === 'text' ? <div class={`source-text text-font-${item.font || 'sans'} text-color-${item.color || 'dark'}`} style={`font-size:${item.textSize || 32}px;text-align:${item.align || 'left'}`}>{item.text}</div> : item.kind === 'youtube' ? <div class="source-youtube" data-youtube={item.videoId}>
   {poster && <img src={poster} alt={alt} loading="lazy" draggable="false" />}
   <button class="source-play" type="button" aria-label={`Play ${title || 'YouTube video'}`} data-play-youtube={item.videoId}>▶</button>
-</div> : item.kind === 'video' ? <video src={item.src || item.source} aria-label={alt || 'Film'} controls playsinline preload="metadata" />
+</div> : item.kind === 'video' ? <video src={item.src || item.source} poster={deferred ? poster : undefined} aria-label={alt || 'Film'} controls playsinline preload={deferred ? 'none' : 'metadata'} />
 : item.kind === 'image' ? <img src={item.src || item.source} alt={alt} loading="lazy" draggable="false" />
 : item.kind === 'placeholder' ? <div class="source-paper" aria-label="Empty photo mat"></div>
 : <div class="source-fragment">{(item.src || poster) && <img src={item.src || poster} alt={alt} loading="lazy" />}<span>{item.kind === 'unavailable' ? 'Media unavailable locally' : title || item.metadata?.providerName || 'Open link'}{item.kind === 'unavailable' && <small>Attach your own photo or film in Local Studio.</small>}</span></div>}
