@@ -5,6 +5,17 @@ const metadata = dialog.querySelector<HTMLElement>('.moment-detail__metadata')!;
 let opener: HTMLElement | null = null;
 let previousOverflow = '';
 const value = (item: any, field: string) => item.overrides?.[field] ?? item[field] ?? item.metadata?.[field] ?? '';
+function appendCaptureCredit(el: HTMLElement, text: string) {
+  const parts = text.split(/(Photogression)/g);
+  for (const part of parts) {
+    if (part !== 'Photogression') { el.append(document.createTextNode(part)); continue; }
+    const link = document.createElement('a');
+    link.className = 'photogression-link';
+    link.href = 'https://photogression.icynatural.now';
+    link.textContent = 'Photogression ↗';
+    el.append(link);
+  }
+}
 function render() {
   const id = new URLSearchParams(location.hash.slice(1)).get('moment');
   const index = items.findIndex((item: any) => item.id === id);
@@ -17,7 +28,12 @@ function render() {
   metadata.replaceChildren();
   for (const [tag, text] of [['h2',value(item,'title')],['p',value(item,'label')],['p',value(item,'description')],['small',[item.date,item.group].filter(Boolean).join(' · ')],['p',item.note]]) {
     if (!text) continue;
-    const el = document.createElement(tag); el.textContent = text; metadata.append(el);
+    const el = document.createElement(tag); appendCaptureCredit(el, text); metadata.append(el);
+  }
+  if (!metadata.querySelector('.photogression-link')) {
+    const credit = document.createElement('p');
+    appendCaptureCredit(credit, 'Taken with Photogression');
+    metadata.append(credit);
   }
   if (item.href) { const a = document.createElement('a'); a.href = item.href; a.textContent = 'Explore ↗'; metadata.append(a); }
   dialog.querySelector('[data-detail-count]')!.textContent = `${index + 1} / ${items.length}`;

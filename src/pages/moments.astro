@@ -23,7 +23,7 @@ const placement = (p: any, prefix: string) => `--${prefix}x:${p?.x ?? 4}%;--${pr
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   </head>
   <body class="moments-page">
-    <header class="moments-header"><a href="/" aria-label="Icy Clearer home">ICY CLEARER ↗</a><h1>MOMENTS</h1><p>Captured through Photogression</p></header>
+    <header class="moments-header"><a href="/" aria-label="Icy Clearer home">ICY CLEARER ↗</a><h1>MOMENTS</h1><p>Captured through <a class="photogression-link" href="https://photogression.icynatural.now">Photogression ↗</a></p></header>
     <main id="gallery" aria-label="Photo gallery">
       <div class:list={['media-room', 'moments-stream', { 'moments-empty': !items.length }]} data-media-room="moments" data-revision={author ? createHash('sha256').update(raw).digest('hex') : undefined}>
         {items.map((item: any) => <div class:list={['moment-slot', { 'moment-slot--featured': item.featured }]} style={`--moment-aspect:${Math.max(.6, Math.min(1.8, item.metadata?.aspect || 1.5))}`}>
