@@ -3,10 +3,10 @@
     "id": "home-sky",
     "group": "sky",
     "desktop": {
-      "x": 56,
-      "y": 4,
-      "width": 26,
-      "height": 10
+      "x": 48.45454545454545,
+      "y": 5.174827742193492,
+      "width": 33.27272727272727,
+      "height": 12.797202797202798
     },
     "mobile": {
       "x": 56,
@@ -31,48 +31,13 @@
     "objectPosition": "50% 70%"
   },
   {
-    "id": "home-moments",
-    "group": "moments",
-    "desktop": {
-      "x": 67,
-      "y": 18,
-      "width": 33,
-      "height": 20.5
-    },
-    "mobile": {
-      "x": 67,
-      "y": 12.979687,
-      "width": 33,
-      "height": 14.782422
-    },
-    "rotation": 10,
-    "z": 3,
-    "shape": "rectangle",
-    "fit": "cover",
-    "overrides": {
-      "title": "Chad",
-      "alt": "Chad with long locs, a foreground hand gesture, and a blue icy eye design"
-    },
-    "src": "/media/home/3ce9fe37253a56e5da49.jpg",
-    "kind": "image",
-    "source": "/media/home/3ce9fe37253a56e5da49.jpg",
-    "metadata": {
-      "aspect": 1.005893909626719
-    },
-    "objectPosition": "70% 50%",
-    "parts": [
-      "Moments",
-      "Everywhere   ⟶"
-    ]
-  },
-  {
     "id": "home-games",
     "group": "games",
     "desktop": {
-      "x": 8,
-      "y": 39.7,
-      "width": 45,
-      "height": 12.1
+      "x": 3.090909090909091,
+      "y": 39.82587440094931,
+      "width": 57.36363636363637,
+      "height": 15.424444444444445
     },
     "mobile": {
       "x": 8,
@@ -80,7 +45,7 @@
       "width": 45,
       "height": 8.725234
     },
-    "rotation": -11,
+    "rotation": -1,
     "z": 5,
     "shape": "rectangle",
     "fit": "cover",
@@ -105,36 +70,12 @@
     ]
   },
   {
-    "id": "home-sketch",
-    "kind": "placeholder",
-    "group": "sketch",
-    "desktop": {
-      "x": 6,
-      "y": 55.1,
-      "width": 29,
-      "height": 14.8
-    },
-    "mobile": {
-      "x": 6,
-      "y": 39.732266,
-      "width": 29,
-      "height": 10.672187
-    },
-    "rotation": -9,
-    "z": 6,
-    "shape": "rectangle",
-    "fit": "cover",
-    "overrides": {
-      "alt": "Sketch media slot"
-    }
-  },
-  {
     "id": "home-portal",
     "kind": "placeholder",
     "group": "portal",
     "desktop": {
-      "x": 53.5,
-      "y": 41,
+      "x": 64.13636363636364,
+      "y": 23.75520706994552,
       "width": 34,
       "height": 27.3
     },
@@ -235,8 +176,8 @@
     "color": "dark",
     "align": "left",
     "desktop": {
-      "x": 12.8,
-      "y": 24.3,
+      "x": 37.89090909090909,
+      "y": 26.313990415188844,
       "width": 11.1,
       "height": 3.23
     },
@@ -277,7 +218,7 @@
     "id": "home-intro-body",
     "kind": "text",
     "sceneStyle": "intro-body",
-    "text": "A space for ideas, experiments,\nmedia, and everything in between.\nNothing here is final — that is\nthe point.",
+    "text": "A space for ideas, experiments,\nmedia, and everything in between.\n",
     "textSize": 32,
     "font": "serif",
     "color": "dark",
@@ -301,16 +242,16 @@
     "id": "home-sky-note",
     "kind": "text",
     "sceneStyle": "sky-note",
-    "text": "SKY\nNOTES",
+    "text": "Personal\nShots\n",
     "textSize": 32,
     "font": "serif",
     "color": "dark",
     "align": "left",
     "desktop": {
-      "x": 85.5,
-      "y": 6.3,
-      "width": 7.2,
-      "height": 6.5
+      "x": 83.22727272727273,
+      "y": 7.013288272046049,
+      "width": 13.772727272727275,
+      "height": 5
     },
     "mobile": {
       "x": 85.5,
@@ -319,33 +260,6 @@
       "height": 4.687109
     },
     "rotation": 0,
-    "z": 1,
-    "parts": [
-      "⟶"
-    ]
-  },
-  {
-    "id": "home-ideas",
-    "kind": "text",
-    "sceneStyle": "ideas",
-    "text": "Ideas\nSketches\nNotes\nFragments",
-    "textSize": 32,
-    "font": "serif",
-    "color": "dark",
-    "align": "left",
-    "desktop": {
-      "x": 35.5,
-      "y": 57.1,
-      "width": 15.7,
-      "height": 10.2
-    },
-    "mobile": {
-      "x": 35.5,
-      "y": 41.174453,
-      "width": 15.7,
-      "height": 7.355156
-    },
-    "rotation": -9,
     "z": 1,
     "parts": [
       "⟶"
@@ -388,8 +302,8 @@
     "color": "dark",
     "align": "left",
     "desktop": {
-      "x": 5.6,
-      "y": 72.8,
+      "x": 5.145454545454546,
+      "y": 60.044727370470646,
       "width": 88.8,
       "height": 2.4
     },
@@ -411,10 +325,10 @@
     "group": "world-natural",
     "kind": "image",
     "desktop": {
-      "x": 5.6,
-      "y": 76,
-      "width": 27.2,
-      "height": 19
+      "x": 0.23636363636363633,
+      "y": 65.55242472120787,
+      "width": 34.654545454545456,
+      "height": 23.489520300525133
     },
     "mobile": {
       "x": 5.6,
@@ -430,9 +344,9 @@
     "href": "/natural.html",
     "overrides": {
       "title": "ICY NATURAL",
-      "label": "ICY NATURAL",
       "description": "play · making · observation · life",
-      "alt": "Indoor basketball action from Hesi pull pretty asf"
+      "alt": "Indoor basketball action from Hesi pull pretty asf",
+      "label": "ICY NATURAL"
     },
     "source": "/media/home/life/64675-basketball-poster.jpg",
     "src": "/media/home/life/64675-basketball-poster.jpg",
@@ -453,10 +367,10 @@
     "group": "world-apps",
     "kind": "placeholder",
     "desktop": {
-      "x": 36.4,
-      "y": 76,
-      "width": 27.2,
-      "height": 19
+      "x": 35.763636363636365,
+      "y": 66.18179672595438,
+      "width": 30.018181818181816,
+      "height": 22.608399493880015
     },
     "mobile": {
       "x": 5.6,
@@ -472,9 +386,9 @@
     "href": "/world.html",
     "overrides": {
       "title": "APP WORLD",
-      "label": "APP WORLD",
       "description": "apps · systems · tools · experiments",
-      "alt": "APP WORLD editable preview"
+      "alt": "APP WORLD editable preview",
+      "label": "APP WORLD"
     },
     "parts": [
       "WORKSPACE / 01",
@@ -486,10 +400,10 @@
     "group": "world-clear",
     "kind": "placeholder",
     "desktop": {
-      "x": 67.2,
-      "y": 76,
-      "width": 27.2,
-      "height": 19
+      "x": 67.2909090909091,
+      "y": 66.34962926055346,
+      "width": 31.381818181818183,
+      "height": 22.398608825631175
     },
     "mobile": {
       "x": 5.6,
@@ -505,9 +419,9 @@
     "href": "/clear.html",
     "overrides": {
       "title": "CLEAR",
-      "label": "CLEAR",
       "description": "perception · evidence · time · coherence",
-      "alt": "CLEAR editable preview"
+      "alt": "CLEAR editable preview",
+      "label": "CLEAR"
     },
     "parts": [
       "01  PERCEPTION / EVIDENCE",
