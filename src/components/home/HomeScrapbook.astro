@@ -1,6 +1,7 @@
 ---
 import MediaRoom from '../MediaRoom.astro';
 import '../../styles/home-scrapbook.css';
+import '../../styles/home-mirror.css';
 ---
 <main class="home-scrapbook" aria-label="Icy Clearer — a living archive">
   <header class="scrap-top">
@@ -12,3 +13,4 @@ import '../../styles/home-scrapbook.css';
   <div class="scrap-floor" aria-hidden="true"></div>
   <MediaRoom room="home" overlay />
 </main>
+<script src="../../scripts/home-mirror.ts"></script>

@@ -5,7 +5,7 @@ import { resolve } from 'node:path';
 import '../styles/media-room.css';
 import MediaAsset from './MediaAsset.astro';
 import AuthorStartup from './AuthorStartup.astro';
-import { homeContent, homeParts, homeWorld, homeEntrance } from '../scripts/home-scene';
+import { homeContent, homeParts, homeWorld, homeEntrance, homeMirror, homeMirrorContent, homeReflectionSources } from '../scripts/home-scene';
 import { isPlay } from '../scripts/natural-play';
 interface Props { room: 'home' | 'natural' | 'clear' | 'worlds'; overlay?: boolean; }
 const { room, overlay = false } = Astro.props;
@@ -13,6 +13,7 @@ const manifests = import.meta.glob('../data/media/*.json', { query: '?raw', impo
 const author = import.meta.env.DEV && import.meta.env.MODE === 'author';
 const raw = author ? readFileSync(resolve(process.cwd(), 'src/data/media', `${room}.json`), 'utf8') : manifests[`../data/media/${room}.json`] as string;
 const items = JSON.parse(raw);
+const reflections = room === 'home' ? homeReflectionSources(items, JSON.parse(manifests['../data/media/moments.json'] as string || '[]')) : undefined;
 const placement = (p: any, prefix: string) => p ? `--${prefix}x:${p.x}%;--${prefix}y:${p.y}%;--${prefix}w:${p.width}%;--${prefix}h:${p.height}%;` : '';
 const style = (item: any) => `${placement(item.desktop, 'd')}${placement(item.mobile ?? item.desktop, 'm')}--rotation:${item.rotation ?? 0}deg;--layer:${item.z ?? 1};--crop:${item.objectPosition ?? '50% 50%'};--media-fit:${item.fit === 'contain' ? 'contain' : 'cover'};`;
 const radii: Record<string, string> = { rectangle: '2px', arch: '48% 48% 2px 2px', round: '50%', organic: '43% 57% 61% 39% / 56% 37% 63% 44%' };
@@ -24,11 +25,12 @@ const existingRules = items.filter((item: any) => item.id.startsWith('intro-')).
 <div class:list={['media-room', { 'media-room--overlay': overlay }]} data-media-room={room} data-revision={author ? createHash('sha256').update(raw).digest('hex') : undefined}>
   {items.filter((item: any) => !item.deleted && item.kind !== 'native' && !item.id.startsWith('intro-') && !(room === 'natural' && isPlay(item))).map((item: any) => (
     <figure class:list={[`room-piece room-shape-${item.shape ?? 'rectangle'}`, { 'home-scene-text': room === 'home' && item.sceneStyle, 'home-world-entrance': room === 'home' && homeWorld(item) }]} data-scene-style={room === 'home' ? item.sceneStyle : undefined} data-role={item.group} data-author-id={item.id} style={style(item)}>
-      {room === 'home' && homeWorld(item) ? <Fragment set:html={homeEntrance(item)} /> : room === 'home' && item.sceneStyle ? <Fragment set:html={homeContent(item)} /> : <MediaAsset item={item} />}
+      {room === 'home' && homeMirror(item) ? <Fragment set:html={homeMirrorContent(item, reflections!)} /> : room === 'home' && homeWorld(item) ? <Fragment set:html={homeEntrance(item)} /> : room === 'home' && item.sceneStyle ? <Fragment set:html={homeContent(item)} /> : <MediaAsset item={item} />}
       {room === 'home' && <Fragment set:html={homeParts(item)} />}
     </figure>
   ))}
 </div>
+{reflections && <script is:inline type="application/json" data-home-reflections set:html={JSON.stringify(reflections).replace(/</g, '\\u003c')}></script>}
 <script>
   document.addEventListener('click', event => {
     const button = (event.target as HTMLElement).closest<HTMLElement>('[data-play-youtube]');

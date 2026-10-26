@@ -1,6 +1,6 @@
 import '../styles/local-author.css';
 import { applyNative, nativeTextNodes, naturalTemplate, renderNaturalObjects } from './natural-objects';
-import { homeContent, homeParts, homeWorld, homeEntrance } from './home-scene';
+import { homeContent, homeParts, homeWorld, homeEntrance, homeMirror, homeMirrorContent } from './home-scene';
 import { layoutMoments } from './moments-layout';
 import { isPlay, layoutPlay } from './natural-play';
 
@@ -21,6 +21,7 @@ export function start() {
   let playDestination = 'play-other';
   const source = document.querySelector(`[data-author-manifest="${room}"]`);
   let items: any[] = JSON.parse(source?.textContent || '[]');
+  const reflections = JSON.parse(document.querySelector('[data-home-reflections]')?.textContent || '{}');
   if (room === 'natural') renderNaturalObjects(items);
   let selected: HTMLElement | null = null;
   let dirty = false;
@@ -125,6 +126,7 @@ export function start() {
   function draw(item: any, el: HTMLElement) {
     if (item.kind === 'native') { applyNative(item, el); return; }
     el.replaceChildren();
+    if (room === 'home' && homeMirror(item)) { el.innerHTML = homeMirrorContent(item, reflections); return; }
     if (room === 'home' && homeWorld(item)) { el.innerHTML = homeEntrance(item); return; }
     if (room === 'home' && item.sceneStyle) { el.innerHTML = homeContent(item); return; }
     if (room === 'home' && item.parts) el.insertAdjacentHTML('beforeend', homeParts(item));
@@ -364,7 +366,7 @@ export function start() {
     else if (field === 'cropX' || field === 'cropY') item.objectPosition = `${panel.querySelector<HTMLInputElement>('[data-field="cropX"]')!.value}% ${panel.querySelector<HTMLInputElement>('[data-field="cropY"]')!.value}%`;
     else if (field === 'rotation') item.rotation = +input.value;
     else if (field && field !== 'aspect') item[field] = input.value;
-    if (field === 'group' && room === 'home') draw(item, selected);
+    if (room === 'home' && (field === 'group' || (field === 'href' && homeMirror(item)))) draw(item, selected);
     if (field === 'label') { const media = selected.querySelector('img'); media?.setAttribute('alt', input.value); let caption = selected.querySelector('figcaption'); if (!caption && input.value) { caption = document.createElement('figcaption'); selected.append(caption); } if (caption) caption.textContent = input.value; }
     apply(item, selected); mark();
   });

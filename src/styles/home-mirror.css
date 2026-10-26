@@ -1,0 +1,42 @@
+/* The frame, scene coordinates and arch silhouette remain in home-scrapbook.
+   Only the glass inside the existing portal object is replaced. */
+.home-scrapbook .living-mirror{position:relative;display:block;width:100%;height:100%;margin:0;padding:0;border:0;border-radius:48% 48% 0 0;overflow:hidden;isolation:isolate;appearance:none;background:#263b36;color:#e0e5d4;box-shadow:inset 1.8cqw 1cqw 1.5cqw #172b2a88,inset -1px 0 0 #f5f6e333;cursor:pointer;touch-action:pan-y;text-decoration:none;-webkit-tap-highlight-color:transparent}
+.living-mirror::after{content:'';position:absolute;inset:0;z-index:5;border-radius:inherit;box-shadow:inset 1.4cqw .6cqw 1.8cqw #14252399,inset -.25cqw 0 .6cqw #eef0db33;pointer-events:none}
+.living-mirror__depth{position:absolute;inset:0;overflow:hidden;border-radius:inherit;pointer-events:none}
+.home-scrapbook .living-mirror .living-mirror__photo{position:absolute;display:block;max-width:none;border-radius:0;pointer-events:none;filter:saturate(.48) contrast(.85);animation-play-state:paused;transition:opacity 1.3s ease}
+.home-scrapbook .living-mirror .living-mirror__photo--water{inset:-9%;width:118%;height:118%;opacity:.36;transform:scaleX(-1) translate3d(1%,0,0);animation:mirror-water-drift 39s ease-in-out infinite alternate paused}
+.home-scrapbook .living-mirror .living-mirror__photo--organic{inset:-3% -23% 0 auto;width:103%;height:105%;opacity:.12;transform:scaleX(-1);mask-image:linear-gradient(110deg,transparent 8%,#0009 53%,#000 100%);animation:mirror-organic-drift 47s ease-in-out infinite alternate paused}
+.home-scrapbook .living-mirror .living-mirror__photo--gaming{left:-8%;top:40%;width:118%;height:33%;opacity:0;transform:scaleX(-1);mask-image:linear-gradient(0deg,transparent,#000c 32%,#000 52%,transparent);animation:mirror-game-bleed 43s ease-in-out infinite paused}
+.living-mirror__geometry{position:absolute;pointer-events:none;animation-play-state:paused;transition:opacity 1.3s ease}
+.living-mirror__geometry--apps{inset:25% -22% 20%;opacity:.1;transform:rotate(-12deg);animation:mirror-orbit-bleed 53s ease-in-out infinite paused}
+.living-mirror__geometry--apps .world-orbit{border-color:#c7d4be66}
+.living-mirror__geometry--apps .world-orbit__core{background:#bed0bb;box-shadow:0 0 0 .6cqw #324c4655,0 0 0 .7cqw #b5c8b366}
+.living-mirror__geometry--clear{left:-26%;top:22%;width:146%;height:57%;opacity:0;stroke:#c4cfb2;stroke-width:1;animation:mirror-clear-bleed 61s ease-in-out infinite paused}
+.living-mirror__silver{position:absolute;inset:0;pointer-events:none;z-index:3;background:linear-gradient(103deg,#dfe6d20d,transparent 22%,#0f252633 49%,#14282466 72%,#ccd9c422 94%),linear-gradient(0deg,#132e2b70,transparent 28%,#b5c4b413 75%,#e6e6ce1a);border-radius:inherit}
+.living-mirror__glint{position:absolute;inset:-35% -65%;z-index:4;pointer-events:none;opacity:.3;transform:rotate(-15deg) translate3d(-6%,0,0);background:linear-gradient(90deg,transparent 35%,#ebefda0d 44%,#eaf0da36 48%,#dbe6d110 51%,transparent 58%);animation:mirror-glass-drift 31s ease-in-out infinite alternate paused}
+.living-mirror__readout{position:absolute;bottom:10%;left:9%;right:9%;z-index:6;opacity:0;text-align:center;font:clamp(7px,1cqw,11px)/1.5 'JetBrains Mono',monospace;letter-spacing:.12em;transition:opacity .7s ease;pointer-events:none}
+.living-mirror__announcement{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.living-mirror[data-running=true] .living-mirror__photo,.living-mirror[data-running=true] .living-mirror__geometry,.living-mirror[data-running=true] .living-mirror__glint{animation-play-state:running}
+.living-mirror[data-running=false] *{animation-play-state:paused!important;transition:none!important}
+.living-mirror[data-resolved=true] .living-mirror__photo,.living-mirror[data-resolved=true] .living-mirror__geometry{animation-play-state:paused!important}
+.living-mirror[data-resolved=true] .living-mirror__photo--water{opacity:.18!important}
+.living-mirror[data-resolved=true][data-reflection=moments] .living-mirror__photo--water{opacity:.75!important}
+.living-mirror[data-resolved=true][data-reflection=natural] .living-mirror__photo--organic{opacity:.65!important}
+.living-mirror[data-resolved=true][data-reflection=gaming] .living-mirror__photo--gaming{opacity:.78!important}
+.living-mirror[data-resolved=true][data-reflection=apps] .living-mirror__geometry--apps,.living-mirror[data-resolved=true][data-reflection=clear] .living-mirror__geometry--clear{opacity:.7!important}
+.living-mirror[data-resolved=true] .living-mirror__readout{opacity:.78}
+.home-scrapbook .living-mirror:focus-visible{outline:2px solid #e1e5c4;outline-offset:-5px}
+.is-authoring .living-mirror{pointer-events:none}
+.is-authoring .living-mirror *{animation-play-state:paused!important}
+@keyframes mirror-water-drift{to{transform:scaleX(-1) translate3d(-3%,3%,0)}}
+@keyframes mirror-organic-drift{to{transform:scaleX(-1) translate3d(3%,-2%,0)}}
+@keyframes mirror-game-bleed{0%,36%,49%,100%{opacity:0}40%,45%{opacity:.24}42%{opacity:.1}}
+@keyframes mirror-orbit-bleed{0%,58%,90%,100%{opacity:.08;transform:rotate(-12deg)}72%,78%{opacity:.26;transform:rotate(3deg)}}
+@keyframes mirror-clear-bleed{0%,17%,31%,100%{opacity:0}23%,26%{opacity:.19}}
+@keyframes mirror-glass-drift{to{transform:rotate(-15deg) translate3d(7%,2%,0)}}
+@media(prefers-reduced-motion:reduce){
+  .living-mirror *{animation:none!important;transition:none!important}
+  .living-mirror .living-mirror__photo--water{opacity:.42}
+  .living-mirror .living-mirror__photo--organic{opacity:.16}
+  .living-mirror .living-mirror__geometry--apps{opacity:.12}
+}
