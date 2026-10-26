@@ -3,10 +3,10 @@
     "id": "home-sky",
     "group": "sky",
     "desktop": {
-      "x": 48.45454545454545,
-      "y": 5.174827742193492,
-      "width": 33.27272727272727,
-      "height": 12.797202797202798
+      "x": 38.63636363636363,
+      "y": 3.2867117279539504,
+      "width": 39.81818181818182,
+      "height": 15.314685314685317
     },
     "mobile": {
       "x": 56,
@@ -34,10 +34,10 @@
     "id": "home-games",
     "group": "games",
     "desktop": {
-      "x": 3.090909090909091,
-      "y": 39.82587440094931,
-      "width": 57.36363636363637,
-      "height": 15.424444444444445
+      "x": 0.2727272727272727,
+      "y": 39.07062799525349,
+      "width": 61.727272727272734,
+      "height": 16.59777777777778
     },
     "mobile": {
       "x": 8,
@@ -74,8 +74,8 @@
     "kind": "placeholder",
     "group": "portal",
     "desktop": {
-      "x": 64.13636363636364,
-      "y": 23.75520706994552,
+      "x": 64.81818181818181,
+      "y": 27.489480964774838,
       "width": 34,
       "height": 27.3
     },
@@ -152,7 +152,7 @@
     "color": "dark",
     "align": "left",
     "desktop": {
-      "x": 5.1,
+      "x": 1.8272727272727267,
       "y": 12.8,
       "width": 66,
       "height": 13.6
@@ -242,16 +242,16 @@
     "id": "home-sky-note",
     "kind": "text",
     "sceneStyle": "sky-note",
-    "text": "Personal\nShots\n",
+    "text": "Lens Captured\n",
     "textSize": 32,
     "font": "serif",
     "color": "dark",
     "align": "left",
     "desktop": {
-      "x": 83.22727272727273,
-      "y": 7.013288272046049,
-      "width": 13.772727272727275,
-      "height": 5
+      "x": 78.13636363636364,
+      "y": 5.502795460654416,
+      "width": 21.86363636363636,
+      "height": 6.468534677741865
     },
     "mobile": {
       "x": 85.5,
@@ -275,10 +275,10 @@
     "color": "dark",
     "align": "left",
     "desktop": {
-      "x": 89.5,
-      "y": 52.4,
-      "width": 8,
-      "height": 7.2
+      "x": 81.77272727272727,
+      "y": 57.98043177541909,
+      "width": 5,
+      "height": 5
     },
     "mobile": {
       "x": 89.5,
@@ -296,14 +296,14 @@
     "id": "home-interest-heading",
     "kind": "text",
     "sceneStyle": "interest-heading",
-    "text": "Enter a world",
+    "text": "Explore my mind",
     "textSize": 32,
     "font": "serif",
     "color": "dark",
     "align": "left",
     "desktop": {
-      "x": 5.145454545454546,
-      "y": 60.044727370470646,
+      "x": 2.4181818181818193,
+      "y": 60.79997377616646,
       "width": 88.8,
       "height": 2.4
     },
@@ -316,8 +316,8 @@
     "rotation": 0,
     "z": 1,
     "parts": [
-      "THREE ENTRANCES",
-      "⟶"
+      "",
+      ""
     ]
   },
   {
