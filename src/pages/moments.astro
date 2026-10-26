@@ -9,6 +9,9 @@ import '../styles/moments.css';
 const author = import.meta.env.DEV && import.meta.env.MODE === 'author';
 const raw = author ? readFileSync(resolve(process.cwd(), 'src/data/media/moments.json'), 'utf8') : rawManifest;
 const items = JSON.parse(raw).filter((item: any) => !item.deleted);
+const featured = items.find((item: any) => item.kind === 'image' && item.featured) || items.find((item: any) => item.kind === 'image');
+const galleryItems = featured ? [featured, ...items.filter((item: any) => item !== featured)] : items;
+const previewCount = 7; // One large lead moment, then six collection previews.
 const value = (item: any, field: string) => item.overrides?.[field] ?? item[field] ?? item.metadata?.[field] ?? '';
 const placement = (p: any, prefix: string) => `--${prefix}x:${p?.x ?? 4}%;--${prefix}y:${p?.y ?? 4}%;--${prefix}w:${p?.width ?? 92}%;--${prefix}h:${p?.height ?? 92}%;`;
 ---
@@ -25,17 +28,18 @@ const placement = (p: any, prefix: string) => `--${prefix}x:${p?.x ?? 4}%;--${pr
   <body class="moments-page">
     <header class="moments-header"><a href="/" aria-label="Icy Clearer home">ICY CLEARER ↗</a><h1>MOMENTS</h1><p>Captured through <a class="photogression-link" href="https://photogression.icynatural.now">Photogression ↗</a></p></header>
     <main id="gallery" aria-label="Photo gallery">
-      <div class:list={['media-room', 'moments-stream', { 'moments-empty': !items.length }]} data-media-room="moments" data-revision={author ? createHash('sha256').update(raw).digest('hex') : undefined}>
-        {items.map((item: any) => <div class:list={['moment-slot', { 'moment-slot--featured': item.featured }]} style={`--moment-aspect:${Math.max(.6, Math.min(1.8, item.metadata?.aspect || 1.5))}`}>
+      <div id="moments-collection" class:list={['media-room', 'moments-stream', { 'moments-empty': !items.length }]} data-media-room="moments" data-revision={author ? createHash('sha256').update(raw).digest('hex') : undefined}>
+        {galleryItems.map((item: any, index: number) => <div class:list={['moment-slot', { 'moment-slot--featured': item === featured, 'moment-slot--archive': index >= previewCount }]} style={`--moment-aspect:${item.metadata?.aspect > 0 ? item.metadata.aspect : 1.5}`}>
           <figure class={`room-piece room-shape-${item.shape || 'rectangle'}`} data-author-id={item.id} style={`${placement(item.desktop, 'd')}${placement(item.mobile || item.desktop, 'm')}--rotation:${item.rotation || 0}deg;--layer:${item.z ?? 1};--crop:${item.objectPosition || '50% 50%'};--media-fit:${item.fit || 'contain'};`}>
             {item.kind === 'text' ? <div class={`source-text text-font-${item.font || 'sans'} text-color-${item.color || 'light'}`} style={`font-size:${item.textSize || 32}px;text-align:${item.align || 'left'}`}>{item.text}</div> : item.kind === 'image' ? <>
-              <img src={item.displaySrc || item.src} width={item.pixelWidth || 1500} height={item.pixelHeight || Math.round(1500 / (item.metadata?.aspect || 1.5))} alt={value(item, 'alt') || value(item, 'title')} loading="lazy" decoding="async" draggable="false" />
+              <img src={index < previewCount ? item.displaySrc || item.src : undefined} data-gallery-src={index >= previewCount ? item.displaySrc || item.src : undefined} width={item.pixelWidth || 1500} height={item.pixelHeight || Math.round(1500 / (item.metadata?.aspect || 1.5))} alt={value(item, 'alt') || value(item, 'title')} loading="lazy" decoding="async" draggable="false" />
               {value(item, 'label') && <figcaption>{value(item, 'label')}</figcaption>}
               <button class="moment-open" type="button" data-moment-open={item.id} aria-label={`View ${value(item, 'title') || value(item, 'label') || 'photo'}`}></button>
             </> : <p>Attach a photo in Local Studio.</p>}
           </figure>
         </div>)}
       </div>
+      {items.length > previewCount && <div class="moments-continuation"><button type="button" class="moments-view-all" aria-expanded="false" aria-controls="moments-collection">VIEW ALL MOMENTS →</button></div>}
       <p class="moments-empty-message">More moments soon.</p>
     </main>
     <dialog class="moment-detail" aria-label="Photo detail">

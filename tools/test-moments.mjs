@@ -112,6 +112,30 @@ try {
     await page.goto(route, { waitUntil: 'networkidle' });
     await room.waitFor(); await clean();
     assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), `no overflow at ${width}`);
+    const slots = room.locator('.moment-slot:visible');
+    const originalItems = JSON.parse(originalManifest);
+    assert.equal(await slots.count(), Math.min(7, originalItems.length), 'lead plus six preview moments');
+    const columns = await room.evaluate(el => getComputedStyle(el).gridTemplateColumns.split(' ').length);
+    assert.equal(columns, width <= 700 ? 2 : 3, 'compact public column count');
+    const hero = room.locator('.moment-slot--featured');
+    if (originalItems.length) {
+      assert.equal(await hero.count(), 1, 'exactly one large featured moment');
+      const box = await hero.boundingBox();
+      const next = await room.locator('.moment-slot:not(.moment-slot--featured)').first().boundingBox();
+      if (next) assert.ok(box.width > next.width * 1.8, 'lead is larger than preview tiles');
+    }
+    if (originalItems.length > 7) {
+      assert.equal(await room.locator('.moment-slot--archive img[src]').count(), 0, 'archive image sources deferred');
+      await page.getByRole('button', { name: 'VIEW ALL MOMENTS' }).click();
+      assert.equal(await slots.count(), originalItems.length, 'full collection revealed');
+      assert.ok(page.url().includes('gallery=all'));
+      await page.reload({ waitUntil: 'networkidle' });
+      assert.equal(await slots.count(), originalItems.length, 'expanded collection survives refresh');
+      await page.getByRole('button', { name: 'SHOW PREVIEW' }).click();
+      assert.equal(await slots.count(), 7);
+      await page.goBack();
+      assert.equal(await slots.count(), originalItems.length, 'Back restores expanded collection');
+    }
   }
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto(`${route}?edit=1`, { waitUntil: 'networkidle' });
@@ -216,6 +240,8 @@ try {
   for (const width of [360, 390, 430, 1440]) {
     await page.setViewportSize({ width, height: 1000 });
     await page.goto(route, { waitUntil: 'networkidle' }); await clean(); await countIs(total);
+    const continuation = page.getByRole('button', { name: 'VIEW ALL MOMENTS' });
+    if (await continuation.count()) await continuation.click();
     assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), `populated stream has no overflow at ${width}`);
     const flow = await items.evaluateAll(els => els.map(el => ({ position: getComputedStyle(el).position, width: el.getBoundingClientRect().width, height: el.getBoundingClientRect().height })));
     assert.ok(await items.first().evaluate(el => el.parentElement.classList.contains('moment-slot') && getComputedStyle(el.parentElement).position === 'relative'), 'auto CSS stream retains flow slots around editable frames');

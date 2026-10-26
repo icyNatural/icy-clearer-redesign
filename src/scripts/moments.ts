@@ -4,6 +4,27 @@ const image = dialog.querySelector<HTMLImageElement>('img')!;
 const metadata = dialog.querySelector<HTMLElement>('.moment-detail__metadata')!;
 let opener: HTMLElement | null = null;
 let previousOverflow = '';
+const collection = document.querySelector<HTMLElement>('.moments-stream')!;
+const viewAll = document.querySelector<HTMLButtonElement>('.moments-view-all');
+function renderCollection() {
+  const editing = new URLSearchParams(location.search).get('edit') === '1';
+  const expanded = new URLSearchParams(location.search).get('gallery') === 'all';
+  collection.classList.toggle('moments-stream--expanded', expanded);
+  viewAll?.setAttribute('aria-expanded', String(expanded));
+  if (viewAll) viewAll.textContent = expanded ? 'SHOW PREVIEW ↑' : 'VIEW ALL MOMENTS →';
+  if (editing || expanded) collection.querySelectorAll<HTMLImageElement>('img[data-gallery-src]').forEach(img => {
+    img.src = img.dataset.gallerySrc!; delete img.dataset.gallerySrc;
+  });
+}
+viewAll?.addEventListener('click', () => {
+  const url = new URL(location.href);
+  if (url.searchParams.get('gallery') === 'all') url.searchParams.delete('gallery');
+  else url.searchParams.set('gallery', 'all');
+  history.pushState(null, '', url); renderCollection();
+  if (!url.searchParams.has('gallery')) viewAll.scrollIntoView({ block: 'end' });
+});
+window.addEventListener('popstate', renderCollection);
+renderCollection();
 const value = (item: any, field: string) => item.overrides?.[field] ?? item[field] ?? item.metadata?.[field] ?? '';
 function appendCaptureCredit(el: HTMLElement, text: string) {
   const parts = text.split(/(Photogression)/g);

@@ -8,3 +8,14 @@
 .moments-page a.photogression-link{display:inline;min-height:0;font:inherit;letter-spacing:inherit;color:inherit;text-decoration:underline;text-decoration-color:#929e9880;text-underline-offset:3px}.moments-page a.photogression-link:hover{color:#b8ded8;text-decoration-color:currentColor}.moments-page a.photogression-link:focus-visible{outline:2px solid #b8ded8;outline-offset:4px}
 @media(max-width:1000px){.media-room.moments-stream{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:700px){.moments-header{padding:16px 6vw}.moments-header h1{margin-top:20px}.media-room.moments-stream{height:auto;grid-template-columns:minmax(0,1fr);gap:20px;padding:8px}.moment-slot--featured{grid-column:auto}.moments-page main{padding-inline:2vw}.moments-page.is-authoring .author-panel{max-height:36dvh}.moments-page .author-panel input:not([type=range]),.moments-page .author-panel textarea,.moments-page .author-panel select{font-size:16px}.moment-detail__metadata{padding-inline:18px}}
+/* Public collection rhythm; Studio retains its independent editable frames. */
+.moments-page:not(.is-authoring) .moments-stream{grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.moments-page:not(.is-authoring) .moment-slot--featured{grid-column:1/-1;max-width:900px;width:100%;justify-self:center;margin-bottom:20px}
+.moments-page:not(.is-authoring) .moment-slot>.room-piece{inset:0;width:100%;height:100%}
+.moments-page:not(.is-authoring) .moment-slot img{object-fit:contain}
+.moments-page:not(.is-authoring) .moments-stream:not(.moments-stream--expanded) .moment-slot--archive{display:none}
+.moments-continuation{text-align:center;padding:32px 12px 16px}
+.moments-view-all{border:0;border-bottom:1px solid #64766d;background:none;color:#c8cfcb;padding:12px 0;font:11px/1.6 system-ui,sans-serif;letter-spacing:.13em;cursor:pointer}
+.moments-view-all:hover{color:#b8ded8}.moments-view-all:focus-visible{outline:2px solid #b8ded8;outline-offset:6px}
+.is-authoring .moments-continuation{display:none}
+@media(max-width:700px){.moments-page:not(.is-authoring) .moments-stream{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.moments-page:not(.is-authoring) .moment-slot--featured{margin-bottom:12px}}
