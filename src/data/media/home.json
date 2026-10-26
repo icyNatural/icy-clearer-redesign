@@ -33,7 +33,7 @@
   },
   {
     "id": "home-games",
-    "href": "http://localhost:3000/",
+    "href": "/gaming/",
     "group": "games",
     "desktop": {
       "x": 0.2727272727272727,

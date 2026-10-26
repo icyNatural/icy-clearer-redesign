@@ -4,6 +4,7 @@
   "version": "0.0.1",
   "type": "module",
   "scripts": {
+    "gaming:publish": "node tools/publish-gaming.mjs",
     "dev": "astro dev",
     "edit": "node tools/astro.mjs dev --mode author --port 4321",
     "build": "astro build",

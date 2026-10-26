@@ -1,0 +1,9 @@
+/* Minimal public-mode controls and copy; existing dark/volt visual system is retained. */
+#test, #settings, [data-tab="test"], [data-tab="settings"], [data-go="test"],
+#loadDemoBtn, #startTestBtn, #clearLatestBtn, #clearHistoryBtn, .gos-library-field, .gos-search-add:not(.is-known) {
+  display: none !important;
+}
+.public-snapshot-notice { color: var(--muted, #a0aaa3); font-size: 11px; letter-spacing: .06em; line-height: 1.8; }
+.public-home-link { color: inherit; }
+.public-loading .shell { visibility: hidden; }
+#publicLoading { padding: 24px; color: var(--muted, #a0aaa3); }

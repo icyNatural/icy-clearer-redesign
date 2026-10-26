@@ -1,0 +1,491 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="icyNatural Game OS - personal subjective gaming evaluations — public read-only snapshot." />
+  <title>icyNatural — Game OS</title>
+  <link rel="icon" href="data:," />
+  <link rel="stylesheet" href="assets/css/styles.css" />
+  <link rel="stylesheet" href="public-mode.css" />
+</head>
+<body data-view="dashboard" class="public-loading"><p id="publicLoading" role="status">Loading personal gaming snapshot…</p>
+  <div class="shell">
+    <aside class="sidebar">
+      <div class="brand-wrap">
+        <div class="brand-mark">IN</div>
+        <div class="brand-copy">
+          <div class="eyebrow">icyNatural</div>
+          <div class="brand-title">Game OS</div>
+        </div>
+      </div>
+
+      <div class="nav-label">Launcher</div>
+      <nav class="nav" aria-label="Views">
+        <button class="nav-btn active" data-tab="dashboard" type="button">
+          <svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/></svg>
+          <span class="nav-txt">Dashboard</span>
+        </button>
+        <button class="nav-btn" data-tab="test" type="button">
+          <svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>
+          <span class="nav-txt">Test Game</span>
+        </button>
+        <button class="nav-btn" data-tab="results" type="button">
+          <svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M4 20V11M10 20V5M16 20v-6M21 20H3"/></svg>
+          <span class="nav-txt">Results</span>
+        </button>
+        <button class="nav-btn" data-tab="discover" type="button">
+          <svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="5.5" cy="6.5" r="2.2"/><circle cx="18.5" cy="9.5" r="2.2"/><circle cx="9.5" cy="18" r="2.2"/><path d="M7.4 7.8l9.4 1.1M6.6 8.4l2.2 7.5M17 11.3l-5.7 5.2"/></svg>
+          <span class="nav-txt">Discover</span>
+        </button>
+        <button class="nav-btn" data-tab="atlas" type="button">
+          <svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2.4 6.1L21 12l-6.6 2.9L12 21l-2.4-6.1L3 12l6.6-2.9z"/></svg>
+          <span class="nav-txt">Taste Atlas</span>
+        </button>
+        <button class="nav-btn" data-tab="feed" type="button">
+          <svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5l8.5 4.7L12 13 3.5 8.2z"/><path d="M3.5 13.2L12 17.8l8.5-4.6M3.5 17.6L12 22.2l8.5-4.6"/></svg>
+          <span class="nav-txt">Feed</span>
+        </button>
+        <button class="nav-btn" data-tab="dna" type="button">
+          <svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 19.5l4-1L20 7a2.1 2.1 0 0 0-3-3L5.5 15.5z"/><path d="M14.5 6.5l3 3"/></svg>
+          <span class="nav-txt">Notes</span>
+        </button>
+        <button class="nav-btn" data-tab="settings" type="button">
+          <svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M4 7.5h9M18.5 7.5H20M4 16.5h2.5M12 16.5h8"/><circle cx="15.5" cy="7.5" r="2.4"/><circle cx="9" cy="16.5" r="2.4"/></svg>
+          <span class="nav-txt">Settings</span>
+        </button>
+        <button class="nav-btn" data-tab="history" type="button">
+          <svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="8"/><path d="M12 7.5V12l3.2 2.2"/></svg>
+          <span class="nav-txt">History</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-foot">
+        <div class="meta-card">
+          <div>Platform</div>
+          <strong id="sidebarPlatform">—</strong>
+        </div>
+        <div class="meta-card">
+          <div>Latest Score</div>
+          <strong id="sidebarScore">—</strong>
+        </div>
+        <div class="sidebar-note">Local vault. Nothing leaves this browser.</div>
+      </div>
+    </aside>
+
+    <div class="stage">
+      <header class="topbar">
+        <div class="topbar-left">
+          <h1>Game OS</h1>
+          <span class="topbar-sep"></span>
+          <p id="publicSnapshotNotice" class="public-snapshot-notice">Loading personal gaming snapshot…</p>
+        </div>
+        <div class="top-actions"><a class="public-home-link" href="/">HOME</a>
+          <button class="btn btn-secondary gos-mobile-search-btn" id="mobileSearchBtn" type="button" aria-label="Search games">Search</button>
+          <button class="btn btn-secondary" id="loadDemoBtn" type="button">Load Demo</button>
+          <button class="btn btn-primary" id="startTestBtn" type="button">Start Test</button>
+        </div>
+      </header>
+
+      <main class="main">
+        <section class="tab active" id="dashboard">
+          <section class="hero hero-split">
+            <div class="hero-left">
+              <div class="eyebrow">Command deck</div>
+              <h2>My games. My evidence.</h2>
+              <p>Measure how a game actually feels, scout what to play next, and watch your taste take shape — from my published, read-only snapshot. These are my subjective evaluations, not objective review scores.</p>
+              <div class="hero-actions">
+                <button class="btn btn-primary" data-go="test" type="button">Start Testing</button>
+                <button class="btn btn-secondary" data-go="history" type="button">View History</button>
+              </div>
+            </div>
+
+            <div class="hero-right">
+              <div class="img-row img-row-1"></div>
+              <div class="img-row img-row-2"></div>
+              <div class="img-row img-row-3"></div>
+            </div>
+          </section>
+
+          <section class="grid-2">
+            <article class="section-card featured-take-card">
+              <div class="featured-take-bg" id="featuredTakeBg"></div>
+
+              <div class="section-head">
+                <div>
+                  <div class="eyebrow">Latest take</div>
+                  <h3 id="recentTakeGame">No experience yet</h3>
+                  <div class="take-identity-line" id="takeIdentityLine">Published personal evaluation</div>
+                </div>
+                <button class="btn btn-secondary" data-go="results" type="button">Open Results</button>
+              </div>
+
+              <div class="featured-take-main">
+                <div class="featured-ring-zone" id="dashboardGlyph" aria-live="polite"></div>
+
+                <div class="take-chip-grid">
+                  <div class="take-chip">
+                    <div class="take-chip-label">Platform</div>
+                    <div class="take-chip-value" id="takeChipPlatform">—</div>
+                  </div>
+                  <div class="take-chip">
+                    <div class="take-chip-label">Intensity</div>
+                    <div class="take-chip-value" id="takeChipIntensity">—</div>
+                  </div>
+                  <div class="take-chip">
+                    <div class="take-chip-label">Replay</div>
+                    <div class="take-chip-value" id="takeChipReplay">—</div>
+                  </div>
+                  <div class="take-chip">
+                    <div class="take-chip-label">Freedom</div>
+                    <div class="take-chip-value" id="takeChipFreedom">—</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="live-strip">
+                <div class="live-item"><span>Game</span><strong id="dashGame">—</strong></div>
+                <div class="live-item"><span>Score</span><strong id="dashScore">—</strong></div>
+                <div class="live-item"><span>Intensity</span><strong id="dashIntensity">—</strong></div>
+                <div class="live-item"><span>Replay</span><strong id="dashReplay">—</strong></div>
+              </div>
+
+              <div class="analysis-list">
+                <div class="analysis-item" id="dashVerdict">No saved experience yet.</div>
+                <div class="analysis-item" id="dashNotesPreview">Your latest session notes will appear here.</div>
+              </div>
+            </article>
+
+            <article class="section-card">
+              <div class="section-head">
+                <div>
+                  <div class="eyebrow">Quick breakdown</div>
+                  <h3>Recent Games</h3>
+                </div>
+                <button class="view-history-btn" id="viewFullHistoryBtn" type="button">View Full History</button>
+              </div>
+              <div id="recentGamesList" class="recent-games-list"></div>
+            </article>
+          </section>
+        </section>
+
+        <section class="tab" id="test">
+          <section class="panel section-card">
+            <div class="section-head">
+              <div>
+                <div class="eyebrow">Test session</div>
+                <h3>Measure the experience</h3>
+              </div>
+            </div>
+
+            <div class="form-grid">
+              <div class="gos-ac-wrap" id="gameNameWrap">
+                <label class="field">
+                  <span>Game Name</span>
+                  <input id="gameName" type="text" value="" placeholder="Enter game name" autocomplete="off" required
+                         role="combobox" aria-expanded="false" aria-controls="gameNameResults"
+                         aria-autocomplete="list" aria-label="Game Name" />
+                </label>
+                <div id="gameNameResults" class="gos-search-results gos-ac-results" role="listbox" aria-label="Game suggestions" hidden>
+                  <div class="gos-ac-local"></div>
+                  <div class="gos-ac-catalog"></div>
+                  <div class="gos-ac-custom-host"></div>
+                </div>
+              </div>
+
+              <label class="field">
+                <span>Platform</span>
+                <select id="platform" class="input" required>
+                  <option value="" selected disabled>Select platform</option>
+                  <option value="PC">PC</option>
+                  <option value="PS5">PS5</option>
+                  <option value="Xbox Series">Xbox Series</option>
+                  <option value="Switch">Switch</option>
+                  <option value="Mobile">Mobile</option>
+                  <option value="Retro">Retro</option>
+                  <option value="Cloud / Streaming">Cloud / Streaming</option>
+                  <option value="Other">Other</option>
+                </select>
+              </label>
+            </div>
+
+            <div id="gamePlatformSuggest" class="gos-ac-platforms" hidden></div>
+
+            <div class="metric-list">
+              <div class="metric-row is-unanswered"><div class="metric-top"><div><div class="metric-name">Control Feel</div><div class="metric-hint">How responsive did inputs feel?</div></div><div class="metric-value" id="controlDisplay">Unanswered</div></div><input id="control" type="range" min="1" max="10" value="5" data-answered="false" aria-label="Control Feel, unanswered" /></div>
+              <div class="metric-row is-unanswered"><div class="metric-top"><div><div class="metric-name">Clarity</div><div class="metric-hint">How easy was it to understand what to do?</div></div><div class="metric-value" id="clarityDisplay">Unanswered</div></div><input id="clarity" type="range" min="1" max="10" value="5" data-answered="false" aria-label="Clarity, unanswered" /></div>
+              <div class="metric-row is-unanswered"><div class="metric-top"><div><div class="metric-name">Freedom</div><div class="metric-hint">How much control did you have over approach?</div></div><div class="metric-value" id="freedomDisplay">Unanswered</div></div><input id="freedom" type="range" min="1" max="10" value="5" data-answered="false" aria-label="Freedom, unanswered" /></div>
+              <div class="metric-row is-unanswered"><div class="metric-top"><div><div class="metric-name">Expression</div><div class="metric-hint">How much could you play in your own style?</div></div><div class="metric-value" id="expressionDisplay">Unanswered</div></div><input id="expression" type="range" min="1" max="10" value="5" data-answered="false" aria-label="Expression, unanswered" /></div>
+              <div class="metric-row is-unanswered"><div class="metric-top"><div><div class="metric-name">Engagement</div><div class="metric-hint">How consistently did your attention stay locked in?</div></div><div class="metric-value" id="engagementDisplay">Unanswered</div></div><input id="engagement" type="range" min="1" max="10" value="5" data-answered="false" aria-label="Engagement, unanswered" /></div>
+              <div class="metric-row is-unanswered"><div class="metric-top"><div><div class="metric-name">Depth</div><div class="metric-hint">Did the game open up more over time?</div></div><div class="metric-value" id="depthDisplay">Unanswered</div></div><input id="depth" type="range" min="1" max="10" value="5" data-answered="false" aria-label="Depth, unanswered" /></div>
+              <div class="metric-row is-unanswered"><div class="metric-top"><div><div class="metric-name">Flow</div><div class="metric-hint">Did time distortion occur while playing?</div></div><div class="metric-value" id="flowDisplay">Unanswered</div></div><input id="flow" type="range" min="1" max="10" value="5" data-answered="false" aria-label="Flow, unanswered" /></div>
+              <div class="metric-row is-unanswered"><div class="metric-top"><div><div class="metric-name">Intensity</div><div class="metric-hint">How dense or active did the experience feel?</div></div><div class="metric-value" id="intensityDisplay">Unanswered</div></div><input id="intensity" type="range" min="1" max="10" value="5" data-answered="false" aria-label="Intensity, unanswered" /></div>
+              <div class="metric-row is-unanswered"><div class="metric-top"><div><div class="metric-name">Replay Pull</div><div class="metric-hint">How strong is the desire to return?</div></div><div class="metric-value" id="replayDisplay">Unanswered</div></div><input id="replay" type="range" min="1" max="10" value="5" data-answered="false" aria-label="Replay Pull, unanswered" /></div>
+            </div>
+
+            <div class="subsection">
+              <div class="field-title">Friction tags</div>
+              <div class="tag-row" id="frictionTags">
+                <button class="tag" type="button">Slow</button>
+                <button class="tag" type="button">Restrictive</button>
+                <button class="tag" type="button">Confusing</button>
+                <button class="tag" type="button">Repetitive</button>
+                <button class="tag" type="button">Clunky</button>
+              </div>
+            </div>
+
+            <div class="subsection">
+              <div class="field-title">Signal tags <span class="field-hint">Tap a tag to cycle: like &rarr; dislike &rarr; off</span></div>
+              <div id="signalTagGroups" class="gos-signal-groups"></div>
+            </div>
+
+            <div class="subsection media-foundation">
+              <div class="field-title">Optional clip / media <span class="field-hint">Local reference only. Nothing is uploaded automatically.</span></div>
+              <div class="media-controls">
+                <label class="btn btn-secondary gos-file-label" for="experienceMediaFile">Choose Local Media</label>
+                <input id="experienceMediaFile" type="file" accept="video/mp4,video/webm,video/quicktime,image/png,image/jpeg,image/webp" hidden />
+                <label class="field inline-field media-visibility-field"><span>Presentation status</span><select id="experienceMediaVisibility" class="input"><option value="private">Private</option><option value="public">Public-ready metadata</option></select></label>
+                <span id="experienceMediaStatus" class="field-hint">No media selected.</span>
+              </div>
+            </div>
+
+            <div class="form-grid">
+              <label class="field">
+                <span>Signal context</span>
+                <select id="signalContext" class="input">
+                  <option value="overall">Overall</option>
+                  <option value="combat">Combat</option>
+                  <option value="exploration">Exploration</option>
+                  <option value="story">Story</option>
+                  <option value="multiplayer">Multiplayer</option>
+                  <option value="endgame">Endgame</option>
+                </select>
+              </label>
+
+              <label class="field notes-field">
+                <span>Notes</span>
+                <textarea id="notes" placeholder="Optional session notes"></textarea>
+              </label>
+            </div>
+
+            <div class="actions">
+              <button class="btn btn-primary" id="calculateBtn" type="button" disabled>Calculate Result</button>
+              <button class="btn btn-secondary" id="resetBtn" type="button">New Blank Test</button>
+              <span id="testValidationStatus" class="test-validation-status" role="status">Enter a game, select a platform, and answer all nine ratings.</span>
+            </div>
+          </section>
+        </section>
+
+        <section class="tab" id="results">
+          <section class="panel section-card results-card" aria-labelledby="resultGame">
+            <header class="results-header">
+              <div>
+                <div class="eyebrow">Measured experience</div>
+                <h2 id="resultGame">Published evaluation</h2>
+              </div>
+              <div class="results-header-meta">Session radar</div>
+            </header>
+
+            <div class="results-composition">
+              <div class="results-emblem-stage">
+                <div class="results-emblem-frame">
+                  <div class="results-emblem-label">Nine-axis profile · fixed 0–10 scale</div>
+                  <div id="resultGlyph" class="result-glyph-host" aria-live="polite" aria-atomic="true"></div>
+                  <div class="sr-only" id="resultScore">—</div>
+                </div>
+
+                <div class="results-readout">
+                  <div class="eyebrow">Experience readout</div>
+                  <div class="verdict" id="verdictText">
+                    High interaction density. Strong expression potential. Very responsive control feel. Strong replay pull.
+                  </div>
+                  <div class="results-note-label">Session note</div>
+                  <div class="analysis-item" id="resultUserNote">
+                    Great combat rhythm. Strong feedback. Moderate freedom but high style factor.
+                  </div>
+                </div>
+              </div>
+
+              <aside class="results-dimensions" aria-label="Nine dimension scores">
+                <div class="results-dimensions-head">
+                  <div><div class="eyebrow">Evidence console</div><h3>Nine dimensions</h3></div>
+                  <div class="results-legend"><span class="is-absolute"></span>Same 0–10 scale on every glyph</div>
+                </div>
+              <div class="bar-row" data-glyph-dimension="control" tabindex="0" role="button" aria-label="Highlight Control dimension"><div class="bar-top"><span>Control</span><span id="resultControlValue">8</span></div><div class="bar-track"><div class="bar-fill" id="resultControl"></div></div></div>
+              <div class="bar-row" data-glyph-dimension="clarity" tabindex="0" role="button" aria-label="Highlight Clarity dimension"><div class="bar-top"><span>Clarity</span><span id="resultClarityValue">7</span></div><div class="bar-track"><div class="bar-fill" id="resultClarity"></div></div></div>
+              <div class="bar-row" data-glyph-dimension="freedom" tabindex="0" role="button" aria-label="Highlight Freedom dimension"><div class="bar-top"><span>Freedom</span><span id="resultFreedomValue">6</span></div><div class="bar-track"><div class="bar-fill" id="resultFreedom"></div></div></div>
+              <div class="bar-row" data-glyph-dimension="expression" tabindex="0" role="button" aria-label="Highlight Expression dimension"><div class="bar-top"><span>Expression</span><span id="resultExpressionValue">9</span></div><div class="bar-track"><div class="bar-fill" id="resultExpression"></div></div></div>
+              <div class="bar-row" data-glyph-dimension="engagement" tabindex="0" role="button" aria-label="Highlight Engagement dimension"><div class="bar-top"><span>Engagement</span><span id="resultEngagementValue">9</span></div><div class="bar-track"><div class="bar-fill" id="resultEngagement"></div></div></div>
+              <div class="bar-row" data-glyph-dimension="depth" tabindex="0" role="button" aria-label="Highlight Depth dimension"><div class="bar-top"><span>Depth</span><span id="resultDepthValue">7</span></div><div class="bar-track"><div class="bar-fill" id="resultDepth"></div></div></div>
+              <div class="bar-row" data-glyph-dimension="flow" tabindex="0" role="button" aria-label="Highlight Flow dimension"><div class="bar-top"><span>Flow</span><span id="resultFlowValue">8</span></div><div class="bar-track"><div class="bar-fill" id="resultFlow"></div></div></div>
+              <div class="bar-row" data-glyph-dimension="intensity" tabindex="0" role="button" aria-label="Highlight Intensity dimension"><div class="bar-top"><span>Intensity</span><span id="resultIntensityValue">9</span></div><div class="bar-track"><div class="bar-fill" id="resultIntensity"></div></div></div>
+              <div class="bar-row" data-glyph-dimension="replay" tabindex="0" role="button" aria-label="Highlight Replay Pull dimension"><div class="bar-top"><span>Replay Pull</span><span id="resultReplayValue">8</span></div><div class="bar-track"><div class="bar-fill" id="resultReplay"></div></div></div>
+              </aside>
+            </div>
+          </section>
+        </section>
+
+        <section class="tab" id="discover">
+          <section class="panel section-card">
+            <div class="section-head">
+              <div>
+                <div class="eyebrow">Universal game search + knowledge graph</div>
+                <h3>Find, save &amp; connect games</h3>
+              </div>
+              <div class="gos-breadcrumb" id="discoverBreadcrumb"></div>
+            </div>
+
+            <div class="gos-search-wrap">
+              <input id="discoverSearch" class="gos-search" type="search"
+                     placeholder="Search almost any game…" autocomplete="off" enterkeyhint="search" />
+              <div id="discoverSearchResults" class="gos-search-results" hidden></div>
+            </div>
+            <div id="catalogSearchStatus" class="gos-catalog-status">Local and cached games work offline. RAWG search is optional.</div>
+
+            <div id="discoverFilters" class="gos-filter-row"></div>
+
+            <div id="discoverDetail" class="gos-detail"></div>
+            <div id="discoverBranches" class="gos-branch-groups"></div>
+
+            <div class="subsection">
+              <div class="field-title">Bounded expansion</div>
+              <div class="gos-expand-row">
+                <label class="field inline-field">
+                  <span>Depth</span>
+                  <select id="discoverDepth" class="input">
+                    <option value="1">1 hop</option>
+                    <option value="2" selected>2 hops</option>
+                    <option value="3">3 hops</option>
+                  </select>
+                </label>
+                <button class="btn btn-secondary" id="discoverExpandBtn" type="button">Expand from here</button>
+                <span class="field-hint">First-degree by default. Expansion is capped (cycle-safe) and always shows the path taken.</span>
+              </div>
+              <div id="discoverExpansion" class="gos-expansion"></div>
+            </div>
+          </section>
+        </section>
+
+        <section class="tab" id="atlas">
+          <section class="panel section-card">
+            <div class="section-head">
+              <div>
+                <div class="eyebrow">Taste Atlas</div>
+                <h3>Patterns from your experiences</h3>
+              </div>
+              <div id="atlasSummary" class="gos-chip-line"></div>
+            </div>
+            <div id="tasteGlyph" class="taste-glyph-panel"></div>
+            <div id="atlasSections" class="gos-atlas-sections"></div>
+          </section>
+        </section>
+
+        <section class="tab" id="feed">
+          <section class="panel section-card">
+            <div class="section-head">
+              <div>
+                <div class="eyebrow">Scouting report</div>
+                <h3>Why these games</h3>
+              </div>
+              <button class="btn btn-primary" id="surpriseBtn" type="button">Surprise Me From My History</button>
+            </div>
+            <div id="surprisePanel" class="gos-surprise"></div>
+            <div id="recommendList" class="gos-rec-list"></div>
+          </section>
+        </section>
+
+        <section class="tab" id="dna">
+          <section class="panel section-card">
+            <div class="section-head">
+              <div>
+                <div class="eyebrow">Notes</div>
+                <h3>Honest read</h3>
+              </div>
+            </div>
+            <div class="analysis-list">
+              <div class="analysis-item">Use this page to stay honest, not biased.</div>
+              <div class="analysis-item">A game can still hit without fitting one fixed lane.</div>
+              <div class="analysis-item">Notes matter as much as the score.</div>
+            </div>
+          </section>
+        </section>
+
+        <section class="tab" id="settings">
+          <section class="panel section-card">
+            <div class="section-head">
+              <div>
+                <div class="eyebrow">Settings</div>
+                <h3>Local controls</h3>
+              </div>
+            </div>
+
+            <div class="analysis-list">
+              <div class="analysis-item">Your evaluations stay in this browser and origin. file://, localhost:3000, 127.0.0.1 and other ports do not share data. Use localhost:3000 consistently after recovery.</div>
+              <div class="analysis-item">Back up regularly with Export Data and keep the downloaded JSON outside this site. Before importing, a target backup is downloaded and source/target snapshots are verified in browser storage. Exact duplicate IDs are skipped; differing records with the same ID stop the import without overwriting. File attachments export references, not playable file bytes: retain original media separately.</div>
+            </div>
+
+            <div class="actions" style="margin-top:18px;">
+              <button class="btn btn-secondary" id="clearLatestBtn" type="button">Clear Latest Game</button>
+              <button class="btn btn-secondary" id="clearHistoryBtn" type="button">Clear Recent Games</button>
+              <button class="btn btn-secondary" id="exportDataBtn" type="button">Export Data</button>
+              <label class="btn btn-secondary gos-file-label" for="importDataFile">Import Data</label>
+              <input id="importDataFile" type="file" accept="application/json,.json" hidden />
+            </div>
+
+            <div class="analysis-list" style="margin-top:14px;">
+              <div class="analysis-item mono" id="storageStatus">Storage: checking…</div>
+              <div class="analysis-item mono" id="migrationStatus">Migration: not checked yet.</div>
+              <div class="analysis-item">
+                <strong>External catalog (optional)</strong>
+                <div class="gos-catalog-settings">
+                  <label class="field"><span>RAWG proxy URL</span><input id="catalogProxyUrl" class="input" type="url" placeholder="http://127.0.0.1:8787/api/games" /></label>
+                  <label class="field"><span>Direct RAWG key (session only)</span><input id="catalogApiKey" class="input" type="password" autocomplete="off" placeholder="Exposed to this browser session" /></label>
+                  <button id="saveCatalogConfigBtn" class="btn btn-secondary" type="button">Apply Catalog Config</button>
+                </div>
+                <div class="subtext">RAWG blocks direct browser calls (no CORS headers), so the proxy is the reliable path. Run <span class="mono">RAWG_API_KEY=… node tools/rawg-proxy.mjs</span> and point the proxy URL at it — the key stays server-side. A direct browser key is visible in DevTools, kept only in memory, and excluded from exports.</div>
+              </div>
+            </div>
+          </section>
+        </section>
+
+        <section class="tab" id="history">
+          <section class="panel section-card">
+            <div class="section-head">
+              <div>
+                <div class="eyebrow">History</div>
+                <h3>Review Log</h3>
+              </div>
+            </div>
+
+            <div class="analysis-list" style="margin-bottom:16px;">
+              <div class="analysis-item">Full saved review history. Click any row to load it into Results.</div>
+            </div>
+
+            <div id="historyGamesList" class="recent-games-list"></div>
+          </section>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <script src="assets/js/core/util.js"></script>
+  <script src="assets/js/ui/art.js"></script>
+  <script src="assets/js/data/branch-vocab.js"></script>
+  <script src="assets/js/data/seed-graph.js"></script>
+  <script src="public-mode.js"></script>
+  <script src="assets/js/domain/signals.js"></script>
+  <script src="assets/js/domain/glyph.js"></script>
+  <script src="assets/js/domain/media.js"></script>
+  <script src="assets/js/domain/catalog.js"></script>
+  <script src="assets/js/domain/lineage.js"></script>
+  <script src="assets/js/domain/taste.js"></script>
+  <script src="assets/js/domain/recommend.js"></script>
+  <script src="assets/js/ui/glyph.js"></script>
+  <script src="assets/js/app.js"></script>
+  <script src="assets/js/ui/gos.js"></script>
+  <script src="assets/js/ui/test-ac.js"></script>
+  <script src="assets/js/ui/discover.js"></script>
+  <script src="assets/js/ui/atlas.js"></script>
+  <script src="assets/js/ui/feed.js"></script>
+</body>
+</html>
