@@ -6,6 +6,7 @@ Run `npm run edit` from the project folder, then open:
 - http://localhost:4321/?edit=1
 - http://localhost:4321/worlds.html?edit=1
 - http://localhost:4321/clear.html?edit=1
+- http://localhost:4321/moments.html?edit=1
 
 If 4321 is occupied, use the port printed by Astro. Ordinary `npm run dev`, production builds and `npm run preview` do not enable the editor, even with `?edit=1`.
 
@@ -49,6 +50,7 @@ Desktop and mobile positions/sizes are saved separately. Resize the browser to c
 | NATURAL | `public/media/natural/` | `src/data/media/natural.json` |
 | CLEAR | `public/media/clear/` | `src/data/media/clear.json` |
 | TWO WORLDS | `public/media/worlds/` | `src/data/media/worlds.json` |
+| MOMENTS | `public/media/moments/` | `src/data/media/moments.json` |
 
 Uploads are copied immediately with content-hashed filenames. SAVE atomically updates JSON. Deleting a piece removes its manifest entry, not the original asset: unused uploads are deliberately retained to avoid destructive deletion. HOME's media frames are manifest-driven; its paper composition is in `src/components/home/HomeScrapbook.astro` and `src/styles/home-scrapbook.css`. Previous intro data/assets remain on disk, but are not displayed. HOME starts with neutral placeholders, not example photographs or videos.
 
@@ -63,3 +65,21 @@ HOME regression check: `node tools/test-home.mjs` with Playwright available (or 
 Two Worlds' original environmental background and CLEAR's generated thought-experiment graphics remain structural artwork, not freely editable pieces. Add supporting images/videos using the room canvas. Outside Natural's native objects and HOME's scene objects, changing structural art or canvas dimensions or adding a new room still requires code. The editor is not a CMS and cannot edit the atlas or written models.
 
 The authoring middleware runs only in Astro's `author` dev mode. It accepts same-origin local-host requests, validates file signatures/paths/layout, and has no production endpoints. Do not expose this local editing server to the public internet. Nothing is committed, pushed or deployed by SAVE.
+
+## Moments gallery
+
+Public route: `/moments.html`. HOME's existing Lens Captured photo (`home-sky`) links here; its image, link, frame, crop, fitting and placement are still independently editable in HOME Studio. There is no second entrance and no automatic HOME image replacement.
+
+Use `/moments.html?edit=1` with `npm run edit`. **+ UPLOAD PHOTOS** opens the native file picker directly and accepts multiple JPG/JPEG/PNG/WEBP/GIF photos (23 MB each). Drop and clipboard image paste use the same existing upload pipeline. HEIC/HEIF is not supported: export those photos as JPEG first. Uploaded originals are retained unchanged; a high-quality, auto-oriented WebP display copy (up to 1600 pixels per side) keeps the stream lighter. The larger view loads the original only when opened. Lazy loading, async decoding and reserved image/frame dimensions limit initial loading and layout shifts. If preview decoding fails, the original remains available as the display fallback.
+
+New photos automatically append to a one-column mobile stream, two columns on medium screens and three on wide screens. No manual positioning is required. Each stream slot is a small Studio canvas: drag, resize, Size, crop, FIT/FILL, tilt, shape and layer controls operate within that photo's slot. Mobile/desktop frames save separately. Slots reflow as photos are added/deleted; moving a photo adjusts its composition within its slot, not the ordering of the stream. Duplicate adds another slot. A FEATURED checkbox gives one photo a wider desktop slot; it is stored for future integration but does not sync HOME or Photogression.
+
+All metadata is optional. TITLE is the detail heading, LABEL is the visible caption, DESCRIPTION is additional detail text, CATEGORY / ROLE is the lens/category, with optional DATE, NOTE and LINK. Empty images render without metadata placeholders. Save writes the Moments manifest and refreshes; originals remain safe when pieces are deleted or undone. Moments allows up to 500 pieces (other rooms keep their 100-piece limit).
+
+On phones, swipe over unselected photos to scroll; tap to select a photo, then drag that selected photo to move it or its corner to resize. The bottom Studio panel occupies at most 36% of screen height and scrolls independently. Upload/save controls have 44px minimum touch targets. No hover is needed.
+
+To edit from a phone on your trusted LAN, run `npm run edit -- --host 0.0.0.0` and open the Network address printed by Astro, followed by `/moments.html?edit=1`. The phone must reach the computer (same trusted network and firewall access). Do not port-forward or expose this author server publicly. Changes save into this project on the computer; they are not phone-browser storage. Public production remains a static build; making saved photos public still requires the existing manual build/publishing workflow. No publishing or cloud infrastructure has been added.
+
+Visitors can open photos in an accessible large-image dialog with next/previous, Close, Escape and browser Back. Optional links are shown inside detail instead of hijacking the photo tap. Normal pages have no Studio chrome; production does not load the authoring module even with `?edit=1`.
+
+Regression: `node tools/test-moments.mjs` against a running author server (`MOMENTS_TEST_ORIGIN` overrides the origin). It uses an available Playwright install or `PLAYWRIGHT_PATH`, backs up/restores Moments data/uploads, and verifies uploads/paste/drop, editing, save/reload, stream flow, mobile widths, detail controls and protected room files. Photogression remains context only: no API, IndexedDB, browser-storage sync or cloud integration.

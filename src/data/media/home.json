@@ -1,6 +1,7 @@
 [
   {
     "id": "home-sky",
+      "href": "/moments.html",
     "group": "sky",
     "desktop": {
       "x": 38.63636363636363,

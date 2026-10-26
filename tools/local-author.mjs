@@ -5,13 +5,13 @@ import { networkInterfaces } from 'node:os';
 import { resolveSource, safeHttp, safeLocal, cleanText } from './media-sources.mjs';
 const homeTextStyles = ['handle','archive','title','signature','intro-heading','intro-body','sky-note','ideas','portal-note','interest-heading'];
 
-const rooms = ['home', 'natural', 'clear', 'worlds'];
+const rooms = ['home', 'natural', 'clear', 'worlds', 'moments'];
 const extensions = ['jpg', 'jpeg', 'png', 'webp', 'gif', 'mp4', 'webm'];
 const limit = 32 * 1024 * 1024;
 const bounded = (value, min, max) => typeof value === 'number' && Number.isFinite(value) && value >= min && value <= max;
 const existingLocal = value => typeof value === 'string' && /^\/(?!\/)[\w/.-]+$/.test(value) && !value.includes('..');
-export function validate(items) {
-  if (!Array.isArray(items) || items.length > 100) throw new Error('Use at most 100 pieces per room.');
+export function validate(items, maximum = 100) {
+  if (!Array.isArray(items) || items.length > maximum) throw new Error(`Use at most ${maximum} pieces per room.`);
   const ids = new Set();
   for (const item of items) {
     if (!item || typeof item.id !== 'string' || !/^[\w-]{1,100}$/.test(item.id) || ids.has(item.id)) throw new Error('Invalid or duplicate media ID.');
@@ -26,6 +26,11 @@ export function validate(items) {
       });
     }
     if (item.deleted === true) continue;
+    if (item.featured !== undefined && typeof item.featured !== 'boolean') throw new Error('Invalid featured flag.');
+    if (item.date !== undefined && (typeof item.date !== 'string' || (item.date !== '' && !/^\d{4}-\d{2}-\d{2}$/.test(item.date)))) throw new Error('Invalid photo date.');
+    if (item.note !== undefined && (typeof item.note !== 'string' || item.note.length > 5000)) throw new Error('Keep notes under 5000 characters.');
+    if (item.displaySrc !== undefined && (!safeLocal(item.displaySrc) || !item.displaySrc.startsWith('/media/moments/'))) throw new Error('Invalid photo preview.');
+    for (const key of ['pixelWidth','pixelHeight']) if (item[key] !== undefined && !bounded(item[key], 1, 100000)) throw new Error('Invalid image dimensions.');
     if (item.kind === 'native') {
       if (typeof item.nativeId !== 'string' || !/^natural-[\w-]+$/.test(item.nativeId)) throw new Error('Invalid Natural object.');
       if (item.nativeText !== undefined && (!Array.isArray(item.nativeText) || item.nativeText.length > 10 || item.nativeText.some(text => typeof text !== 'string' || text.length > 500))) throw new Error('Invalid Natural text.');
@@ -85,7 +90,8 @@ export function validate(items) {
   return items.map(item => {
     if (item.deleted === true) return { id: item.id, deleted: true };
     if (item.kind === 'native') return { id: item.id, kind: 'native', nativeId: item.nativeId, nativeText: item.nativeText, desktop: item.desktop, mobile: item.mobile, z: item.z };
-    const result = Object.fromEntries(Object.entries(item).filter(([key]) => ['id','src','source','provider','videoId','metadata','overrides','kind','desktop','mobile','shape','objectPosition','rotation','z','label','href','group','deleted','fit','text','textSize','font','color','align','sceneStyle','parts','previewImages'].includes(key)));
+    const result = Object.fromEntries(Object.entries(item).filter(([key]) => ['id','src','source','provider','videoId','metadata','overrides','kind','desktop','mobile','shape','objectPosition','rotation','z','label','href','group','deleted','fit','text','textSize','font','color','align','sceneStyle','parts','previewImages','featured','date','note','displaySrc','pixelWidth','pixelHeight'].includes(key)));
+    if (result.note !== undefined) result.note = cleanText(result.note, 5000);
     for (const key of ['desktop', 'mobile']) if (result[key]) result[key] = Object.fromEntries(['x', 'y', 'width', 'height'].map(k => [k, result[key][k]]));
     for (const key of ['label', 'group']) if (result[key] !== undefined) result[key] = cleanText(result[key], 200);
     return result;
@@ -118,6 +124,7 @@ export function localAuthor() {
           if (req.url === '/__author/upload') {
             const ext = String(body.name).split('.').pop().toLowerCase();
             if (!extensions.includes(ext) || typeof body.data !== 'string' || !/^[A-Za-z0-9+/]*={0,2}$/.test(body.data)) throw new Error('Choose a supported image or video.');
+            if (body.room === 'moments' && ['mp4','webm'].includes(ext)) throw new Error('Moments accepts photos only.');
             const data = Buffer.from(body.data, 'base64');
             if (!data.length || data.length > 23 * 1024 * 1024) throw new Error('File must be between 1 byte and 23 MB.');
             const signature = data.subarray(0, 16);
@@ -126,11 +133,24 @@ export function localAuthor() {
             const name = `${createHash('sha256').update(data).digest('hex').slice(0,20)}.${ext}`;
             const folder = resolve(root, 'public/media', body.room); await mkdir(folder, { recursive: true });
             await writeFile(join(folder, name), data);
+            if (body.room === 'moments') {
+              // Sharp is already installed by Astro. Keep the untouched original;
+              // use an oriented, high-quality display copy for the photo stream.
+              try {
+                const { default: sharp } = await import('sharp');
+                const previewName = `${name}.display.webp`;
+                const info = await sharp(data, { limitInputPixels: 100000000 }).rotate().resize({width:1600,height:1600,fit:'inside',withoutEnlargement:true}).webp({quality:90}).toFile(join(folder, previewName));
+                return send(200, {src:`/media/moments/${name}`,kind:'image',displaySrc:`/media/moments/${previewName}`,pixelWidth:info.width,pixelHeight:info.height,metadata:{aspect:info.width/info.height}});
+              } catch {
+                // Never discard an original when thumbnail decoding fails.
+                return send(200, {src:`/media/moments/${name}`,kind:'image'});
+              }
+            }
             return send(200, { src: `/media/${body.room}/${name}`, kind: ['mp4','webm'].includes(ext) ? 'video' : 'image' });
           }
           if (req.url === '/__author/save') {
             if (busy) return send(409, { error: 'A save is already in progress. Try again.' });
-            const items = validate(body.items);
+            const items = validate(body.items, body.room === 'moments' ? 500 : 100);
             if (body.room !== 'home' && items.some(item => item.sceneStyle || item.parts || item.previewImages)) throw new Error('HOME composition belongs to HOME only.');
             if (body.room !== 'natural' && items.some(item => item.kind === 'native')) throw new Error('Native objects belong to Natural only.');
             const file = resolve(root, 'src/data/media', `${body.room}.json`);

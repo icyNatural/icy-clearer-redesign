@@ -1,0 +1,50 @@
+---
+import { createHash } from 'node:crypto';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+import rawManifest from '../data/media/moments.json?raw';
+import '../styles/media-room.css';
+import '../styles/moments.css';
+const author = import.meta.env.DEV && import.meta.env.MODE === 'author';
+const raw = author ? readFileSync(resolve(process.cwd(), 'src/data/media/moments.json'), 'utf8') : rawManifest;
+const items = JSON.parse(raw).filter((item: any) => !item.deleted);
+const value = (item: any, field: string) => item.overrides?.[field] ?? item[field] ?? item.metadata?.[field] ?? '';
+const placement = (p: any, prefix: string) => `--${prefix}x:${p?.x ?? 4}%;--${prefix}y:${p?.y ?? 4}%;--${prefix}w:${p?.width ?? 92}%;--${prefix}h:${p?.height ?? 92}%;`;
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#111414" />
+    <meta name="description" content="Moments everywhere. Photographic observations by Icy Clearer." />
+    <title>Moments — Icy Clearer</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  </head>
+  <body class="moments-page">
+    <header class="moments-header"><a href="/" aria-label="Icy Clearer home">ICY CLEARER ↗</a><h1>MOMENTS</h1><p>Captured through Photogression</p></header>
+    <main id="gallery" aria-label="Photo gallery">
+      <div class:list={['media-room', 'moments-stream', { 'moments-empty': !items.length }]} data-media-room="moments" data-revision={author ? createHash('sha256').update(raw).digest('hex') : undefined}>
+        {items.map((item: any) => <div class:list={['moment-slot', { 'moment-slot--featured': item.featured }]} style={`--moment-aspect:${Math.max(.6, Math.min(1.8, item.metadata?.aspect || 1.5))}`}>
+          <figure class={`room-piece room-shape-${item.shape || 'rectangle'}`} data-author-id={item.id} style={`${placement(item.desktop, 'd')}${placement(item.mobile || item.desktop, 'm')}--rotation:${item.rotation || 0}deg;--layer:${item.z ?? 1};--crop:${item.objectPosition || '50% 50%'};--media-fit:${item.fit || 'contain'};`}>
+            {item.kind === 'text' ? <div class={`source-text text-font-${item.font || 'sans'} text-color-${item.color || 'light'}`} style={`font-size:${item.textSize || 32}px;text-align:${item.align || 'left'}`}>{item.text}</div> : item.kind === 'image' ? <>
+              <img src={item.displaySrc || item.src} width={item.pixelWidth || 1500} height={item.pixelHeight || Math.round(1500 / (item.metadata?.aspect || 1.5))} alt={value(item, 'alt') || value(item, 'title')} loading="lazy" decoding="async" draggable="false" />
+              {value(item, 'label') && <figcaption>{value(item, 'label')}</figcaption>}
+              <button class="moment-open" type="button" data-moment-open={item.id} aria-label={`View ${value(item, 'title') || value(item, 'label') || 'photo'}`}></button>
+            </> : <p>Attach a photo in Local Studio.</p>}
+          </figure>
+        </div>)}
+      </div>
+      <p class="moments-empty-message">More moments soon.</p>
+    </main>
+    <dialog class="moment-detail" aria-label="Photo detail">
+      <div class="moment-detail__bar"><button type="button" data-detail="close" aria-label="Close photo">Close ×</button><span data-detail-count></span><div><button type="button" data-detail="previous" aria-label="Previous photo">←</button><button type="button" data-detail="next" aria-label="Next photo">→</button></div></div>
+      <img class="moment-detail__image" alt="" decoding="async" />
+      <div class="moment-detail__metadata"></div>
+    </dialog>
+    <script is:inline type="application/json" data-moments-content set:html={JSON.stringify(items).replace(/</g, '\\u003c')}></script>
+    <script src="../scripts/moments.ts"></script>
+    {author && <script is:inline type="module" src="/src/scripts/local-author.ts"></script>}
+    {author && <script is:inline type="application/json" data-author-manifest="moments" set:html={JSON.stringify(items).replace(/</g, '\\u003c')}></script>}
+  </body>
+</html>

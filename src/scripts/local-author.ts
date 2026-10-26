@@ -1,6 +1,7 @@
 import '../styles/local-author.css';
 import { applyNative, nativeTextNodes, naturalTemplate, renderNaturalObjects } from './natural-objects';
 import { homeContent, homeParts, homeWorld, homeEntrance } from './home-scene';
+import { layoutMoments } from './moments-layout';
 
 // This module is requested only by the dev-only author component branch.
 if (new URLSearchParams(location.search).get('edit') === '1') start();
@@ -8,6 +9,7 @@ function start() {
   const canvas = document.querySelector<HTMLElement>('[data-media-room]');
   if (!canvas) return;
   const room = canvas.dataset.mediaRoom!;
+  const moments = room === 'moments';
   const source = document.querySelector(`[data-author-manifest="${room}"]`);
   let items: any[] = JSON.parse(source?.textContent || '[]');
   if (room === 'natural') renderNaturalObjects(items);
@@ -27,8 +29,8 @@ function start() {
   panel.className = 'author-panel';
   panel.setAttribute('aria-label', 'Local media editor');
   panel.innerHTML = `<div class="author-top"><strong>LOCAL STUDIO</strong><a href="${location.pathname}">Exit</a></div>
-    <nav aria-label="Edit room"><a href="/?edit=1">Home</a><a href="/natural.html?edit=1">Natural</a><a href="/worlds.html?edit=1">Two Worlds</a><a href="/clear.html?edit=1">Clear</a></nav>
-    <div class="author-actions"><button data-action="add">+ ADD MEDIA</button><button data-action="text">+ TEXT</button><button data-action="save">SAVE</button></div>
+    <nav aria-label="Edit room"><a href="/?edit=1">Home</a><a href="/natural.html?edit=1">Natural</a><a href="/worlds.html?edit=1">Two Worlds</a><a href="/clear.html?edit=1">Clear</a><a href="/moments.html?edit=1">Moments</a></nav>
+    <div class="author-actions">${moments ? '<button data-action="upload">+ UPLOAD PHOTOS</button>' : ''}<button data-action="add">+ ADD MEDIA</button><button data-action="text">+ TEXT</button><button data-action="save">SAVE</button></div>
     <div class="author-actions"><button data-action="undo" disabled>Undo</button><button data-action="redo" disabled>Redo</button></div>
     <div class="author-source-flow" hidden><div class="author-actions"><button data-action="file">FILE</button><button data-action="url">URL</button><button data-action="cancel-source">Cancel</button></div><div class="author-url-flow" hidden><label>MEDIA SOURCE <input data-source-url placeholder="https://… or /media/…" /></label><button data-action="fetch">FETCH</button><div class="author-source-preview" aria-live="polite"></div><button data-action="accept-source" hidden>ADD</button></div></div>
     <p class="author-status" role="status" aria-live="polite">Select a piece or add a file · ${breakpoint} layout</p>
@@ -41,18 +43,20 @@ function start() {
     <label>Tilt <input data-field="rotation" type="range" min="-30" max="30" /></label>
     <label>SOURCE <input data-field="source" placeholder="URL or /media/…" /></label><div class="author-actions"><button data-action="apply-source">FETCH SOURCE</button><button data-action="refresh-metadata">REFRESH METADATA</button></div>
     ${['title','description','alt','label'].map(field => `<label>${field.toUpperCase()} <button type="button" data-auto="${field}" aria-label="Reset ${field} to auto">AUTO</button><input data-field="${field}" maxlength="${field === 'description' ? 5000 : 500}" /></label>`).join('')}
-    <label>LINK <input data-field="href" placeholder="Optional click destination" /></label><label>CATEGORY / ROLE <input data-field="group" maxlength="200" placeholder="hero, highlight, process…" /></label></div>
+    <label>LINK <input data-field="href" placeholder="Optional click destination" /></label><label>CATEGORY / ROLE <input data-field="group" maxlength="200" placeholder="hero, highlight, process…" /></label>${moments ? '<label>DATE <input data-field="date" type="date" /></label><label>NOTE <textarea data-field="note" maxlength="5000"></textarea></label><label><input data-field="featured" type="checkbox" /> FEATURED</label>' : ''}</div>
     <small>Drag to move · corner to resize · arrows to nudge.<br>Phone and desktop positions save separately. Files ≤23 MB.</small>`;
   document.body.append(panel);
   const picker = document.createElement('input');
   picker.type = 'file'; picker.accept = '.jpg,.jpeg,.png,.webp,.gif,.mp4,.webm'; picker.multiple = true; picker.hidden = true;
+  if (moments) picker.accept = '.jpg,.jpeg,.png,.webp,.gif';
   document.body.append(picker);
   const addSpot = document.createElement('button');
-  addSpot.className = 'author-add-spot'; addSpot.textContent = '+ ADD MEDIA';
-  addSpot.addEventListener('click', () => { if (saving || uploading) return; replacing = false; openSource(); });
+  addSpot.className = 'author-add-spot'; addSpot.textContent = moments ? '+ UPLOAD PHOTOS' : '+ ADD MEDIA';
+  addSpot.addEventListener('click', () => { if (saving || uploading) return; replacing = false; if (moments) { picker.multiple = true; picker.value = ''; picker.click(); } else openSource(); });
   canvas.append(addSpot);
   const status = (text: string) => { panel.querySelector('.author-status')!.textContent = text; };
-  const mark = () => { dirty = true; status(`Unsaved · ${breakpoint} layout`); };
+  const mark = () => { if (moments) layoutMoments(canvas, items); dirty = true; status(`Unsaved · ${breakpoint} layout`); };
+  if (moments) layoutMoments(canvas, items);
   function checkpoint() {
     const snapshot = JSON.stringify(items);
     if (snapshot === history[historyIndex]) return;
@@ -75,7 +79,7 @@ function start() {
     if (room === 'natural') renderNaturalObjects(items);
     for (const item of items.filter(i => !i.deleted && i.kind !== 'native')) {
       const el = document.createElement('figure'); el.className = 'room-piece'; el.dataset.authorId = item.id;
-      canvas.append(el); draw(item, el); apply(item, el);
+      canvas.append(el); if (moments) layoutMoments(canvas, items); draw(item, el); apply(item, el);
     }
     panel.querySelector<HTMLElement>('.author-selection')!.hidden = true;
     const elements = Array.from(document.querySelectorAll<HTMLElement>('[data-author-id]'));
@@ -87,7 +91,7 @@ function start() {
   panel.addEventListener('focusin', () => { if (inputStart === null) inputStart = JSON.stringify(items); });
   panel.addEventListener('change', checkpointInput);
   panel.addEventListener('focusout', checkpointInput);
-  const container = (el: HTMLElement) => el.closest('.piece') ? el.parentElement! : canvas;
+  const container = (el: HTMLElement) => moments ? el.closest<HTMLElement>('.moment-slot') || canvas : el.closest('.piece') ? el.parentElement! : canvas;
   const current = () => items.find(i => i.id === selected?.dataset.authorId);
   const clamp = (n: number, min: number, max: number) => Math.max(min, Math.min(max, n));
   const value = (item: any, field: string) => item.overrides?.[field] ?? item[field] ?? ((field === 'label' || field === 'alt') ? item.metadata?.title : item.metadata?.[field]) ?? '';
@@ -111,7 +115,7 @@ function start() {
     const wrap = document.createElement('div'); wrap.className = item.kind === 'youtube' ? 'source-youtube' : item.kind === 'placeholder' ? 'source-paper' : 'source-fragment';
     wrap.style.borderRadius = 'inherit'; wrap.style.width = '100%'; wrap.style.height = '100%';
     if (item.kind === 'video') { const video = document.createElement('video'); video.src = item.src || item.source; video.controls = true; video.playsInline = true; video.setAttribute('aria-label', value(item,'alt')); wrap.append(video); }
-    else if (item.kind === 'image' || item.src || item.metadata?.thumbnail) { const img = document.createElement('img'); img.src = item.src || item.metadata?.thumbnail || item.source; img.alt = value(item,'alt'); img.draggable = false; wrap.append(img); }
+    else if (item.kind === 'image' || item.src || item.metadata?.thumbnail) { const img = document.createElement('img'); img.src = (moments && item.displaySrc) || item.src || item.metadata?.thumbnail || item.source; img.alt = value(item,'alt'); img.draggable = false; img.loading = 'lazy'; img.decoding = 'async'; wrap.append(img); }
     if (item.kind === 'youtube') { const play = document.createElement('span'); play.className = 'source-play'; play.textContent = '▶'; wrap.append(play); }
     if (item.kind === 'unavailable' || item.kind === 'link') { const text = document.createElement('span'); text.textContent = item.kind === 'unavailable' ? 'Media unavailable locally' : value(item,'title') || item.source; wrap.append(text); }
     el.append(wrap);
@@ -131,7 +135,7 @@ function start() {
       // Replace the entire preview using the existing media workflow. Caption,
       // destination and placement remain independent of the replacement source.
       if (homeWorld(item) && (media.src || media.source) !== (item.src || item.source)) delete item.previewImages;
-      for (const key of ['src','source','provider','videoId','metadata','kind','title','description','alt','label']) delete item[key];
+      for (const key of ['src','source','provider','videoId','metadata','kind','title','description','alt','label','displaySrc','pixelWidth','pixelHeight']) delete item[key];
     }
     else { item = { id: `media-${crypto.randomUUID()}`, desktop: { x:10,y:10,width:35,height:30 }, mobile: { x:5,y:8,width:85,height:23 }, z:3,shape:'rectangle' }; items.push(item); el = document.createElement('figure'); el.className = 'room-piece'; el.dataset.authorId = item.id; canvas.append(el); }
     Object.assign(item, media);
@@ -154,6 +158,12 @@ function start() {
       const p = item[breakpoint];
       if (!media.metadata?.aspect) { p.width = breakpoint === 'mobile' ? 45 : 24; p.height = 18; }
       p.x = clamp(insertion.x - p.width / 2, 0, 100 - p.width); p.y = clamp(insertion.y - p.height / 2, 0, 100 - p.height);
+    }
+    if (moments) {
+      if (isNew && !media.desktop) {
+        item.desktop = {x:4,y:4,width:92,height:92}; item.mobile = {...item.desktop}; item.fit = 'contain';
+      }
+      layoutMoments(canvas, items);
     }
     draw(item, el); select(el); apply(item,el); mark(); checkpoint();
     panel.querySelector<HTMLElement>('.author-source-flow')!.hidden = true;
@@ -187,7 +197,7 @@ function start() {
     const p = item[breakpoint] || item.desktop || item.mobile;
     if (p) for (const [key, value] of Object.entries({ left: p.x, top: p.y, width: p.width, height: p.height })) el.style.setProperty(key, `${value}%`, 'important');
     el.style.setProperty('transform', `rotate(${item.rotation || 0}deg)`, 'important');
-    el.style.setProperty('z-index', String(el === selected && room !== 'home' ? 1000 : (item.z || 1)), 'important');
+    el.style.setProperty('z-index', String(el === selected && room !== 'home' && !moments ? 1000 : (item.z ?? 1)), 'important');
     el.style.animation = 'none';
     const inside = el.querySelector<HTMLElement>('.piece__in'); if (inside) inside.style.setProperty('transform', 'none', 'important');
     const radius = ({ rectangle: '2px', arch: '48% 48% 2px 2px', round: '50%', organic: '43% 57% 61% 39% / 56% 37% 63% 44%' } as any)[item.shape] || '2px';
@@ -207,6 +217,11 @@ function start() {
     panel.querySelector<HTMLElement>('.author-selection')!.hidden = false;
     const crop = (item.objectPosition || '50% 50%').split(' ').map(parseFloat);
     for (const [field, entry] of Object.entries({ size: item[breakpoint].width, shape: item.shape || 'rectangle', rotation: item.rotation || 0, cropX: crop[0], cropY: crop[1], source: item.source || item.src || '', title:value(item,'title'),description:value(item,'description'),alt:value(item,'alt'),label:value(item,'label'), href: item.href || '', group: item.group || '', fit:item.fit || 'cover', text:item.text || '', textSize:item.textSize || 32, font:item.font || 'sans', color:item.color || 'dark', align:item.align || 'left' })) panel.querySelector<HTMLInputElement>(`[data-field="${field}"]`)!.value = String(entry);
+    if (moments) {
+      panel.querySelector<HTMLInputElement>('[data-field="date"]')!.value = item.date || '';
+      panel.querySelector<HTMLTextAreaElement>('[data-field="note"]')!.value = item.note || '';
+      panel.querySelector<HTMLInputElement>('[data-field="featured"]')!.checked = !!item.featured;
+    }
     panel.querySelector<HTMLElement>('.author-text-controls')!.hidden = item.kind !== 'text';
     panel.querySelectorAll<HTMLElement>('.author-text-controls > label:not(:first-child), .author-text-controls > .author-row').forEach(control => { control.hidden = !!item.sceneStyle; });
     panel.querySelector('.author-part-controls')?.remove();
@@ -246,6 +261,9 @@ function start() {
     const target = event.target as HTMLElement;
     if (target.closest('.author-panel')) return;
     const el = target.closest<HTMLElement>('[data-author-id]'); if (!el) return;
+    // An unselected photo remains a native touch-scroll surface. Tap to select;
+    // only the selected photo captures drag/resize gestures.
+    if (moments && event.pointerType === 'touch' && selected !== el) return;
     event.preventDefault(); event.stopImmediatePropagation();
     if (selected !== el) select(el);
     const item = ensure(el); const bounds = container(el).getBoundingClientRect();
@@ -295,6 +313,11 @@ function start() {
       apply(item, selected); mark(); return;
     }
     if (!field || field === 'source') return;
+    if (moments && ['date','note','featured'].includes(field)) {
+      item[field] = field === 'featured' ? input.checked : input.value;
+      if (field === 'featured' && input.checked) items.forEach(other => { if (other !== item) other.featured = false; });
+      mark(); return;
+    }
     if (['text','textSize','font','color','align'].includes(field)) { item[field] = field === 'textSize' ? +input.value : input.value; draw(item, selected); apply(item, selected); mark(); return; }
     if (['title','description','alt','label'].includes(field)) {
       item.overrides ||= {}; if (input.value) item.overrides[field] = input.value; else { delete item.overrides[field]; delete item[field]; }
@@ -321,6 +344,7 @@ function start() {
     const action = (event.target as HTMLElement).closest<HTMLElement>('[data-action]')?.dataset.action;
     if (saving || uploading) return;
     checkpointInput();
+    if (action === 'upload' && moments) { replacing = false; picker.multiple = true; picker.value = ''; picker.click(); }
     if (action === 'undo' || action === 'redo') { restoreHistory(action === 'undo' ? -1 : 1); return; }
     if (action === 'text') { replacing = false; insertion = visibleCenter(); install({kind:'text',text:'Your words',textSize:32,font:'sans',color:'dark',align:'left'}); insertion = null; panel.querySelector<HTMLTextAreaElement>('[data-field="text"]')!.focus(); }
     if (action === 'duplicate' && selected) {
@@ -381,6 +405,7 @@ function start() {
     try {
       for (const [index, file] of files.entries()) {
       if (!/\.(jpe?g|png|webp|gif|mp4|webm)$/i.test(file.name)) { status(`Skipped unsupported file: ${file.name}`); continue; }
+      if (moments && !/\.(jpe?g|png|webp|gif)$/i.test(file.name)) { status('Moments accepts JPG, PNG, WEBP and GIF photos. Export HEIC as JPEG first.'); continue; }
       if (file.size > 23 * 1024 * 1024) { status(`Skipped ${file.name}: choose a file under 23 MB.`); continue; }
       status(`Copying ${index + 1}/${files.length} to project…`);
       const data = await new Promise<string>((resolve, reject) => { const reader = new FileReader(); reader.onload = () => resolve(String(reader.result).split(',')[1]); reader.onerror = reject; reader.readAsDataURL(file); });
