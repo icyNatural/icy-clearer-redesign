@@ -17,7 +17,7 @@
 .living-mirror__readout{position:absolute;bottom:10%;left:9%;right:9%;z-index:6;opacity:0;text-align:center;font:clamp(8px,1cqw,11px)/1.6 'JetBrains Mono',monospace;letter-spacing:.12em;white-space:pre-line;text-shadow:0 1px 4px #0d2525;transition:opacity .7s ease;pointer-events:none}
 .living-mirror__announcement{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
 .living-mirror[data-running=true] .living-mirror__photo,.living-mirror[data-running=true] .living-mirror__geometry,.living-mirror[data-running=true] .living-mirror__glint{animation-play-state:running}
-.living-mirror[data-running=false] *{animation-play-state:paused!important;transition:none!important}
+.living-mirror[data-running=false] *{animation-play-state:paused!important}
 .living-mirror[data-resolved=true] .living-mirror__photo,.living-mirror[data-resolved=true] .living-mirror__geometry{animation-play-state:paused!important;opacity:0!important}
 .living-mirror[data-resolved=true] .living-mirror__photo--water{opacity:.18!important}
 .living-mirror[data-resolved=true][data-reflection=moments] .living-mirror__photo--water{opacity:.75!important}
@@ -25,6 +25,15 @@
 .living-mirror[data-resolved=true][data-reflection=gaming] .living-mirror__photo--gaming{opacity:.78!important}
 .living-mirror[data-resolved=true][data-reflection=apps] .living-mirror__geometry--apps,.living-mirror[data-resolved=true][data-reflection=clear] .living-mirror__geometry--clear{opacity:.7!important}
 .living-mirror[data-resolved=true] .living-mirror__readout{opacity:.78}
+.living-mirror[data-phase=resolving] .living-mirror__readout{opacity:.3}
+.living-mirror[data-phase=stable] .living-mirror__readout{opacity:1}
+.home-scrapbook .living-mirror[data-phase=stable] .living-mirror__photo{filter:saturate(.58) contrast(1.04) brightness(1.08)}
+.living-mirror[data-phase=stable]::after{box-shadow:inset 1.4cqw .6cqw 1.8cqw #14252388,inset 0 0 .7cqw #eef0db66}
+.living-mirror::after{transition:box-shadow .45s ease}
+.living-mirror[data-phase=stable] .living-mirror__depth{animation:mirror-settle .55s ease-out both}
+@keyframes mirror-settle{0%{filter:brightness(1)}45%{filter:brightness(1.13)}100%{filter:brightness(1)}}
+.is-authoring .living-mirror .living-mirror__photo,.is-authoring .living-mirror .living-mirror__geometry{opacity:0!important}
+.is-authoring .living-mirror .living-mirror__photo--water{opacity:.75!important}
 .home-scrapbook .living-mirror:focus-visible{outline:2px solid #e1e5c4;outline-offset:-5px}
 .is-authoring .living-mirror{pointer-events:none}
 .is-authoring .living-mirror *{animation-play-state:paused!important}
@@ -35,6 +44,7 @@
 @keyframes mirror-clear-bleed{0%,17%,31%,100%{opacity:0}23%,26%{opacity:.19}}
 @keyframes mirror-glass-drift{to{transform:rotate(-15deg) translate3d(7%,2%,0)}}
 @media(prefers-reduced-motion:reduce){
+  .living-mirror::after{transition:none}
   .living-mirror *{animation:none!important;transition:none!important}
   .living-mirror .living-mirror__photo--water{opacity:.42}
   .living-mirror .living-mirror__photo--organic{opacity:.16}

@@ -6,6 +6,7 @@ let opener: HTMLElement | null = null;
 let previousOverflow = '';
 const collection = document.querySelector<HTMLElement>('.moments-stream')!;
 const viewAll = document.querySelector<HTMLButtonElement>('.moments-view-all');
+let swipe: { pointerId: number; x: number; y: number; vertical: boolean } | null = null;
 function renderCollection() {
   const editing = new URLSearchParams(location.search).get('edit') === '1';
   const expanded = new URLSearchParams(location.search).get('gallery') === 'all';
@@ -38,6 +39,7 @@ function appendCaptureCredit(el: HTMLElement, text: string) {
   }
 }
 function render() {
+  swipe = null;
   const id = new URLSearchParams(location.hash.slice(1)).get('moment');
   const index = items.findIndex((item: any) => item.id === id);
   if (index < 0 || document.body.classList.contains('is-authoring')) {
@@ -73,6 +75,32 @@ function step(direction: number) {
   if (!next) return;
   history.replaceState(history.state, '', `#moment=${encodeURIComponent(next.id)}`); render();
 }
+// Keep native vertical scrolling and pinch zoom; only a deliberate touch swipe
+// on the photo navigates. Buttons, metadata and mouse input keep their behavior.
+const swipeEnabled = () => dialog.open && items.length > 1 &&
+  !document.body.classList.contains('is-authoring') && new URLSearchParams(location.search).get('edit') !== '1';
+image.addEventListener('pointerdown', event => {
+  swipe = null;
+  if (event.pointerType !== 'touch' || !event.isPrimary || !swipeEnabled()) return;
+  swipe = { pointerId: event.pointerId, x: event.clientX, y: event.clientY, vertical: false };
+});
+image.addEventListener('pointermove', event => {
+  if (!swipe || event.pointerId !== swipe.pointerId) return;
+  const dx = Math.abs(event.clientX - swipe.x);
+  const dy = Math.abs(event.clientY - swipe.y);
+  // Once the user starts scrolling vertically, never turn that gesture into navigation.
+  if (dy >= 10 && dy >= dx) swipe.vertical = true;
+});
+image.addEventListener('pointerup', event => {
+  const gesture = swipe;
+  swipe = null;
+  if (!gesture || event.pointerId !== gesture.pointerId || event.pointerType !== 'touch' || !swipeEnabled() || gesture.vertical) return;
+  const dx = event.clientX - gesture.x;
+  const dy = event.clientY - gesture.y;
+  if (Math.abs(dx) >= 50 && Math.abs(dx) > Math.abs(dy) * 1.5) step(dx < 0 ? 1 : -1);
+});
+image.addEventListener('pointercancel', () => { swipe = null; });
+image.addEventListener('lostpointercapture', () => { swipe = null; });
 document.addEventListener('click', event => {
   const button = (event.target as HTMLElement).closest<HTMLElement>('[data-moment-open]');
   if (!button || document.body.classList.contains('is-authoring')) return;

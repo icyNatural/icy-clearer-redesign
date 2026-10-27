@@ -1,74 +1,127 @@
 import { homeMirrorIdleLabel, homeMirrorWorlds } from './home-scene';
 
-// The existing CSS glass effect remains autonomous. Only a resolved world
-// becomes an entrance; no router, storage, video or extra network work.
-const mirrors = Array.from(document.querySelectorAll<HTMLElement>('[data-living-mirror]'));
 const editing = new URLSearchParams(location.search).get('edit') === '1';
+const mirrors = Array.from(document.querySelectorAll<HTMLElement>('[data-living-mirror]'));
 if (editing) {
-  // Also covers links redrawn by Studio and the interval before it initializes.
-  // Let the event propagate so Studio can still select the scene object.
+  // Cover Studio redraws without consuming its selection/manipulation events.
   document.addEventListener('click', event => {
     if ((event.target as Element).closest('[data-living-mirror]')) event.preventDefault();
   }, true);
+  document.addEventListener('keydown', event => {
+    if (['Enter', ' '].includes(event.key) && (event.target as Element).closest('[data-living-mirror]')) event.preventDefault();
+  }, true);
 } else if (mirrors.length) {
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
-  const visible = new Set<Element>();
-  const resets: Array<() => void> = [];
-  const update = () => mirrors.forEach(mirror => { mirror.dataset.running = String(visible.has(mirror) && !document.hidden && !reduced.matches); });
-  const observer = new IntersectionObserver(entries => {
-    for (const entry of entries) entry.isIntersecting ? visible.add(entry.target) : visible.delete(entry.target);
-    update();
-  }, { threshold: .06 });
   mirrors.forEach(mirror => {
-    let next = 0;
-    let locked: typeof homeMirrorWorlds[number] | undefined;
-    let resetTimer: ReturnType<typeof setTimeout> | undefined;
-    let readoutTimer: ReturnType<typeof setTimeout> | undefined;
     const readout = mirror.querySelector<HTMLElement>('.living-mirror__readout')!;
     const announcement = mirror.querySelector<HTMLElement>('.living-mirror__announcement')!;
-    // Studio can pin a matching visual by linking one of the five worlds.
-    // Preserve other authored links in the scene; only known worlds enter the cycle.
-    const authoredHref = mirror.getAttribute('href');
-    const authoredWorld = homeMirrorWorlds.find(world => authoredHref === world.href);
-    const reset = () => {
-      clearTimeout(resetTimer); clearTimeout(readoutTimer);
-      locked = undefined;
-      delete mirror.dataset.resolved; delete mirror.dataset.destination;
-      readout.textContent = ''; announcement.textContent = '';
-      mirror.setAttribute('aria-label', homeMirrorIdleLabel);
-    };
-    const activate = () => {
-      if (locked) {
-        // Full document navigation preserves native browser Back behavior.
-        location.assign(locked.href);
-        return;
+    // An authored known link chooses the starting world, not a permanent lock.
+    const authored = homeMirrorWorlds.findIndex(world => world.href === mirror.getAttribute('href'));
+    let index = Math.max(0, authored);
+    let stable = false;
+    let visible = false;
+    let away = false;
+    let hovered = false;
+    let focused = false;
+    let pointer: number | null = null;
+    let pressDestination: string | null = null;
+    let suppressClick = false;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    let remaining = 1300;
+    let deadline = 0;
+    const world = () => homeMirrorWorlds[index];
+    const held = () => hovered || focused || pointer !== null;
+    const blocked = () => away || !visible || document.hidden || (stable && held());
+    const stop = () => {
+      if (timer !== undefined) {
+        remaining = Math.max(0, deadline - performance.now());
+        clearTimeout(timer); timer = undefined;
       }
-      locked = authoredWorld || homeMirrorWorlds[next++ % homeMirrorWorlds.length];
-      mirror.dataset.reflection = locked.signal;
-      mirror.dataset.destination = locked.href;
-      mirror.dataset.resolved = 'true';
-      readout.textContent = `SIGNAL FOUND\n${locked.name.toUpperCase()}`;
-      mirror.setAttribute('aria-label', `Living portal — current destination ${locked.name}. Activate to enter.`);
-      announcement.textContent = `${locked.name} found. Activate again to enter.`;
-      const showEntrance = () => { if (locked) readout.textContent = `${locked.name.toUpperCase()}\nENTER →`; };
-      if (reduced.matches) showEntrance();
-      else readoutTimer = setTimeout(showEntrance, 900);
-      resetTimer = setTimeout(reset, 15000);
     };
-    mirror.addEventListener('click', event => { event.preventDefault(); activate(); });
+    const schedule = () => {
+      stop();
+      mirror.dataset.running = String(!blocked() && !held() && !reduced.matches);
+      if (blocked()) return;
+      deadline = performance.now() + remaining;
+      timer = setTimeout(() => {
+        timer = undefined;
+        if (stable) { index = (index + 1) % homeMirrorWorlds.length; resolve(); }
+        else settle();
+      }, remaining);
+    };
+    const settle = () => {
+      stable = true;
+      mirror.dataset.phase = 'stable';
+      mirror.dataset.destination = world().href;
+      mirror.removeAttribute('aria-disabled');
+      mirror.setAttribute('aria-label', `Living portal — ${world().name} — enter`);
+      readout.textContent = `${world().name.toUpperCase()}\nENTER →`;
+      // Avoid announcing an endless carousel to screen readers while unfocused.
+      announcement.textContent = focused ? `${world().name}. Enter to visit.` : '';
+      remaining = 5500;
+      schedule();
+    };
+    const resolve = () => {
+      stable = false;
+      mirror.dataset.resolved = 'true';
+      mirror.dataset.phase = 'resolving';
+      mirror.dataset.reflection = world().signal;
+      delete mirror.dataset.destination;
+      mirror.setAttribute('aria-disabled', 'true');
+      mirror.setAttribute('aria-label', homeMirrorIdleLabel);
+      readout.textContent = 'RESOLVING';
+      announcement.textContent = '';
+      remaining = reduced.matches ? 0 : 1300;
+      schedule();
+    };
+    const activate = (href: string | null = stable ? world().href : null) => {
+      if (stable && href === world().href) location.assign(href);
+    };
+    mirror.addEventListener('click', event => {
+      event.preventDefault();
+      if (!suppressClick) activate(pressDestination || (stable ? world().href : null));
+      suppressClick = false; pressDestination = null;
+    });
+    mirror.addEventListener('pointerenter', event => { if (event.pointerType === 'mouse') { hovered = true; schedule(); } });
+    mirror.addEventListener('pointerleave', event => { if (event.pointerType === 'mouse') { hovered = false; schedule(); } });
+    mirror.addEventListener('focus', () => { focused = true; schedule(); });
+    mirror.addEventListener('blur', () => { focused = false; announcement.textContent = ''; schedule(); });
+    mirror.addEventListener('pointerdown', event => {
+      if (!event.isPrimary || event.button !== 0) return;
+      pointer = event.pointerId;
+      pressDestination = stable ? world().href : null;
+      suppressClick = !stable;
+      schedule();
+    });
+    const release = (event: PointerEvent) => {
+      if (pointer !== event.pointerId) return;
+      pointer = null;
+      if (event.type === 'pointercancel') { suppressClick = true; pressDestination = null; }
+      // Give the associated click and the visitor a complete hold after release.
+      if (stable) { stop(); remaining = 5500; }
+      schedule();
+    };
+    window.addEventListener('pointerup', release);
+    window.addEventListener('pointercancel', release);
     mirror.addEventListener('keydown', event => {
-      if (event.key !== 'Enter' && event.key !== ' ') return;
-      // Buttons and Studio-authored anchors use the same two stages. Prevent
-      // native synthetic clicks, repeated-key navigation and Space scrolling.
+      if (!['Enter', ' '].includes(event.key)) return;
       event.preventDefault();
       if (!event.repeat) activate();
     });
-    resets.push(reset);
+    const observer = new IntersectionObserver(entries => {
+      visible = entries[0].isIntersecting;
+      schedule();
+    }, { threshold: .06 });
     observer.observe(mirror);
+    document.addEventListener('visibilitychange', schedule);
+    reduced.addEventListener('change', () => { stop(); if (!stable && reduced.matches) settle(); else schedule(); });
+    addEventListener('pagehide', () => { away = true; schedule(); });
+    addEventListener('pageshow', event => {
+      away = false;
+      if (event.persisted) { stop(); pointer = null; pressDestination = null; suppressClick = false; remaining = stable ? 5500 : 1300; }
+      schedule();
+    });
+    resolve();
     mirror.dataset.portalReady = 'true';
   });
-  reduced.addEventListener('change', update);
-  document.addEventListener('visibilitychange', update);
-  addEventListener('pagehide', () => { resets.forEach(reset => reset()); mirrors.forEach(mirror => { mirror.dataset.running = 'false'; }); });
-  addEventListener('pageshow', event => { if (event.persisted) resets.forEach(reset => reset()); update(); });
 }

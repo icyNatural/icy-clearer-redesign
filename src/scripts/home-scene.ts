@@ -19,13 +19,13 @@ export const homeMirror = (item: any) => item.group === 'portal' && !item.sceneS
 // Every resolved signal leads to an existing world. Shared by the rendered
 // mirror and its interaction; this is not another scene or route system.
 export const homeMirrorWorlds = [
-  { signal: 'moments', name: 'Moments', href: '/moments.html' },
   { signal: 'natural', name: 'Natural', href: '/natural.html' },
+  { signal: 'moments', name: 'Moments', href: '/moments.html' },
   { signal: 'apps', name: 'App World', href: '/world.html' },
   { signal: 'clear', name: 'Clear', href: '/clear.html' },
-  { signal: 'gaming', name: 'Gaming', href: '/gaming/' },
+  { signal: 'gaming', name: 'Gaming', href: '/games.html' },
 ] as const;
-export const homeMirrorIdleLabel = 'Living portal — reveal a world. Activate again to enter.';
+export const homeMirrorIdleLabel = 'Living portal — resolving destination';
 export function homeMirrorContent(item: any, reflections: ReturnType<typeof homeReflectionSources>) {
   const water = item.kind === 'image' ? item.src || item.source || reflections.water : reflections.water;
   const photo = (src: string, name: string) => src ? `<img class="living-mirror__photo living-mirror__photo--${name}" src="${escape(src)}" alt="" loading="lazy" decoding="async" draggable="false" />` : '';
