@@ -1,7 +1,7 @@
 [
   {
     "id": "home-sky",
-      "href": "/moments.html",
+    "href": "/moments.html",
     "group": "sky",
     "desktop": {
       "x": 38.63636363636363,
@@ -92,8 +92,9 @@
     "shape": "arch",
     "fit": "cover",
     "overrides": {
-      "alt": "Portal media slot"
-    }
+      "alt": "Portal to Natural"
+    },
+    "href": "/natural.html"
   },
   {
     "id": "home-handle",
@@ -271,7 +272,7 @@
     "id": "home-portal-note",
     "kind": "text",
     "sceneStyle": "portal-note",
-    "text": "WORLDS\nBELOW",
+    "text": "NATURAL\nBELOW",
     "textSize": 32,
     "font": "serif",
     "color": "dark",
