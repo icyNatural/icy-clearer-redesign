@@ -43,6 +43,17 @@ try {
     assert.equal(await page.locator('.home-world-entrance').count(), 3);
     assert.ok(!(await page.locator('main').innerText()).includes('SEVEN ROOMS'));
     assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `horizontal overflow at ${width}`);
+    if (width <= 700) {
+      const copy = await page.locator('.scrap-archive,.scene-intro-body,.world-entrance__caption p').evaluateAll(elements => elements.map(el => {
+        const style = getComputedStyle(el);
+        return { size: parseFloat(style.fontSize), line: parseFloat(style.lineHeight), family: style.fontFamily };
+      }));
+      for (const text of copy) {
+        assert.ok(text.size >= (width < 360 ? 10 : 12) && text.size <= 14, `readable mobile sentence copy at ${width}`);
+        assert.ok(text.line >= text.size * 1.19, `comfortable sentence leading at ${width}`);
+        assert.ok(text.family.includes('JetBrains Mono'), `authored monospace retained at ${width}`);
+      }
+    }
     for (const [name,label,href] of worlds) {
       assert.equal(await slot(name).getByRole('heading').textContent(), label);
       assert.equal(await slot(name).getByRole('link').getAttribute('href'), href);

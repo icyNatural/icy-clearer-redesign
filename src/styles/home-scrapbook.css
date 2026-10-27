@@ -101,9 +101,13 @@ main.home-scrapbook {
   .is-authoring .home-scrapbook{aspect-ratio:852/2560}
   .home-scrapbook .room-piece{left:var(--dx);top:var(--dy);width:var(--dw);height:var(--dh)}
   .home-scrapbook .home-world-entrance{box-shadow:.5cqw 1.1cqw 2cqw #57452f28}
-  .home-scrapbook .room-piece.home-world-entrance>.world-entrance__caption{padding:1.8cqw 2cqw 3.3cqw;gap:1cqw}
+  .home-scrapbook .room-piece.home-world-entrance>.world-entrance__caption{padding:0 .5cqw;gap:.3cqw}
   .world-entrance__caption h3{font-size:3.3cqw}
-  .world-entrance__caption p{font-size:clamp(8px,1.5cqw,11px);line-height:1.35}
+  .world-entrance__caption p{font-size:clamp(10px,3.34cqw,14px);line-height:1.2;text-wrap:wrap}
+  /* Sentence copy needs a readable floor independent of the scaled artwork.
+     Keep the authored anchors; only the intro measure expands for wrapping. */
+  .home-scene-text>.scrap-archive{width:36cqw;font-size:12px;line-height:1.2;white-space:normal}
+  .scene-intro-body{width:58cqw;font-size:14px;line-height:1.3;white-space:normal}
   .world-entrance__arrow{font-size:3.7cqw}
   .world-signal__text{font-size:clamp(6px,1cqw,9px);letter-spacing:0}
   [data-role=world-clear] .world-signal__text{font-size:clamp(6px,1cqw,9px)}
@@ -113,4 +117,7 @@ main.home-scrapbook {
   .scrap-menu summary{min-width:32px;min-height:32px;align-content:center;gap:5px}
   .scrap-menu nav{width:min(72cqw,280px);top:36px;font-size:clamp(12px,2cqw,14px);gap:8px}
   .scrap-menu nav a{padding:8px}
+}
+@media(max-width:359px){
+  .world-entrance__caption p{font-size:10px}
 }
