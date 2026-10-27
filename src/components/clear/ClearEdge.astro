@@ -1,0 +1,167 @@
+---
+import moments from "../../data/media/moments.json";
+const photo =
+  moments.find(
+    (item: any) =>
+      !item.deleted && item.src === "/media/moments/4724dc7bb129d9e2ea22.jpg",
+  ) || moments.find((item: any) => !item.deleted && item.kind === "image");
+const source = photo?.displaySrc || photo?.src;
+const description =
+  photo?.src === "/media/moments/4724dc7bb129d9e2ea22.jpg"
+    ? "Trees and vegetation beside water, with reflected forms beneath the shore. A real photograph from Moments."
+    : photo?.overrides?.alt ||
+      photo?.alt ||
+      "A real observation from the Moments photographic collection, with pixel-derived contours.";
+---
+
+<section
+  class="clear-instrument edge"
+  id="edge"
+  data-instrument="edge"
+  aria-labelledby="edge-title"
+>
+  <header class="instrument-heading">
+    <p class="code">04 / THE EDGE</p>
+    <span class="instrument-state" data-edge-state>
+      {source ? "UNRESOLVED" : "UNKNOWN"}
+    </span>
+  </header>
+  <div class="edge-heading">
+    <h2 id="edge-title">
+      Where does
+      <br />
+      one thing
+      <br />
+      <em>actually end?</em>
+    </h2>
+    <p class="field-invitation">
+      Move through the photograph.
+      <br />
+      Redraw what counts as an edge.
+    </p>
+  </div>
+  {source ? (
+    <figure class="edge-photograph">
+      <div
+        class="phenomenon edge-field"
+        data-edge-field
+        role="slider"
+        tabindex="0"
+        aria-label="Image boundary threshold, drag sideways to change it"
+        aria-valuemin="0"
+        aria-valuemax="100"
+        aria-valuenow="45"
+        aria-valuetext="45 percent weighted pixel brightness"
+      >
+        <img
+          data-edge-image
+          src={source}
+          alt={description}
+          loading="lazy"
+          decoding="async"
+          draggable="false"
+        />
+        <canvas data-edge-canvas aria-hidden="true"></canvas>
+        <div class="edge-crosshair" data-edge-crosshair aria-hidden="true">
+          <i></i>
+          <i></i>
+        </div>
+        <span class="photo-word photo-word--land" aria-hidden="true">
+          land?
+        </span>
+        <span class="photo-word photo-word--water" aria-hidden="true">
+          water?
+        </span>
+        <span class="edge-threshold" data-edge-threshold>
+          THRESHOLD / 0.45
+        </span>
+      </div>
+      <figcaption>
+        <span>OBSERVED MATERIAL / MOMENTS</span>
+        <a href="/moments.html">OPEN THE PHOTOGRAPHS ↗</a>
+      </figcaption>
+    </figure>
+  ) : (
+    <p class="edge-unavailable" role="status">
+      No photograph is available in Moments. Add a real observation there to
+      open this instrument.
+    </p>
+  )}
+  <div class="edge-measuring">
+    <div
+      class="edge-purpose"
+      role="group"
+      aria-label="Choose the boundary measurement"
+    >
+      <span class="code">MEASURE</span>
+      <button type="button" data-edge-measure="light" aria-pressed="true">
+        LIGHT / DARK
+      </button>
+      <button type="button" data-edge-measure="green" aria-pressed="false">
+        GREEN CONTRAST
+      </button>
+    </div>
+    <div
+      class="edge-resolution"
+      role="group"
+      aria-label="Choose image sampling resolution"
+    >
+      <span class="code">SAMPLE WIDTH</span>
+      <button type="button" data-edge-resolution="24" aria-pressed="false">
+        24
+      </button>
+      <button type="button" data-edge-resolution="48" aria-pressed="true">
+        48
+      </button>
+      <button type="button" data-edge-resolution="96" aria-pressed="false">
+        96
+      </button>
+      <span class="code">PIXELS</span>
+    </div>
+  </div>
+  <div class="field-foot">
+    <output data-edge-count>READING THE PHOTOGRAPH</output>
+    <span>IMAGE CONTOURS ≠ PHYSICAL BORDERS</span>
+  </div>
+  <div class="revelation" aria-live="polite">
+    <p class="signal" data-edge-signal>
+      BOUNDARIES ARE DECISIONS
+    </p>
+    <p class="revelation-line" data-edge-reveal>
+      The photograph stays.
+      <br />
+      The boundary moves.
+    </p>
+    <p class="revelation-detail" data-edge-detail>
+      Blue contours follow a pixel threshold. They do not establish where land,
+      water or life begins.
+    </p>
+  </div>
+  <div class="instrument-notes">
+    <a href="/doctrines/make-the-invisible-pattern-visible.html">
+      READ DOCTRINE / MAKE THE INVISIBLE PATTERN VISIBLE ↗
+    </a>
+    <details>
+      <summary>UNSEAL THE MEASUREMENT</summary>
+      <p>
+        The photograph is existing Moments material; CLEAR does not alter its
+        file, metadata or collection. Contours are computed from its actual
+        pixels after resampling. Light/dark uses weighted sRGB brightness
+        (0.2126R + 0.7152G + 0.0722B), not calibrated physical luminance. Green
+        contrast uses (2G − R − B + 2) / 4 with normalised channels.
+      </p>
+      <p>
+        Sample width is the number of columns used to resample this image. The
+        count is the number of adjacent sample pairs crossing the selected
+        threshold. These are image-processing boundaries, not semantic
+        segmentation, a measured shoreline, a biological claim or evidence about
+        the unseen space outside the photograph.
+      </p>
+      <p>
+        Change the purpose, change the border. Absence at a threshold means no
+        crossing was detected at that resolution. It does not mean no physical
+        boundary exists.
+      </p>
+    </details>
+  </div>
+</section>

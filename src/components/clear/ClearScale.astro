@@ -1,0 +1,152 @@
+---
+import { WINDOW_NAMES } from "../../data/clear-instruments";
+---
+
+<section
+  class="clear-instrument scale"
+  id="scale"
+  data-instrument="scale"
+  aria-labelledby="scale-title"
+>
+  <header class="instrument-heading">
+    <p class="code">03 / THE SCALE</p>
+    <span class="instrument-state" data-scale-state>
+      PARTIAL
+    </span>
+  </header>
+  <div class="scale-heading">
+    <h2 id="scale-title">
+      An event.
+      <br />
+      <em>Or a pattern?</em>
+    </h2>
+    <p class="field-invitation">
+      Pull the field sideways.
+      <br />
+      Let more time enter.
+    </p>
+  </div>
+  <div class="scale-window">
+    <span class="code">OBSERVATION WINDOW</span>
+    <output data-scale-window>1 SECOND</output>
+  </div>
+  <div
+    class="phenomenon scale-field"
+    data-scale-field
+    role="slider"
+    tabindex="0"
+    aria-label="Observation window, drag sideways from one second to one year"
+    aria-valuemin="0"
+    aria-valuemax="4"
+    aria-valuenow="0"
+    aria-valuetext="One second"
+  >
+    <svg viewBox="0 0 1000 390" preserveAspectRatio="none" aria-hidden="true">
+      <defs>
+        <linearGradient id="scale-fill" x2="0" y2="1">
+          <stop stop-color="#88b9ca" stop-opacity=".18" />
+          <stop offset="1" stop-color="#88b9ca" stop-opacity="0" />
+        </linearGradient>
+      </defs>
+      <g class="scale-grid">
+        <path d="M35 70H965M35 180H965M35 290H965M35 40V305M965 40V305" />
+        <text x="8" y="74">
+          1
+        </text>
+        <text x="8" y="294">
+          0
+        </text>
+      </g>
+      <path class="scale-area" data-scale-area />
+      <path class="scale-trace" data-scale-trace />
+      <line
+        class="scale-cursor"
+        data-scale-cursor
+        x1="35"
+        x2="35"
+        y1="40"
+        y2="305"
+      />
+      <g class="scale-ruler">
+        <path d="M35 345H965M35 335V355M267.5 335V355M500 335V355M732.5 335V355M965 335V355" />
+        <circle data-scale-handle cx="35" cy="345" r="9" />
+      </g>
+      <text
+        class="scale-axis"
+        data-scale-axis
+        x="965"
+        y="325"
+        text-anchor="end"
+      >
+        1 SECOND
+      </text>
+    </svg>
+  </div>
+  <div
+    class="scale-stops"
+    role="group"
+    aria-label="Choose an observation window"
+  >
+    {WINDOW_NAMES.map((name, index) => (
+      <button
+        type="button"
+        data-scale-stop={index}
+        aria-pressed={index === 0 ? "true" : "false"}
+      >
+        {name}
+      </button>
+    ))}
+  </div>
+  <div class="field-foot">
+    <span>ILLUSTRATIVE ACTIVITY / NORMALISED 0–1</span>
+    <output data-scale-bin>240 BIN AVERAGES</output>
+  </div>
+  <div class="revelation" aria-live="polite">
+    <p class="signal" data-scale-signal>
+      CHANGE THE SCALE
+    </p>
+    <p class="revelation-line" data-scale-reveal>
+      A fragment. Not the whole pattern.
+    </p>
+    <p class="revelation-detail" data-scale-detail>
+      One fixed analytic record. Only the observation window changes.
+    </p>
+  </div>
+  <div class="interaction-record">
+    <span class="code">YOUR PATH THROUGH THE INSTRUMENT</span>
+    <svg
+      viewBox="0 0 600 64"
+      aria-label="Your recent observation-window choices"
+    >
+      <path class="interaction-baseline" d="M10 50H590" />
+      <path data-interaction-path />
+      <g data-interaction-points />
+    </svg>
+    <p data-interaction-note>No exploration recorded yet.</p>
+  </div>
+  <div class="instrument-notes">
+    <a href="/models/from-reaction-to-pattern.html">
+      OPEN MODEL / FROM REACTION TO PATTERN ↗
+    </a>
+    <details>
+      <summary>UNSEAL SCALE NOTES</summary>
+      <p>
+        This synthetic signal combines oscillations at 0.22 seconds, 12 seconds,
+        one day, 28 days and one year, plus a small linear drift. It is an
+        illustrative construction, not a scientific dataset. Thirty days is used
+        for the month window; a year here is 365.25 days.
+      </p>
+      <p>
+        Every view integrates the same function into 240 bin averages. Fine
+        variation is compressed as the window grows. A pattern can survive that
+        compression while its mechanism disappears. Pattern is not cause.
+      </p>
+      <p>
+        The small path records your actual choices in this session, up to the
+        latest 24. It resets on reload and is not transmitted or stored. The
+        instrument’s offered scales influence which patterns you look for:
+        systems train participants.
+      </p>
+    </details>
+  </div>
+</section>

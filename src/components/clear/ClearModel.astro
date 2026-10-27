@@ -1,0 +1,202 @@
+<section
+  class="clear-instrument model"
+  id="model"
+  data-instrument="model"
+  aria-labelledby="model-title"
+>
+  <header class="instrument-heading">
+    <p class="code">02 / THE MODEL</p>
+    <span class="instrument-state" data-model-state>
+      MODEL DEPENDENT
+    </span>
+  </header>
+  <div class="model-heading">
+    <h2 id="model-title">
+      A beautiful
+      <br />
+      <em>explanation.</em>
+    </h2>
+    <p class="field-invitation">
+      Turn the mechanism.
+      <br />
+      Then move its centre.
+    </p>
+  </div>
+  <div class="model-composition">
+    <div
+      class="phenomenon orbit-field"
+      data-orbit-field
+      role="slider"
+      tabindex="0"
+      aria-label="Turn the orbital mechanism to change elapsed day"
+      aria-valuemin="0"
+      aria-valuemax="780"
+      aria-valuenow="0"
+      aria-valuetext="Day zero in an illustrative orbit record"
+    >
+      <svg data-orbit-svg viewBox="0 0 600 500" aria-hidden="true">
+        <g class="orbit-graduations" data-orbit-graduations></g>
+        <circle
+          class="orbit-time-marker"
+          data-orbit-time-marker
+          cx="530"
+          cy="240"
+          r="5"
+        />
+        <circle class="deferent" data-deferent cx="300" cy="240" r="134.1" />
+        <circle
+          class="earth-orbit is-erased"
+          data-earth-orbit
+          cx="300"
+          cy="240"
+          r="88"
+        />
+        <circle class="epicycle" data-epicycle cx="434.1" cy="240" r="88" />
+        <path class="orbital-trace" data-orbital-trace />
+        <path class="construction-arm" data-construction-arm />
+        <path class="line-of-sight" data-line-of-sight />
+        <g class="model-sun" data-model-sun>
+          <circle r="9" />
+          <path d="M-16 0H-12M12 0H16M0-16V-12M0 12V16" />
+        </g>
+        <g class="model-earth" data-model-earth>
+          <circle r="7" />
+          <circle class="observer-ring" r="17" />
+        </g>
+        <circle class="deferent-centre" data-deferent-centre r="4" />
+        <g class="model-planet" data-model-planet>
+          <circle r="7" />
+          <circle r="15" />
+        </g>
+        <text class="orbit-label" data-earth-label>
+          EARTH / OBSERVER
+        </text>
+        <text class="orbit-label" data-sun-label>
+          SUN
+        </text>
+        <text class="orbit-label" data-planet-label>
+          MARS
+        </text>
+        <text class="orbit-label" data-epicycle-label>
+          EPICYCLE
+        </text>
+        <text x="300" y="484" text-anchor="middle" class="orbit-drag-label">
+          TURN THE RIM / EACH DIVISION = 30 DAYS
+        </text>
+      </svg>
+    </div>
+    <div class="model-register">
+      <p class="code">THE SAME SYNTHETIC SKY</p>
+      <svg
+        class="sky-record"
+        viewBox="0 0 220 175"
+        role="img"
+        aria-label="Observed sky bearings in white; predicted bearings in blue"
+      >
+        <path d="M25 138H195M110 24V151" />
+        <g data-sky-observations></g>
+        <g data-sky-predictions></g>
+      </svg>
+      <p class="record-key">
+        <span>● RECORD</span>
+        <span>+ PREDICTION</span>
+      </p>
+      <dl class="model-measures">
+        <div>
+          <dt>ELAPSED</dt>
+          <dd>
+            <output data-model-day>0</output> days
+          </dd>
+        </div>
+        <div>
+          <dt>ANGULAR RMS ERROR</dt>
+          <dd>
+            <output data-model-error>0.00°</output>
+          </dd>
+        </div>
+        <div>
+          <dt>TESTED BEARINGS</dt>
+          <dd>48 synthetic samples</dd>
+        </div>
+      </dl>
+      <div
+        class="frame-choices"
+        role="group"
+        aria-label="Choose the origin of the coordinate frame"
+      >
+        <button type="button" data-model-frame="earth" aria-pressed="true">
+          <span class="frame-earth" aria-hidden="true">
+            ⊕
+          </span>{" "}
+          EARTH CENTRED
+        </button>
+        <button type="button" data-model-frame="sun" aria-pressed="false">
+          <span class="frame-sun" aria-hidden="true">
+            ☉
+          </span>{" "}
+          SUN CENTRED
+        </button>
+      </div>
+      <button
+        type="button"
+        class="text-action fold-epicycle"
+        data-model-simplify
+        aria-pressed="false"
+      >
+        ERASE THE EPICYCLE TERM ↗
+      </button>
+    </div>
+  </div>
+  <div class="model-equation">
+    <span class="code">POSITION SEEN FROM EARTH</span>
+    <p data-model-equation>
+      deferent <em>−</em> epicycle <em>=</em> apparent position
+    </p>
+  </div>
+  <div class="revelation" aria-live="polite">
+    <p class="signal" data-model-signal>
+      THE MODEL IS NOT THE THING
+    </p>
+    <p class="revelation-line" data-model-reveal>
+      What does prediction prove?
+    </p>
+    <p class="revelation-detail" data-model-detail>
+      White points retain the reference record. Blue marks show the prediction.
+    </p>
+  </div>
+  <div class="instrument-notes">
+    <a href="/models/replace-stories-with-systems.html">
+      OPEN MODEL / REPLACE STORIES WITH SYSTEMS ↗
+    </a>
+    <details>
+      <summary>UNSEAL THE ASSUMPTIONS</summary>
+      <p>
+        A simplified Ptolemaic-style deferent and epicycle, compared with a
+        Sun-centred circular construction. The two complete constructions are
+        the same vector relation in different coordinate frames. Their exact
+        agreement is mathematical, not independent evidence for two physical
+        cosmologies.
+      </p>
+      <p>
+        Earth: 1 AU, 365.256 days. Mars: 1.524 AU, 686.98 days. Uniform,
+        coplanar circles; no eccentricity, equant, inclination, perturbations or
+        light-time correction. This is not a reconstruction of Ptolemy’s full
+        machinery or a modern ephemeris.
+      </p>
+      <p>
+        RMS compares 48 directions over a fixed 780-day illustrative record.
+        Erasing the Earth-motion term is a deliberate loss of mechanism.
+        Historical geocentrism and heliocentrism are distinguishable by evidence
+        beyond these projected directions.
+      </p>
+      <div class="source-links">
+        <a href="https://sciencedemonstrations.fas.harvard.edu/presentations/ptolemaic-epicycle-machine">
+          HARVARD / EPICYCLE MACHINE ↗
+        </a>
+        <a href="https://nssdc.gsfc.nasa.gov/planetary/factsheet/marsfact.html">
+          NASA / ORBIT PARAMETERS ↗
+        </a>
+      </div>
+    </details>
+  </div>
+</section>

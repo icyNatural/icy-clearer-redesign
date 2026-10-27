@@ -1,14 +1,15 @@
 ---
-
-
 import "../styles/clear.css";
-import MediaRoom from '../components/MediaRoom.astro';
-import ClearVault from '../components/ClearVault.astro';
+import MediaRoom from "../components/MediaRoom.astro";
+import ClearVault from "../components/ClearVault.astro";
 
 // The written layer is read from the pages themselves — never listed by hand.
-const pieceModules = import.meta.glob("../pages/{models,modes,system,doctrines}/*.md", {
-  eager: true,
-});
+const pieceModules = import.meta.glob(
+  "../pages/{models,modes,system,doctrines}/*.md",
+  {
+    eager: true,
+  },
+);
 
 type Piece = {
   dir: string;
@@ -27,7 +28,8 @@ const pieces = Object.entries(pieceModules)
     const parts = path.split("/");
     const dir = parts[parts.length - 2];
     const slug = parts[parts.length - 1].replace(/\.md$/, "");
-    const fm = ((mod as { frontmatter?: Record<string, string> }).frontmatter ?? {});
+    const fm =
+      (mod as { frontmatter?: Record<string, string> }).frontmatter ?? {};
     const isModel = dir === "models";
     return {
       dir,
@@ -92,143 +94,197 @@ const paths = [
     href: "/doctrines/questions-are-seeking-devices.html",
   },
 ];
-
 ---
+
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Icy Clear — See clearly before you explain.</title>
-  <meta name="description" content="Five interactive instruments for seeing before explaining. Perception, systems, time, evidence and coherence — an encoded doctrine environment." />
-  <meta name="theme-color" content="#080e13" />
-  <meta property="og:title" content="Icy Clear" />
-  <meta property="og:description" content="See clearly before you explain." />
-  <meta property="og:type" content="website" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400&family=IBM+Plex+Mono:wght@400&family=IBM+Plex+Sans:wght@400;500&display=swap" />
-</head>
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <title>Icy Clear — See clearly before you explain.</title>
+    <meta
+      name="description"
+      content="Four operable instruments for observation, models, scale and boundaries. Enter Icy Clear’s encoded philosophical environment."
+    />
+    <meta name="theme-color" content="#090c0d" />
+    <meta property="og:title" content="Icy Clear" />
+    <meta property="og:description" content="See clearly before you explain." />
+    <meta property="og:type" content="website" />
+    <link
+      rel="preload"
+      href="/clear/fonts/bodoni.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href="/clear/fonts/barlow.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  </head>
 
-<body class="clear-vault">
-<ClearVault />
-<div class="vault-archive">
-  <section class="index" id="index" data-sec="index" aria-labelledby="indexq">
-    <header class="ex__head">
-      <p class="eyebrow">SOURCE ARCHIVE / UNABRIDGED</p>
-      <h2 class="ex__q" id="indexq">The written record.</h2>
-    </header>
-    <p class="note index__note">Models, operating modes and doctrine. No unlock required.</p>
+  <body
+    class="clear-vault"
+    data-clear-author={
+      import.meta.env.DEV && import.meta.env.MODE === "author"
+        ? "true"
+        : "false"
+    }
+  >
+    <ClearVault />
+    <div class="vault-archive">
+      <section
+        class="index"
+        id="index"
+        data-sec="index"
+        aria-labelledby="indexq"
+      >
+        <header class="ex__head">
+          <p class="eyebrow">SOURCE ARCHIVE / UNABRIDGED</p>
+          <h2 class="ex__q" id="indexq">
+            The written record.
+          </h2>
+        </header>
+        <p class="note index__note">
+          Models, operating modes and doctrine. No unlock required.
+        </p>
 
-    <div class="folds">
-      <details class="fold" id="models">
-        <summary class="fold__sum"><span class="label">Models</span><span class="idx">{models.length}</span></summary>
-        <div class="fold__body">
-          <ul class="rows rows--tight">
-            {models.map((m) => (
-              <li class="row-item">
-                <a class="row row--link" href={m.href}>
-                  <span class="row__n idx">{m.n}</span>
-                  <span class="row__body">
-                    <span class="label">{m.label}</span>
-                    <span class="d-md row__head">{m.title}</span>
-                    {m.chain && <span class="chain">{m.chain}</span>}
-                    <span class="read row__read">{m.read}</span>
-                  </span>
-                </a>
-              </li>
-            ))}
-          </ul>
+        <div class="folds">
+          <details class="fold" id="models">
+            <summary class="fold__sum">
+              <span class="label">Models</span>
+              <span class="idx">{models.length}</span>
+            </summary>
+            <div class="fold__body">
+              <ul class="rows rows--tight">
+                {models.map((m) => (
+                  <li class="row-item">
+                    <a class="row row--link" href={m.href}>
+                      <span class="row__n idx">{m.n}</span>
+                      <span class="row__body">
+                        <span class="label">{m.label}</span>
+                        <span class="d-md row__head">{m.title}</span>
+                        {m.chain && <span class="chain">{m.chain}</span>}
+                        <span class="read row__read">{m.read}</span>
+                      </span>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </details>
+
+          <details class="fold" id="modes">
+            <summary class="fold__sum">
+              <span class="label">Modes</span>
+              <span class="idx">{modes.length}</span>
+            </summary>
+            <div class="fold__body">
+              <ul class="rows rows--tight">
+                {modes.map((m) => (
+                  <li class="row-item">
+                    <a class="row row--link" href={m.href}>
+                      <span class="row__n idx">{m.n}</span>
+                      <span class="row__body">
+                        <span class="label">{m.label}</span>
+                        <span class="d-md row__head">{m.title}</span>
+                        {m.chain && <span class="chain">{m.chain}</span>}
+                        <span class="read row__read">{m.read}</span>
+                      </span>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </details>
+
+          <details class="fold" id="systems">
+            <summary class="fold__sum">
+              <span class="label">Systems</span>
+              <span class="idx">{systems.length}</span>
+            </summary>
+            <div class="fold__body">
+              <ul class="rows rows--tight">
+                {systems.map((s) => (
+                  <li class="row-item">
+                    <a class="row row--link" href={s.href}>
+                      <span class="row__n idx">{s.n}</span>
+                      <span class="row__body">
+                        <span class="label">{s.label}</span>
+                        <span class="d-md row__head">{s.title}</span>
+                        {s.chain && <span class="chain">{s.chain}</span>}
+                        <span class="read row__read">{s.read}</span>
+                      </span>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </details>
+
+          <details class="fold" id="doctrines">
+            <summary class="fold__sum">
+              <span class="label">Doctrines</span>
+              <span class="idx">{doctrines.length}</span>
+            </summary>
+            <div class="fold__body">
+              <ul class="rows rows--tight">
+                {doctrines.map((d) => (
+                  <li class="row-item">
+                    <a class="row row--link" href={d.href}>
+                      <span class="row__n idx">{d.n}</span>
+                      <span class="row__body">
+                        <span class="label">{d.label}</span>
+                        <span class="d-md row__head">{d.title}</span>
+                        {d.chain && <span class="chain">{d.chain}</span>}
+                        <span class="read row__read">{d.read}</span>
+                      </span>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </details>
+
+          <details class="fold" id="paths">
+            <summary class="fold__sum">
+              <span class="label">Paths by intent</span>
+              <span class="idx">{paths.length}</span>
+            </summary>
+            <div class="fold__body">
+              <ul class="paths">
+                {paths.map((p) => (
+                  <li>
+                    <a
+                      class="path"
+                      href={p.href}
+                      target={p.external ? "_blank" : undefined}
+                      rel={p.external ? "noopener" : undefined}
+                    >
+                      <span class="path__intent">{p.intent}</span>
+                      <span class="path__route">{p.route}</span>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </details>
         </div>
-      </details>
-
-      <details class="fold" id="modes">
-        <summary class="fold__sum"><span class="label">Modes</span><span class="idx">{modes.length}</span></summary>
-        <div class="fold__body">
-          <ul class="rows rows--tight">
-            {modes.map((m) => (
-              <li class="row-item">
-                <a class="row row--link" href={m.href}>
-                  <span class="row__n idx">{m.n}</span>
-                  <span class="row__body">
-                    <span class="label">{m.label}</span>
-                    <span class="d-md row__head">{m.title}</span>
-                    {m.chain && <span class="chain">{m.chain}</span>}
-                    <span class="read row__read">{m.read}</span>
-                  </span>
-                </a>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </details>
-
-      <details class="fold" id="systems">
-        <summary class="fold__sum"><span class="label">Systems</span><span class="idx">{systems.length}</span></summary>
-        <div class="fold__body">
-          <ul class="rows rows--tight">
-            {systems.map((s) => (
-              <li class="row-item">
-                <a class="row row--link" href={s.href}>
-                  <span class="row__n idx">{s.n}</span>
-                  <span class="row__body">
-                    <span class="label">{s.label}</span>
-                    <span class="d-md row__head">{s.title}</span>
-                    {s.chain && <span class="chain">{s.chain}</span>}
-                    <span class="read row__read">{s.read}</span>
-                  </span>
-                </a>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </details>
-
-      <details class="fold" id="doctrines">
-        <summary class="fold__sum"><span class="label">Doctrines</span><span class="idx">{doctrines.length}</span></summary>
-        <div class="fold__body">
-          <ul class="rows rows--tight">
-            {doctrines.map((d) => (
-              <li class="row-item">
-                <a class="row row--link" href={d.href}>
-                  <span class="row__n idx">{d.n}</span>
-                  <span class="row__body">
-                    <span class="label">{d.label}</span>
-                    <span class="d-md row__head">{d.title}</span>
-                    {d.chain && <span class="chain">{d.chain}</span>}
-                    <span class="read row__read">{d.read}</span>
-                  </span>
-                </a>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </details>
-
-      <details class="fold" id="paths">
-        <summary class="fold__sum"><span class="label">Paths by intent</span><span class="idx">{paths.length}</span></summary>
-        <div class="fold__body">
-          <ul class="paths">
-            {paths.map((p) => (
-              <li>
-                <a
-                  class="path"
-                  href={p.href}
-                  target={p.external ? "_blank" : undefined}
-                  rel={p.external ? "noopener" : undefined}
-                >
-                  <span class="path__intent">{p.intent}</span>
-                  <span class="path__route">{p.route}</span>
-                </a>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </details>
+      </section>
     </div>
-  </section>
-</div>
-<footer class="vault-footer"><span>ICY CLEAR / END OF RECORD</span><a href="#doctrine-index">RETURN TO INDEX ↑</a></footer>
-<MediaRoom room="clear" overlay />
-<script>import "../scripts/clear-exhibits";</script>
-</body>
+    <footer class="vault-footer">
+      <span>ICY CLEAR / BECOMING IS THE STATE</span>
+      <a href="#doctrine-index">REOPEN THE INQUIRY ↑</a>
+    </footer>
+    <MediaRoom room="clear" overlay />
+    <script>
+      import "../scripts/clear-exhibits";
+    </script>
+  </body>
 </html>

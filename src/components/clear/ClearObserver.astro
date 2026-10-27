@@ -1,0 +1,263 @@
+---
+import {
+  ambiguousLoop,
+  pathFrom,
+  LIGHT_SOURCES,
+} from "../../data/clear-instruments";
+const form = pathFrom(ambiguousLoop(0, 0.22), true);
+---
+
+<section
+  class="clear-instrument observer"
+  id="observer"
+  data-instrument="observer"
+  aria-labelledby="observer-title"
+>
+  <header class="instrument-heading">
+    <p class="code">01 / THE OBSERVER</p>
+    <span class="instrument-state" data-observer-state>
+      UNRESOLVED
+    </span>
+  </header>
+  <div class="observer-composition">
+    <div class="observer-copy">
+      <p class="small-label">A mind in the making</p>
+      <h1 id="observer-title">
+        Before you <br />
+        call it
+        <br />
+        <em>anything.</em>
+      </h1>
+      <p class="field-invitation">
+        Touch the event. <br />
+        Stay with what changes.
+      </p>
+      <span class="vertical-note">THE OBSERVER IS INSIDE</span>
+    </div>
+    <div class="observer-event">
+      <div
+        class="phenomenon observer-field"
+        data-observer-field
+        role="button"
+        tabindex="0"
+        aria-label="Hold the ambiguous event. Drag sideways to change your viewpoint."
+        aria-pressed="false"
+        aria-describedby="observer-help"
+      >
+        <svg viewBox="0 0 600 490" aria-hidden="true">
+          <defs>
+            <radialGradient id="attention-glow">
+              <stop stop-color="#d6e6da" stop-opacity=".18" />
+              <stop offset="1" stop-color="#d6e6da" stop-opacity="0" />
+            </radialGradient>
+            <clipPath id="attention-sample-mask">
+              <circle data-attention-mask cx="300" cy="234" r="70" />
+            </clipPath>
+          </defs>
+          <circle
+            class="attention-glow"
+            data-attention
+            cx="300"
+            cy="234"
+            r="155"
+            fill="url(#attention-glow)"
+          />
+          <g class="observer-contours">
+            {[-60, -40, -20, 20, 40, 60].map((depth) => (
+              <path
+                data-contour={depth}
+                d={pathFrom(ambiguousLoop(0, 0.22, 160, depth), true)}
+              />
+            ))}
+          </g>
+          <path class="event-retained" data-event-retained d={form} />
+          <path class="event-form" data-event-form d={form} />
+          <g
+            class="attention-samples"
+            data-attention-samples
+            clip-path="url(#attention-sample-mask)"
+          ></g>
+          <g class="interpretations" data-interpretations>
+            <path d="M166 132L98 92H44M421 152L478 126H557M190 344L121 397H44M402 330L474 380H557" />
+            <text x="44" y="82">
+              organism?
+            </text>
+            <text x="487" y="116">
+              signal?
+            </text>
+            <text x="44" y="418">
+              accident?
+            </text>
+            <text x="480" y="402">
+              unknown?
+            </text>
+          </g>
+          <g
+            class="attention-cross"
+            data-attention-cross
+            transform="translate(300 234)"
+          >
+            <path d="M-16 0H-7M7 0H16M0-16V-7M0 7V16" />
+            <circle r="26" />
+          </g>
+          <text
+            class="event-word"
+            data-event-word
+            x="300"
+            y="460"
+            text-anchor="middle"
+          >
+            EVENT / NO NAME APPLIED
+          </text>
+        </svg>
+      </div>
+      <div class="field-foot">
+        <span id="observer-help">TAP TO HOLD · DRAG TO REFRAME</span>
+        <output data-observer-time>EVENT IN PROGRESS</output>
+      </div>
+    </div>
+  </div>
+  <div class="observer-after">
+    <form class="naming" data-label-form hidden>
+      <label for="event-label">You observed it. Now give it a name.</label>
+      <div>
+        <input
+          id="event-label"
+          name="label"
+          maxlength="36"
+          placeholder="What did you see?"
+          autocomplete="off"
+          required
+        />
+        <button type="submit">APPLY ↗</button>
+      </div>
+      <div class="offered-names" aria-label="Suggested interpretations">
+        <button type="button" data-name="organism">
+          organism
+        </button>
+        <button type="button" data-name="signal">
+          signal
+        </button>
+        <button type="button" data-name="accident">
+          accident
+        </button>
+      </div>
+    </form>
+    <div class="observer-actions" data-observer-actions hidden>
+      <button type="button" class="text-action" data-reopen>
+        REOPEN THE EVENT ↗
+      </button>
+      <button
+        type="button"
+        class="text-action"
+        data-recall
+        aria-pressed="false"
+      >
+        RECONSTRUCT FROM MEMORY ↗
+      </button>
+    </div>
+    <div class="revelation" aria-live="polite">
+      <p class="signal" data-observer-signal>
+        OBSERVE BEFORE NAMING
+      </p>
+      <p class="revelation-line" data-observer-reveal>
+        The event comes first.
+      </p>
+      <p class="revelation-detail" data-observer-detail>
+        A procedural form. No hidden correct answer.
+      </p>
+    </div>
+  </div>
+  <details class="light-delay">
+    <summary>
+      FOLLOW THE LIGHT <span aria-hidden="true">↘</span>
+    </summary>
+    <div class="delay-heading">
+      <p class="code">OBSERVATION / TRAVEL TIME</p>
+      <p>
+        How old is
+        <br />
+        <em>what arrives?</em>
+      </p>
+    </div>
+    <div
+      class="phenomenon delay-field"
+      data-delay-field
+      role="slider"
+      tabindex="0"
+      aria-label="Select a light source by its lookback time"
+      aria-valuemin="0"
+      aria-valuemax="2"
+      aria-valuenow="0"
+      aria-valuetext="Sun, about 8 minutes 20 seconds"
+    >
+      <svg viewBox="0 0 600 190" aria-hidden="true">
+        <path class="delay-axis" d="M35 82H568M568 44V123" />
+        {LIGHT_SOURCES.map((source) => (
+          <g>
+            <path class="delay-axis" d={`M${source.x} 72V92`} />
+            <text
+              x={source.x}
+              y="144"
+              text-anchor={source.name === "ANDROMEDA" ? "start" : "middle"}
+            >
+              {source.name}
+            </text>
+          </g>
+        ))}
+        <path class="light-path" data-light-path d="M468 82H568" />
+        <g data-light-marker transform="translate(468 82)">
+          <circle r="11" />
+          <circle r="3" />
+        </g>
+        <circle class="arrival" cx="568" cy="82" r="4" />
+        <text x="568" y="29" text-anchor="end">
+          ARRIVAL
+        </text>
+        <text x="35" y="174">
+          LOOKBACK · LOGARITHMIC TIME AXIS
+        </text>
+      </svg>
+    </div>
+    <div class="delay-readout" aria-live="polite">
+      <span data-light-name>SUN</span>
+      <strong data-light-delay>≈ 08m 20s</strong>
+      <span>before the light arrives here.</span>
+    </div>
+    <p class="signal">YOU ARE SEEING THE PAST.</p>
+    <p class="source-note">
+      Approximate light travel times; sunlight varies with Earth’s distance.
+      This axis spaces the three estimates logarithmically. Light-path
+      transitions are illustrative, not real-time propagation.
+    </p>
+    <div class="source-links">
+      <a href="https://soho.nascom.nasa.gov/explore/faq.html">SUN / NASA ↗</a>
+      <a href="https://science.nasa.gov/missions/hubble/measuring-a-white-dwarf-star/">
+        SIRIUS / NASA ↗
+      </a>
+      <a href="https://science.nasa.gov/photojournal/andromeda/">
+        ANDROMEDA / NASA ↗
+      </a>
+    </div>
+  </details>
+  <div class="instrument-notes">
+    <a href="/models/seeing-before-naming.html">
+      OPEN MODEL / SEEING BEFORE NAMING ↗
+    </a>
+    <details>
+      <summary>UNSEAL OBSERVER NOTES</summary>
+      <p>
+        The visible form is a changing parametric loop. Moving the viewpoint
+        changes its projection; moving attention changes which contours stand
+        out. Naming hides alternative words, not evidence. Reconstruction
+        retains 16 of 240 contour samples. This is an illustration of
+        information loss, not a simulation of a brain or an empirical model of
+        memory.
+      </p>
+      <p>
+        Keep it unresolved. The first thought is a draft. Physical does not mean
+        obvious. Becoming is already a state.
+      </p>
+    </details>
+  </div>
+</section>
