@@ -2,340 +2,36 @@
 import "../styles/foundation.css";
 import MediaRoom from '../components/MediaRoom.astro';
 import NaturalObjects from '../components/NaturalObjects.astro';
-import NaturalPlay from '../components/NaturalPlay.astro';
+import NaturalField from '../components/NaturalField.astro';
 import manifest from '../data/media/natural.json?raw';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-const raw = import.meta.env.DEV && import.meta.env.MODE === 'author' ? readFileSync(resolve(process.cwd(), 'src/data/media/natural.json'), 'utf8') : manifest;
+
+const raw = import.meta.env.DEV && import.meta.env.MODE === 'author'
+  ? readFileSync(resolve(process.cwd(), 'src/data/media/natural.json'), 'utf8')
+  : manifest;
 const items = JSON.parse(raw);
 ---
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Icy Natural — Still Forming</title>
-  <meta name="description" content="The personal layer of Icy. Gaming, basketball, play, curation, and thought-seeds." />
-  <meta name="theme-color" content="#d8e8d0" />
-  <meta property="og:title" content="Icy Natural" />
-  <meta property="og:description" content="Become, slowly. Gaming, basketball, and a living collection of play." />
+  <title>Natural — Icy Clearer</title>
+  <meta name="description" content="A living field of play, voice, observation, making, archive, and now." />
+  <meta name="theme-color" content="#080d0c" />
+  <meta property="og:title" content="Natural — Icy Clearer" />
+  <meta property="og:description" content="Signals overlap. Artifacts stay themselves." />
   <meta property="og:type" content="website" />
 </head>
-<body>
+<body class="natural-document">
+  <a class="skip-link" href="#main">Skip to content</a>
+  <a class="world-back" href="/" aria-label="Back home">← HOME</a>
 
-<a class="skip-link" href="#main">Skip to content</a>
+  <main id="main" class="natural-shell" tabindex="-1">
+    <NaturalField items={items} />
+  </main>
 
-<a class="world-back" href="/" aria-label="Back to portal">← Icy</a>
-
-<main id="main" class="natural-shell" tabindex="-1">
-  <section class="nat-hero">
-    <h1 class="nat-title" data-author-id="natural-title" data-native-text>ICY NATURAL</h1>
-  </section>
-
-  <NaturalPlay items={items} />
-
-  <details class="nat-section nat-depth">
-    <summary>INTERESTS +</summary>
-    <div class="nat-section-head">
-      <p class="nat-section-title" data-author-id="natural-interests" data-native-text>Interests</p>
-      <span data-author-id="natural-interest-note" data-native-text>Seven rooms · forming</span>
-    </div>
-    <div class="nat-grid">
-      {['Basketball','Gaming','Music','Philosophy','Drawing','Clothing','Discovery'].map((name) => (
-        <div class:list={['nat-card',{'nat-card--live':['Gaming','Basketball'].includes(name)}]} data-name={name} data-author-id={`natural-card-${name.toLowerCase()}`}>
-          <span class="nat-tag" data-native-text>Interest</span>
-          <h3 data-native-text>{name}</h3>
-          <p data-native-text>{['Gaming','Basketball'].includes(name) ? 'Explore PLAY →' : 'Soon.'}</p>
-          {['Gaming','Basketball'].includes(name) && <a class="nat-card-link" href={`#${name.toLowerCase()}`} aria-label={`Explore ${name}`}></a>}
-        </div>
-      ))}
-    </div>
-  </details>
-
-  <details class="nat-section nat-depth">
-    <summary>THINK / SEEDS +</summary>
-    <div class="nat-section-head">
-      <p class="nat-section-title" data-author-id="natural-seeds" data-native-text>Seeds</p>
-      <span data-author-id="natural-seed-note" data-native-text>Thoughts in formation</span>
-    </div>
-    <div class="nat-seed-list">
-      {[
-        'You Are Not a Statistic',
-        'Words Become Environments',
-        'Questions Are Seeking Devices',
-        'Make the Invisible Pattern Visible',
-        'Not Viral. Valuable.',
-        'Curate From Real Inclination',
-      ].map((seed, index) => (
-        <div class="nat-seed" data-author-id={`natural-seed-${index}`}>
-          <span class="nat-seed-dot" aria-hidden="true"></span>
-          <span class="nat-seed-title" data-native-text>{seed}</span>
-          <span class="nat-seed-status" data-native-text>Forming</span>
-        </div>
-      ))}
-    </div>
-  </details>
-
-  <section class="nat-switch">
-    <a class="switch-pill" href="/clear.html" data-author-id="natural-switch" data-native-text>Enter Icy Clear →</a>
-  </section>
-</main>
-<MediaRoom room="natural" overlay />
-<NaturalObjects />
-
-<style is:global>
-  :root {
-    --nat-ink: #142a18;
-    --nat-muted: #4a6b4a;
-    --nat-faint: rgba(60, 95, 60, 0.6);
-    --nat-stroke: rgba(120, 160, 110, 0.3);
-  }
-  html, body { margin: 0; padding: 0; }
-  /* the shell is 100% wide plus its own gutter — size the box, not its contents */
-  *, *::before, *::after { box-sizing: border-box; }
-  body {
-    color: var(--nat-ink);
-    background:
-      radial-gradient(circle at 12% 6%, rgba(215,235,205,0.85), transparent 42%),
-      radial-gradient(circle at 88% 90%, rgba(154,185,132,0.55), transparent 50%),
-      linear-gradient(180deg, #e8f0e0 0%, #c8d9b8 50%, #9fb88a 100%);
-    background-attachment: fixed;
-    min-height: 100vh;
-    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter", system-ui, sans-serif;
-    -webkit-font-smoothing: antialiased;
-  }
-
-  .world-back {
-    position: fixed;
-    top: max(14px, env(safe-area-inset-top));
-    left: max(14px, env(safe-area-inset-left));
-    z-index: 120;
-    padding: 9px 14px;
-    border-radius: 999px;
-    font-size: 0.74rem;
-    font-weight: 900;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-    text-decoration: none;
-    color: var(--nat-ink);
-    background: rgba(240,248,235,0.6);
-    border: 1px solid var(--nat-stroke);
-    backdrop-filter: blur(22px) saturate(150%);
-    -webkit-backdrop-filter: blur(22px) saturate(150%);
-    box-shadow: 0 10px 30px rgba(30,70,35,0.12);
-    transition: transform .2s ease, background .2s ease;
-  }
-  .world-back:hover { transform: translateX(-2px); background: rgba(240,248,235,0.85); }
-
-  .natural-shell {
-    width: min(1080px, 100%);
-    margin: 0 auto;
-    padding: 76px 22px 80px;
-  }
-
-  .nat-hero { margin-bottom: 18px; }
-  .nat-eyebrow {
-    display: inline-block;
-    padding: 7px 11px;
-    border-radius: 999px;
-    background: rgba(240,248,235,0.55);
-    border: 1px solid var(--nat-stroke);
-    font-size: 0.66rem;
-    font-weight: 950;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    margin-bottom: 22px;
-    color: #3a5c3a;
-  }
-  .nat-title {
-    margin: 0;
-    font-size: clamp(1.6rem, 5vw, 2.8rem);
-    line-height: 1;
-    letter-spacing: -0.055em;
-    font-weight: 900;
-  }
-  .nat-line {
-    margin: 0 0 12px;
-    font-size: clamp(1.1rem, 2.5vw, 1.45rem);
-    font-weight: 800;
-    letter-spacing: -0.02em;
-  }
-  .nat-sub {
-    margin: 0;
-    max-width: 54ch;
-    color: var(--nat-muted);
-    font-size: 1rem;
-    line-height: 1.55;
-  }
-
-  .nat-section { margin-bottom: 44px; }
-  .nat-depth { border-top: 1px solid var(--nat-stroke); }
-  .nat-depth > summary { cursor: pointer; padding: 20px 0; font: 11px var(--icy-mono); letter-spacing: .1em; }
-  .is-authoring .nat-depth > summary { color: var(--nat-muted); }
-  .nat-section-head {
-    display: flex;
-    align-items: end;
-    justify-content: space-between;
-    gap: 14px;
-    margin: 0 0 14px;
-  }
-  .nat-section-title {
-    margin: 0;
-    font-size: clamp(1.5rem, 6vw, 2.2rem);
-    line-height: 1;
-    letter-spacing: -0.06em;
-    font-weight: 900;
-  }
-  .nat-section-head span {
-    color: var(--nat-faint);
-    font-size: 0.72rem;
-    font-weight: 850;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-  }
-
-  .nat-grid {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 12px;
-  }
-  .nat-card {
-    position: relative;
-    min-height: 150px;
-    padding: 19px;
-    border-radius: 28px;
-    border: 1px solid var(--nat-stroke);
-    background:
-      radial-gradient(circle at 18% 10%, rgba(240,248,235,0.86), transparent 40%),
-      linear-gradient(145deg, rgba(240,248,235,0.62), rgba(180,205,160,0.38));
-    backdrop-filter: blur(20px) saturate(140%);
-    -webkit-backdrop-filter: blur(20px) saturate(140%);
-    box-shadow: 0 18px 48px rgba(30,70,35,0.1), inset 0 1px 0 rgba(240,248,235,0.72);
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    opacity: 0.84;
-  }
-  .nat-card::after {
-    content: "Soon";
-    position: absolute;
-    top: 16px;
-    right: 16px;
-    padding: 4px 10px;
-    border-radius: 999px;
-    background: rgba(240,248,235,0.7);
-    border: 1px solid var(--nat-stroke);
-    font-size: 0.6rem;
-    font-weight: 950;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: #3a5c3a;
-  }
-  .nat-tag {
-    display: inline-flex;
-    width: fit-content;
-    margin: 0 0 10px;
-    padding: 6px 10px;
-    border-radius: 999px;
-    background: rgba(240,248,235,0.55);
-    border: 1px solid var(--nat-stroke);
-    font-size: 0.66rem;
-    font-weight: 950;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: #3a5c3a;
-  }
-  .nat-card h3 {
-    margin: 0 0 6px;
-    font-size: clamp(1.25rem, 4vw, 1.7rem);
-    line-height: 1.02;
-    letter-spacing: -0.05em;
-    font-weight: 900;
-  }
-  .nat-card p {
-    margin: 0;
-    color: var(--nat-muted);
-    font-size: 0.94rem;
-  }
-
-  .nat-seed-list {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    border-radius: 24px;
-    padding: 14px;
-    border: 1px solid var(--nat-stroke);
-    background: rgba(240,248,235,0.42);
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
-  }
-  .nat-seed {
-    display: grid;
-    grid-template-columns: auto 1fr auto;
-    align-items: center;
-    gap: 12px;
-    padding: 12px 14px;
-    border-radius: 16px;
-    background: rgba(240,248,235,0.5);
-    border: 1px solid rgba(120,160,110,0.18);
-  }
-  .nat-seed-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #9bb88a, #4f7353);
-    box-shadow: 0 0 12px rgba(139,168,117,0.7);
-  }
-  .nat-seed-title { font-weight: 800; letter-spacing: -0.01em; font-size: 0.98rem; }
-  .nat-seed-status {
-    font-size: 0.62rem;
-    font-weight: 950;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--nat-faint);
-  }
-
-  .nat-switch {
-    margin-top: 64px;
-    padding: 26px;
-    border-radius: 24px;
-    border: 1px solid var(--nat-stroke);
-    background: rgba(240,248,235,0.5);
-    text-align: center;
-  }
-  .nat-switch p {
-    margin: 0 0 14px;
-    color: var(--nat-muted);
-    font-size: 0.95rem;
-  }
-  .switch-pill {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 12px 20px;
-    border-radius: 999px;
-    background: linear-gradient(135deg, #dff0fb, #b9d8ec);
-    color: #0c2235;
-    text-decoration: none;
-    font-weight: 950;
-    font-size: 0.85rem;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-    border: 1px solid rgba(118,166,210,0.3);
-    box-shadow: 0 10px 30px rgba(39,86,126,0.15);
-    transition: transform .25s ease;
-  }
-  .switch-pill:hover { transform: translateY(-2px); }
-
-  @media (max-width: 760px) {
-    .nat-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    .natural-shell { padding-top: 76px; }
-  }
-  @media (max-width: 460px) {
-    .nat-grid { grid-template-columns: 1fr; }
-    .nat-seed { grid-template-columns: auto 1fr; }
-    .nat-seed-status { grid-column: 2; justify-self: start; }
-  }
-</style>
-
+  <MediaRoom room="natural" overlay />
+  <NaturalObjects />
 </body>
 </html>
