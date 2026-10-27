@@ -9,7 +9,7 @@ import { introCopy } from './intro';
 // Consume only the published snapshot. Never open the personal database/export.
 export const naraka = snapshot.collections.experiences.find(record => record.gameId === 'game:user:naraka')!;
 export const gameplay = home.find(item => item.id === 'home-games')!;
-export const clips = natural.filter(item => ['play-gears', 'play-supplied-short', 'play-marvel'].includes(item.id));
+export const clips = ['play-naraka-duel', 'play-halo-pistol', 'play-gears'].map(id => natural.find(item => item.id === id)!);
 export const channel = introCopy.channel;
 
 // Execute the exact published geometry engine at build time; no copied formula,

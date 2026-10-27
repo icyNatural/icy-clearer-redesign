@@ -23,6 +23,7 @@ export function layoutPlay(canvas: HTMLElement, items: any[]) {
     slot.style.order = String(ordered.indexOf(item));
     slot.style.setProperty('--play-aspect', String(playAspect(item)));
     slot.classList.toggle('play-slot--wide', playAspect(item) > 1.2);
+    slot.classList.toggle('play-slot--reserve', item.curated === false || item.kind === 'placeholder');
     const copy = slot.querySelector<HTMLElement>('.play-copy')!; copy.replaceChildren();
     for (const [tag, text] of [['h4',item.kind === 'placeholder' ? '' : value(item,'title')], ['p',value(item,'label')], ['p',value(item,'description')], ['small',item.metadata?.author]]) {
       if (!text) continue;

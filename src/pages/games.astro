@@ -20,10 +20,7 @@ const dimensions = radar.points;
     </header>
     <main id="main" class="gaming-shell" tabindex="-1">
       <header class="gaming-intro">
-        <p class="eyebrow">The way I play</p>
         <h1>Gaming<span>.</span></h1>
-        <p class="intro-line">In the moment.<br /><em>Then, my take.</em></p>
-        <p class="intro-note">My gameplay, my taste, and what stays with me.</p>
       </header>
 
       <article class="game-story" aria-labelledby="naraka-title">
@@ -34,17 +31,16 @@ const dimensions = radar.points;
         <figure class="gameplay">
           <a class="watch-preview" href={gameplay.metadata.canonicalUrl} target="_blank" rel="noopener noreferrer" aria-label={`Watch ${gameplay.metadata.title} on YouTube (opens in a new tab)`}>
             <img src={gameplay.metadata.thumbnail} alt={gameplay.overrides.alt} width="1280" height="723" fetchpriority="high" />
-            <span class="watch-action"><span aria-hidden="true">▶</span> WATCH ON YOUTUBE ↗</span>
+            <span class="watch-action"><span aria-hidden="true">▶</span> WATCH ↗</span>
           </a>
           <figcaption><span>{gameplay.metadata.title}</span><span>{gameplay.metadata.author} · YouTube</span></figcaption>
         </figure>
 
-        <a class="story-connector" href="#naraka-evaluation"><span aria-hidden="true">↓</span> FROM THE GAMEPLAY TO MY TAKE</a>
+        <a class="story-connector" href="#naraka-evaluation"><span aria-hidden="true">↓</span> MY TAKE</a>
 
         <section id="naraka-evaluation" class="evaluation" aria-labelledby="evaluation-title">
           <div class="take-copy">
-            <p class="eyebrow">My evaluation / {naraka.gameName}</p>
-            <h3 id="evaluation-title">The feeling,<br /><em>made visible.</em></h3>
+            <h3 id="evaluation-title" class="eyebrow">MY TAKE / {naraka.gameName}</h3>
             <a class="score-link" href="/gaming/?view=history" aria-label={`${naraka.gameName}, ${naraka.score} out of 10. Open Gaming OS history`}><strong>{naraka.score.toFixed(1)}</strong><span>/ 10<br />MY TAKE ↗</span></a>
             <p class="verdict">{naraka.verdict}</p>
             <a class="text-link" href="/gaming/?view=history">FIND NARAKA IN HISTORY →</a>
@@ -61,26 +57,24 @@ const dimensions = radar.points;
                 {dimensions.map(point => <text class="radar-label" x={100 + Math.cos(point.angle) * 97} y={100 + Math.sin(point.angle) * 97} text-anchor={Math.cos(point.angle) > .3 ? 'start' : Math.cos(point.angle) < -.3 ? 'end' : 'middle'} dominant-baseline="middle">{point.label}</text>)}
               </svg>
             </a>
-            <p class="radar-note">Nine dimensions. One personal signal.<br />Same fixed 0–10 scale as Gaming OS.</p>
             <details class="dimension-details"><summary>READ THE DIMENSION VALUES</summary><dl>{dimensions.map(point => <div><dt>{point.label}</dt><dd>{point.value} / 10</dd></div>)}</dl></details>
           </div>
         </section>
 
-        <a class="story-connector" href="#full-system"><span aria-hidden="true">↓</span> THE TAKE IS ONE PART OF THE SYSTEM</a>
+        <a class="story-connector" href="#full-system"><span aria-hidden="true">↓</span> FULL SYSTEM</a>
         <section id="full-system" class="system-entry" aria-labelledby="system-title">
-          <div><p class="eyebrow">Go deeper / the analytical layer</p><h2 id="system-title">Gaming OS<span>↗</span></h2><p>History, scores, signals, Taste Atlas, library, and recommendations. The structure underneath the play.</p></div>
+          <div><h2 id="system-title">Gaming OS<span>↗</span></h2></div>
           <a class="system-link" href="/gaming/">ENTER GAMING OS →</a>
         </section>
       </article>
 
       <section class="more-gameplay" aria-labelledby="more-title">
-        <header class="more-heading"><div><p class="eyebrow">More from my screen</p><h2 id="more-title">Other moments in play.</h2></div><a class="text-link" href={channel} target="_blank" rel="noopener noreferrer">MORE ON YOUTUBE ↗</a></header>
+        <header class="more-heading"><h2 id="more-title">SCREEN SIGNAL / YOUTUBE</h2><a class="text-link" href={channel} target="_blank" rel="noopener noreferrer">MORE FROM CEE HAM ↗</a></header>
         <div class="clip-list">
-          {clips.map(clip => <a class="clip" href={clip.metadata.canonicalUrl} target="_blank" rel="noopener noreferrer"><img src={clip.metadata.thumbnail} alt="" loading="lazy" width="480" height="270" /><div><p class="eyebrow">{clip.id === 'play-marvel' ? 'Marvel Rivals / Venom' : 'Gears E-Day'} · YouTube ↗</p><h3>{clip.metadata.title}</h3><p class="clip-author">{clip.metadata.author}</p></div><span class="clip-play" aria-hidden="true">▶</span></a>)}
+          {clips.map(clip => <a class="clip" href={clip.metadata.canonicalUrl} target="_blank" rel="noopener noreferrer"><img src={clip.metadata.thumbnail} alt="" loading="lazy" width="480" height="854" /><div><p class="eyebrow">WATCH ↗</p><h3>{clip.metadata.title}</h3><p class="clip-author">{clip.metadata.author}</p></div><span class="clip-play" aria-hidden="true">▶</span></a>)}
         </div>
-        <p class="media-note">Clips stand on their own here. No rating is attached without a verified evaluation.</p>
       </section>
-      <footer class="gaming-footer"><a href="/">← HOME</a><p>Looking for the wider world of play?</p><a href="/natural.html#play">NATURAL PLAY ↗</a></footer>
+      <footer class="gaming-footer"><a href="/">← HOME</a><a href="/natural.html#play">NATURAL PLAY ↗</a></footer>
     </main>
   </body>
 </html>

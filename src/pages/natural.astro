@@ -28,15 +28,13 @@ const items = JSON.parse(raw);
 
 <main id="main" class="natural-shell" tabindex="-1">
   <section class="nat-hero">
-    <span class="nat-eyebrow" data-author-id="natural-eyebrow" data-native-text>World 02 · Forming</span>
-    <h1 class="nat-title" data-author-id="natural-title" data-native-text>Icy<br/>Natural.</h1>
-    <p class="nat-line" data-author-id="natural-line" data-native-text>Become, slowly.</p>
-    <p class="nat-sub" data-author-id="natural-description" data-native-text>A living archive of interests, play, and personal curation. The room is being built. Nothing here is final — that is the point.</p>
+    <h1 class="nat-title" data-author-id="natural-title" data-native-text>ICY NATURAL</h1>
   </section>
 
   <NaturalPlay items={items} />
 
-  <section class="nat-section">
+  <details class="nat-section nat-depth">
+    <summary>INTERESTS +</summary>
     <div class="nat-section-head">
       <p class="nat-section-title" data-author-id="natural-interests" data-native-text>Interests</p>
       <span data-author-id="natural-interest-note" data-native-text>Seven rooms · forming</span>
@@ -51,9 +49,10 @@ const items = JSON.parse(raw);
         </div>
       ))}
     </div>
-  </section>
+  </details>
 
-  <section class="nat-section">
+  <details class="nat-section nat-depth">
+    <summary>THINK / SEEDS +</summary>
     <div class="nat-section-head">
       <p class="nat-section-title" data-author-id="natural-seeds" data-native-text>Seeds</p>
       <span data-author-id="natural-seed-note" data-native-text>Thoughts in formation</span>
@@ -74,10 +73,9 @@ const items = JSON.parse(raw);
         </div>
       ))}
     </div>
-  </section>
+  </details>
 
   <section class="nat-switch">
-    <p data-author-id="natural-switch-note" data-native-text>Looking for the systems side?</p>
     <a class="switch-pill" href="/clear.html" data-author-id="natural-switch" data-native-text>Enter Icy Clear →</a>
   </section>
 </main>
@@ -131,10 +129,10 @@ const items = JSON.parse(raw);
   .natural-shell {
     width: min(1080px, 100%);
     margin: 0 auto;
-    padding: 96px 22px 120px;
+    padding: 76px 22px 80px;
   }
 
-  .nat-hero { margin-bottom: 56px; }
+  .nat-hero { margin-bottom: 18px; }
   .nat-eyebrow {
     display: inline-block;
     padding: 7px 11px;
@@ -149,10 +147,10 @@ const items = JSON.parse(raw);
     color: #3a5c3a;
   }
   .nat-title {
-    margin: 0 0 18px;
-    font-size: clamp(3.4rem, 12vw, 6.2rem);
-    line-height: 0.88;
-    letter-spacing: -0.085em;
+    margin: 0;
+    font-size: clamp(1.6rem, 5vw, 2.8rem);
+    line-height: 1;
+    letter-spacing: -0.055em;
     font-weight: 900;
   }
   .nat-line {
@@ -170,6 +168,9 @@ const items = JSON.parse(raw);
   }
 
   .nat-section { margin-bottom: 44px; }
+  .nat-depth { border-top: 1px solid var(--nat-stroke); }
+  .nat-depth > summary { cursor: pointer; padding: 20px 0; font: 11px var(--icy-mono); letter-spacing: .1em; }
+  .is-authoring .nat-depth > summary { color: var(--nat-muted); }
   .nat-section-head {
     display: flex;
     align-items: end;

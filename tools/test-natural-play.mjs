@@ -102,7 +102,7 @@ try {
       assert.equal(await page.locator(`#${['gaming', 'basketball', 'other-play'][index]} [data-play-stream="${group}"]`).count(), 1);
     }
     assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), `no overflow at ${width}px`);
-    const frames = await playItems.evaluateAll(elements => elements.map(el => {
+    const frames = await playItems.evaluateAll(elements => elements.filter(el => el.getBoundingClientRect().width > 0).map(el => {
       const slot = el.closest('.play-slot');
       const frame = el.parentElement;
       const box = el.getBoundingClientRect(); const outer = frame.getBoundingClientRect();
@@ -110,7 +110,9 @@ try {
         position: getComputedStyle(slot).position, aspect: getComputedStyle(frame).aspectRatio, width: box.width, height: box.height,
         outerWidth: outer.width, outerHeight: outer.height };
     }));
-    assert.ok(frames.length >= known.length);
+    assert.ok(frames.length >= initial.filter(item => groups.includes(item.group) && !item.deleted && item.kind !== 'placeholder' && item.curated !== false).length);
+    assert.equal(await page.locator('.play-slot--reserve:visible').count(), 0, 'source history and empty slots are optional Studio depth');
+    assert.ok((await piece('play-hoop').boundingBox()).y < 320, 'real basketball appears in the first viewport');
     for (const frame of frames) {
       assert.ok(frame.slot && frame.position === 'relative', `${frame.id} owns a relative flow slot`);
       assert.notEqual(frame.aspect, 'auto', `${frame.id} has its own aspect ratio`);
@@ -141,7 +143,7 @@ try {
   assert.ok(hoopMetadata.width > 0 && hoopMetadata.height > 0 && hoopMetadata.duration > 0, 'real playable hoop media');
   const supplied = initial.find(item => item.id === 'play-supplied-short');
   assert.match(`${supplied.metadata?.title || ''} ${supplied.title || ''} ${supplied.label || ''}`, /gears/i, 'supplied short uses actual Gears metadata');
-  const youtubeIds = await page.locator('#play [data-play-youtube]').evaluateAll(buttons => buttons.map(el => ({ id: el.closest('[data-author-id]').dataset.authorId, video: el.dataset.playYoutube })));
+  const youtubeIds = await page.locator('#play [data-play-youtube]:visible').evaluateAll(buttons => buttons.map(el => ({ id: el.closest('[data-author-id]').dataset.authorId, video: el.dataset.playYoutube })));
   assert.ok(youtubeIds.length >= 4, 'gaming sources use deferred YouTube players');
   for (const { id, video } of youtubeIds) {
     await piece(id).locator('[data-play-youtube]').click();

@@ -38,6 +38,8 @@ try {
     assert.equal(await page.locator('.watch-preview').getAttribute('href'), home.find(item => item.id === 'home-games').metadata.canonicalUrl);
     assert.equal(await page.locator('.watch-preview').getAttribute('target'), '_blank');
     assert.equal(await page.locator('.clip').count(), 3);
+    assert.deepEqual(await page.locator('.clip').evaluateAll(links => links.map(link => new URL(link.href).searchParams.get('v'))), ['J4Po1W2ROBE', 'ijLxbhyn7hI', 'mdhgL77UL7Y']);
+    assert.ok((await page.locator('.watch-preview').boundingBox()).y < 320, 'gameplay appears in the first viewport');
     assert.equal(await page.locator('.more-heading a').getAttribute('href'), 'https://www.youtube.com/@icyclear');
     assert.equal(await page.locator('.system-link').getAttribute('href'), '/gaming/');
     const media = await page.locator('.gameplay').boundingBox();

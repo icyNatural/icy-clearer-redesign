@@ -63,7 +63,7 @@
       "status": "ok"
     },
     "videoId": "mdhgL77UL7Y",
-    "playOrder": 2
+    "playOrder": 4
   },
   {
     "id": "play-supplied-short",
@@ -96,7 +96,8 @@
       "status": "ok"
     },
     "videoId": "-Wu0ulE0Yps",
-    "playOrder": 3
+    "playOrder": 3,
+    "curated": false
   },
   {
     "id": "play-marvel",
@@ -129,7 +130,8 @@
       "status": "ok"
     },
     "videoId": "6JL4DZIalNg",
-    "playOrder": 4
+    "playOrder": 4,
+    "curated": false
   },
   {
     "id": "play-hoop",
@@ -243,5 +245,105 @@
       "title": "ADD PLAY MOMENT"
     },
     "playOrder": 1
+  },
+  {
+    "id": "play-naraka-duel",
+    "group": "play-gaming",
+    "desktop": {
+      "x": 0,
+      "y": 0,
+      "width": 100,
+      "height": 100
+    },
+    "mobile": {
+      "x": 0,
+      "y": 0,
+      "width": 100,
+      "height": 100
+    },
+    "fit": "contain",
+    "shape": "rectangle",
+    "z": 1,
+    "source": "https://www.youtube.com/shorts/J4Po1W2ROBE",
+    "kind": "youtube",
+    "provider": "youtube",
+    "metadata": {
+      "title": "30 Seconds of Naraka Bladepoint Domination 1v1",
+      "author": "Cee Ham",
+      "channelId": "UCc0yfWeqsutUCCBsAoBBboA",
+      "channelUrl": "https://www.youtube.com/@icyClear",
+      "thumbnail": "/media/natural/remote/J4Po1W2ROBE.jpg",
+      "canonicalUrl": "https://www.youtube.com/watch?v=J4Po1W2ROBE",
+      "aspect": 0.5625,
+      "fetchedAt": "2026-10-27T12:28:48.969Z",
+      "status": "ok"
+    },
+    "videoId": "J4Po1W2ROBE",
+    "playOrder": 2
+  },
+  {
+    "id": "play-halo-pistol",
+    "group": "play-gaming",
+    "desktop": {
+      "x": 0,
+      "y": 0,
+      "width": 100,
+      "height": 100
+    },
+    "mobile": {
+      "x": 0,
+      "y": 0,
+      "width": 100,
+      "height": 100
+    },
+    "fit": "contain",
+    "shape": "rectangle",
+    "z": 1,
+    "source": "https://www.youtube.com/shorts/ijLxbhyn7hI",
+    "kind": "youtube",
+    "provider": "youtube",
+    "metadata": {
+      "title": "If the game Has a Pistol, I'm using It | Halo Infinite",
+      "author": "Cee Ham",
+      "channelId": "UCc0yfWeqsutUCCBsAoBBboA",
+      "channelUrl": "https://www.youtube.com/@icyClear",
+      "thumbnail": "/media/natural/remote/ijLxbhyn7hI.jpg",
+      "canonicalUrl": "https://www.youtube.com/watch?v=ijLxbhyn7hI",
+      "aspect": 0.5625,
+      "fetchedAt": "2026-10-27T12:28:48.970Z",
+      "status": "ok"
+    },
+    "videoId": "ijLxbhyn7hI",
+    "playOrder": 3
+  },
+  {
+    "id": "play-observe",
+    "group": "play-other",
+    "desktop": {
+      "x": 0,
+      "y": 0,
+      "width": 100,
+      "height": 100
+    },
+    "mobile": {
+      "x": 0,
+      "y": 0,
+      "width": 100,
+      "height": 100
+    },
+    "fit": "contain",
+    "shape": "rectangle",
+    "z": 1,
+    "kind": "image",
+    "provider": "local",
+    "src": "/media/moments/3da6aa713541c9f283ae.jpg.display.webp",
+    "source": "/media/moments/3da6aa713541c9f283ae.jpg",
+    "overrides": {
+      "alt": "Sunlight through green leaves, from Moments"
+    },
+    "metadata": {
+      "aspect": 0.75
+    },
+    "playOrder": 0
   }
 ]
