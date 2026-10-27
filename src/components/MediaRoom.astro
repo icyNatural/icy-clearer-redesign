@@ -23,7 +23,7 @@ const existingRules = items.filter((item: any) => item.id.startsWith('intro-')).
 <style is:inline set:html={existingRules}></style>
 <style is:inline set:html={shapeRules}></style>
 <div class:list={['media-room', { 'media-room--overlay': overlay }]} data-media-room={room} data-revision={author ? createHash('sha256').update(raw).digest('hex') : undefined}>
-  {items.filter((item: any) => !item.deleted && item.kind !== 'native' && !item.id.startsWith('intro-') && !(room === 'natural' && isPlay(item))).map((item: any) => (
+  {items.filter((item: any) => !item.deleted && item.kind !== 'native' && !item.id.startsWith('intro-') && !(room === 'natural' && (isPlay(item) || Array.isArray(item.signals)))).map((item: any) => (
     <figure class:list={[`room-piece room-shape-${item.shape ?? 'rectangle'}`, { 'home-scene-text': room === 'home' && item.sceneStyle, 'home-world-entrance': room === 'home' && homeWorld(item) }]} data-scene-style={room === 'home' ? item.sceneStyle : undefined} data-role={item.group} data-author-id={item.id} style={style(item)}>
       {room === 'home' && homeMirror(item) ? <Fragment set:html={homeMirrorContent(item, reflections!)} /> : room === 'home' && homeWorld(item) ? <Fragment set:html={homeEntrance(item)} /> : room === 'home' && item.sceneStyle ? <Fragment set:html={homeContent(item)} /> : <MediaAsset item={item} />}
       {room === 'home' && <Fragment set:html={homeParts(item)} />}
