@@ -30,7 +30,11 @@
       "status": "ok"
     },
     "videoId": "68PbSDhCrxI",
-    "playOrder": 1
+    "playOrder": 1,
+    "signals": [
+      "PLAY",
+      "NOW"
+    ]
   },
   {
     "id": "play-gears",
@@ -63,7 +67,10 @@
       "status": "ok"
     },
     "videoId": "mdhgL77UL7Y",
-    "playOrder": 4
+    "playOrder": 4,
+    "signals": [
+      "PLAY"
+    ]
   },
   {
     "id": "play-supplied-short",
@@ -97,7 +104,11 @@
     },
     "videoId": "-Wu0ulE0Yps",
     "playOrder": 3,
-    "curated": false
+    "curated": false,
+    "signals": [
+      "PLAY",
+      "ARCHIVE"
+    ]
   },
   {
     "id": "play-marvel",
@@ -131,7 +142,11 @@
     },
     "videoId": "6JL4DZIalNg",
     "playOrder": 4,
-    "curated": false
+    "curated": false,
+    "signals": [
+      "PLAY",
+      "ARCHIVE"
+    ]
   },
   {
     "id": "play-hoop",
@@ -163,7 +178,11 @@
       "fetchedAt": "2026-10-25T06:36:44.428Z",
       "status": "ok"
     },
-    "playOrder": 1
+    "playOrder": 1,
+    "signals": [
+      "PLAY",
+      "NOW"
+    ]
   },
   {
     "id": "play-hoop-slot",
@@ -190,7 +209,10 @@
     "overrides": {
       "title": "ADD HOOP CLIP"
     },
-    "playOrder": 2
+    "playOrder": 2,
+    "signals": [
+      "PLAY"
+    ]
   },
   {
     "id": "play-photo-slot",
@@ -217,7 +239,10 @@
     "overrides": {
       "title": "ADD PHOTO"
     },
-    "playOrder": 3
+    "playOrder": 3,
+    "signals": [
+      "PLAY"
+    ]
   },
   {
     "id": "play-other-slot",
@@ -244,7 +269,10 @@
     "overrides": {
       "title": "ADD PLAY MOMENT"
     },
-    "playOrder": 1
+    "playOrder": 1,
+    "signals": [
+      "MAKE"
+    ]
   },
   {
     "id": "play-naraka-duel",
@@ -279,7 +307,11 @@
       "status": "ok"
     },
     "videoId": "J4Po1W2ROBE",
-    "playOrder": 2
+    "playOrder": 2,
+    "signals": [
+      "PLAY",
+      "NOW"
+    ]
   },
   {
     "id": "play-halo-pistol",
@@ -314,7 +346,11 @@
       "status": "ok"
     },
     "videoId": "ijLxbhyn7hI",
-    "playOrder": 3
+    "playOrder": 3,
+    "signals": [
+      "PLAY",
+      "NOW"
+    ]
   },
   {
     "id": "play-observe",
@@ -344,6 +380,100 @@
     "metadata": {
       "aspect": 0.75
     },
-    "playOrder": 0
+    "playOrder": 0,
+    "signals": [
+      "OBSERVE",
+      "NOW"
+    ]
+  },
+  {
+    "id": "natural-voice-slot",
+    "group": "signal-voice",
+    "kind": "placeholder",
+    "curated": false,
+    "signals": [
+      "VOICE"
+    ],
+    "overrides": {
+      "title": "ADD VOICE SIGNAL"
+    },
+    "desktop": {
+      "x": 0,
+      "y": 0,
+      "width": 100,
+      "height": 100
+    },
+    "mobile": {
+      "x": 0,
+      "y": 0,
+      "width": 100,
+      "height": 100
+    },
+    "fit": "cover",
+    "shape": "organic",
+    "z": 1,
+    "metadata": {
+      "aspect": 1
+    }
+  },
+  {
+    "id": "natural-archive-slot",
+    "group": "signal-archive",
+    "kind": "placeholder",
+    "curated": false,
+    "signals": [
+      "ARCHIVE"
+    ],
+    "overrides": {
+      "title": "ADD ARCHIVE SIGNAL"
+    },
+    "desktop": {
+      "x": 0,
+      "y": 0,
+      "width": 100,
+      "height": 100
+    },
+    "mobile": {
+      "x": 0,
+      "y": 0,
+      "width": 100,
+      "height": 100
+    },
+    "fit": "cover",
+    "shape": "organic",
+    "z": 1,
+    "metadata": {
+      "aspect": 1
+    }
+  },
+  {
+    "id": "natural-make-slot",
+    "group": "signal-make",
+    "kind": "placeholder",
+    "curated": false,
+    "signals": [
+      "MAKE"
+    ],
+    "overrides": {
+      "title": "ADD MAKE SIGNAL"
+    },
+    "desktop": {
+      "x": 0,
+      "y": 0,
+      "width": 100,
+      "height": 100
+    },
+    "mobile": {
+      "x": 0,
+      "y": 0,
+      "width": 100,
+      "height": 100
+    },
+    "fit": "cover",
+    "shape": "organic",
+    "z": 1,
+    "metadata": {
+      "aspect": 1
+    }
   }
 ]
