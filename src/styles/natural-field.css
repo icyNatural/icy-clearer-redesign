@@ -143,23 +143,88 @@ body.natural-document::before{
   .natural-footer span{width:100%;margin-left:0}
 }
 @media(max-width:430px){
-  .natural-shell{padding-top:70px}
+  .natural-shell{padding-top:70px;padding-inline:10px}
   .natural-mast h1{font-size:clamp(58px,20vw,86px)}
   .natural-subline{font-size:9px}
-  .signal-rail{gap:4px 14px}
+  .signal-rail{gap:4px 12px;margin-bottom:14px}
   .signal-rail button{font-size:8px}
-  .signal-grid{gap:8px}
-  .signal-cluster{min-height:205px;padding:8px;border-radius:28% 34% 30% 26% / 12% 16% 20% 18%}
-  .signal-head button{grid-template-columns:1fr;gap:5px;min-height:65px;padding-inline:0}
-  .signal-mark{width:16px;height:16px}
-  .signal-head b{display:none}
-  .signal-head small{display:none}
-  .signal-artifacts{gap:4px;min-height:120px}
-  .signal-artifact img,.signal-artifact video{min-height:55px}
-  .signal-artifact figcaption{padding:12px 3px 3px}
-  .signal-artifact figcaption strong{font-size:7px}
-  .signal-artifact figcaption span{font-size:6px;letter-spacing:0;line-height:1.4}
-  .signal-empty{min-height:120px}.signal-empty span{font-size:16px}.signal-empty small{font-size:6px}
+
+  /* Keep the desktop 3-across logic, but fit it to the phone instead of
+     preserving desktop-height capsules. Six signals resolve as a compact 3 × 2 field. */
+  .signal-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+  .signal-cluster{
+    min-height:0;
+    aspect-ratio:.78;
+    padding:7px;
+    display:grid;
+    grid-template-rows:auto minmax(0,1fr);
+    border-radius:25% 31% 27% 23% / 13% 16% 19% 17%;
+  }
+  .signal-cluster::before{inset:5px}
+  .signal-head{min-width:0}
+  .signal-head button{
+    grid-template-columns:auto minmax(0,1fr);
+    align-items:center;
+    gap:5px;
+    min-height:38px;
+    padding:0 0 5px;
+  }
+  .signal-mark{width:12px;height:12px}
+  .signal-head strong{font-size:clamp(17px,5.1vw,22px);line-height:.9}
+  .signal-head b,.signal-head small{display:none}
+
+  .signal-artifacts{
+    min-height:0;
+    height:100%;
+    gap:3px;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    grid-template-rows:repeat(2,minmax(0,1fr));
+    overflow:hidden;
+  }
+  .signal-artifact{min-height:0;height:auto}
+  .signal-artifact:nth-child(1){grid-row:span 2}
+  .signal-artifact img,.signal-artifact video{
+    width:100%;
+    height:100%;
+    min-height:0;
+    object-fit:cover;
+  }
+  .signal-artifact figcaption{padding:13px 3px 3px}
+  .signal-artifact figcaption strong{font-size:6.5px}
+  .signal-artifact figcaption span{display:none}
+
+  .signal-empty{
+    min-height:0;
+    height:100%;
+    grid-column:1/-1;
+    padding:4px;
+  }
+  .signal-empty span{font-size:15px}
+  .signal-empty small{font-size:5.5px;letter-spacing:.12em}
+
+  /* A chosen signal can still expand into a deep view; only the ALL field is
+     forced into the fitted 3 × 2 composition. */
+  .signal-cluster.is-active{
+    aspect-ratio:auto;
+    min-height:440px;
+    padding:12px;
+    border-radius:30px;
+  }
+  .signal-cluster.is-active .signal-head button{min-height:52px}
+  .signal-cluster.is-active .signal-mark{width:22px;height:22px}
+  .signal-cluster.is-active .signal-head strong{font-size:34px}
+  .signal-cluster.is-active .signal-artifacts{
+    min-height:330px;
+    height:auto;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    grid-template-rows:none;
+    gap:6px;
+    overflow:visible;
+  }
+  .signal-cluster.is-active .signal-artifact img,
+  .signal-cluster.is-active .signal-artifact video{min-height:110px}
+  .signal-cluster.is-active .signal-artifact figcaption strong{font-size:9px}
+  .signal-cluster.is-active .signal-artifact figcaption span{display:block;font-size:7px}
 }
 @media(max-width:700px){.is-authoring .natural-shell{width:100%}}
 @media(prefers-reduced-motion:reduce){.signal-cluster,.signal-artifact img{transition:none!important}}
