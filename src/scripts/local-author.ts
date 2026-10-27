@@ -18,6 +18,7 @@ export function start() {
   const room = canvas.dataset.mediaRoom!;
   const moments = room === 'moments';
   const naturalPlay = room === 'natural' && !!document.querySelector('#play');
+  const naturalField = room === 'natural' && !!document.querySelector('[data-natural-field]');
   let playDestination = 'play-other';
   const source = document.querySelector(`[data-author-manifest="${room}"]`);
   let items: any[] = JSON.parse(source?.textContent || '[]');
@@ -53,7 +54,7 @@ export function start() {
     <label>Tilt <input data-field="rotation" type="range" min="-30" max="30" /></label>
     <label>SOURCE <input data-field="source" placeholder="URL or /media/…" /></label><div class="author-actions"><button data-action="apply-source">FETCH SOURCE</button><button data-action="refresh-metadata">REFRESH METADATA</button></div>
     ${['title','description','alt','label'].map(field => `<label>${field.toUpperCase()} <button type="button" data-auto="${field}" aria-label="Reset ${field} to auto">AUTO</button><input data-field="${field}" maxlength="${field === 'description' ? 5000 : 500}" /></label>`).join('')}
-    <label>LINK <input data-field="href" placeholder="Optional click destination" /></label><label>CATEGORY / ROLE <input data-field="group" maxlength="200" placeholder="hero, highlight, process…" /></label>${moments ? '<label>DATE <input data-field="date" type="date" /></label><label>NOTE <textarea data-field="note" maxlength="5000"></textarea></label><label><input data-field="featured" type="checkbox" /> FEATURED</label>' : ''}</div>
+    <label>LINK <input data-field="href" placeholder="Optional click destination" /></label><label>CATEGORY / ROLE <input data-field="group" maxlength="200" placeholder="hero, highlight, process…" /></label>${naturalField ? '<label>SIGNALS <input data-field="signals" maxlength="200" placeholder="PLAY, VOICE, ARCHIVE…" /></label>' : ''}${moments ? '<label>DATE <input data-field="date" type="date" /></label><label>NOTE <textarea data-field="note" maxlength="5000"></textarea></label><label><input data-field="featured" type="checkbox" /> FEATURED</label>' : ''}</div>
     <small>Drag to move · corner to resize · arrows to nudge.<br>Phone and desktop positions save separately. Files ≤23 MB.</small>`;
   document.body.append(panel);
   const picker = document.createElement('input');
@@ -226,6 +227,11 @@ export function start() {
     // HOME's material surrounds follow their media through replace/duplicate/undo.
     if (room === 'home') { el.dataset.role = item.group || ''; el.dataset.sceneStyle = item.sceneStyle || ''; el.classList.toggle('home-scene-text', !!item.sceneStyle); el.classList.toggle('home-world-entrance', !!homeWorld(item)); el.style.setProperty('--media-fit', item.fit || 'cover'); el.style.setProperty('--crop', item.objectPosition || '50% 50%'); }
     const p = item[breakpoint] || item.desktop || item.mobile;
+    if (naturalField && el.closest('.signal-artifact')) {
+      el.dataset.signals = Array.isArray(item.signals) ? item.signals.join(' ') : '';
+      el.querySelectorAll<HTMLElement>('img,video').forEach(m => { m.style.setProperty('object-position', item.objectPosition || '50% 50%', 'important'); m.style.setProperty('object-fit', item.fit || 'cover', 'important'); });
+      return;
+    }
     if (p) for (const [key, value] of Object.entries({ left: p.x, top: p.y, width: p.width, height: p.height })) el.style.setProperty(key, `${value}%`, 'important');
     el.style.setProperty('transform', `rotate(${item.rotation || 0}deg)`, 'important');
     el.style.setProperty('z-index', String(el === selected && room !== 'home' && !moments ? 1000 : (item.z ?? 1)), 'important');
@@ -252,6 +258,7 @@ export function start() {
     panel.querySelector<HTMLElement>('.author-selection')!.hidden = false;
     const crop = (item.objectPosition || '50% 50%').split(' ').map(parseFloat);
     for (const [field, entry] of Object.entries({ size: item[breakpoint].width, shape: item.shape || 'rectangle', rotation: item.rotation || 0, cropX: crop[0], cropY: crop[1], source: item.source || item.src || '', title:value(item,'title'),description:value(item,'description'),alt:value(item,'alt'),label:value(item,'label'), href: item.href || '', group: item.group || '', fit:item.fit || 'cover', text:item.text || '', textSize:item.textSize || 32, font:item.font || 'sans', color:item.color || 'dark', align:item.align || 'left' })) panel.querySelector<HTMLInputElement>(`[data-field="${field}"]`)!.value = String(entry);
+    if (naturalField) panel.querySelector<HTMLInputElement>('[data-field="signals"]')!.value = Array.isArray(item.signals) ? item.signals.join(', ') : '';
     if (moments) {
       panel.querySelector<HTMLInputElement>('[data-field="date"]')!.value = item.date || '';
       panel.querySelector<HTMLTextAreaElement>('[data-field="note"]')!.value = item.note || '';
@@ -298,7 +305,8 @@ export function start() {
     const el = target.closest<HTMLElement>('[data-author-id]'); if (!el) return;
     // An unselected photo remains a native touch-scroll surface. Tap to select;
     // only the selected photo captures drag/resize gestures.
-    if ((moments || (naturalPlay && el.closest('.play-slot'))) && event.pointerType === 'touch' && selected !== el) return;
+    if ((moments || (naturalPlay && el.closest('.play-slot')) || (naturalField && el.closest('.signal-artifact'))) && event.pointerType === 'touch' && selected !== el) return;
+    if (naturalField && el.closest('.signal-artifact')) return;
     event.preventDefault(); event.stopImmediatePropagation();
     if (selected !== el) select(el);
     const item = ensure(el); const bounds = container(el).getBoundingClientRect();
@@ -348,6 +356,11 @@ export function start() {
       apply(item, selected); mark(); return;
     }
     if (!field || field === 'source') return;
+    if (naturalField && field === 'signals') {
+      item.signals = [...new Set(input.value.split(',').map(value => value.trim().toUpperCase()).filter(Boolean))];
+      selected.dataset.signals = item.signals.join(' ');
+      mark(); return;
+    }
     if (naturalPlay && field === 'playOrder') { if (input.value === '') delete item.playOrder; else item.playOrder = clamp(+input.value,0,10000); mark(); return; }
     if (moments && ['date','note','featured'].includes(field)) {
       item[field] = field === 'featured' ? input.checked : input.value;
