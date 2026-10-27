@@ -5,7 +5,7 @@ import raw from '../data/media/natural.json?raw';
 const author = import.meta.env.DEV && import.meta.env.MODE === 'author';
 const items = JSON.parse(author ? readFileSync(resolve(process.cwd(), 'src/data/media/natural.json'), 'utf8') : raw);
 ---
-<script is:inline type="application/json" id="natural-object-state" set:html={JSON.stringify(items.filter((item: any) => item.kind === 'native' || item.id.startsWith('natural-'))).replace(/</g, '\\u003c')} />
+<script is:inline type="application/json" id="natural-object-state" set:html={JSON.stringify(items.filter((item: any) => item.kind === 'native' && (author || !item.visibility || item.visibility === 'public'))).replace(/</g, '\\u003c')} />
 <script>
   import { renderNaturalObjects } from '../scripts/natural-objects';
   const items = JSON.parse(document.getElementById('natural-object-state')?.textContent || '[]');

@@ -99,7 +99,7 @@ try {
   await page.locator('.moment-detail__metadata').evaluate(el => { el.style.minHeight = '1000px'; });
   await nativeSwipe(200, 500, 202, 200);
   assert.equal(await current(), start, 'native vertical gesture does not navigate');
-  assert.ok(await dialog.evaluate(el => el.scrollTop > 0), 'native vertical gesture scrolls the dialog');
+  await page.waitForFunction(() => document.querySelector('.moment-detail').scrollTop > 0, { timeout: 3000 });
   await dialog.evaluate(el => { el.scrollTop = 0; });
   await page.locator('[data-detail="next"]').click();
   assert.equal(await current(), expected(1), 'Next button unchanged');

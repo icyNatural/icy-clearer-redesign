@@ -93,16 +93,24 @@ main.home-scrapbook {
 [data-role=world-clear] .world-signal__text{inset:3cqw 1.7cqw;justify-content:center;gap:2cqw;border-left:1px solid #49695766;padding-left:1.3cqw;color:#394c3f;letter-spacing:.015em}
 .is-authoring .home-world-entrance>.author-handle{z-index:5}
 @media(max-width:700px){
-  /* Extend only the foyer's lower area. home.json rebases the original mobile
-     y/height by 1846/2560, preserving the personal collage in actual pixels. */
-  .home-scrapbook{aspect-ratio:852/2560}
-  .scrap-floor{top:49.106484%;height:5.047656%}
-  .home-scrapbook .home-world-entrance{grid-template: minmax(0,1fr)/39% minmax(0,1fr);box-shadow:.6cqw 1.2cqw 2.4cqw #57452f25}
-  .home-scrapbook .room-piece.home-world-entrance>.world-entrance__caption{padding:3.1cqw 3.3cqw 5cqw;gap:2cqw}
-  .world-entrance__caption h3{font-size:clamp(20px,5.6cqw,25px)}
-  .world-entrance__caption p{font-size:clamp(11px,2.8cqw,13px);line-height:1.5}
-  .world-entrance__arrow{right:3cqw;bottom:1.2cqw;font-size:5.2cqw}
-  .home-world-entrance .world-preview--collage{gap:.7cqw;padding:.8cqw}
-  .world-signal__text{inset:2cqw;font-size:8px;letter-spacing:0}
-  [data-role=world-clear] .world-signal__text{inset:2.5cqw 1.6cqw;padding-left:1.5cqw;gap:3cqw;font-size:8px}
+  /* Scale the authored canvas, rather than turning it into a different page:
+     sky/Lens Capture upper-right, Games left of the mirror, then three doors.
+     Keep saved mobile coordinates intact for the independent author workspace;
+     its inline geometry still takes precedence when editing. */
+  .home-scrapbook{aspect-ratio:852/1846}
+  .is-authoring .home-scrapbook{aspect-ratio:852/2560}
+  .home-scrapbook .room-piece{left:var(--dx);top:var(--dy);width:var(--dw);height:var(--dh)}
+  .home-scrapbook .home-world-entrance{box-shadow:.5cqw 1.1cqw 2cqw #57452f28}
+  .home-scrapbook .room-piece.home-world-entrance>.world-entrance__caption{padding:1.8cqw 2cqw 3.3cqw;gap:1cqw}
+  .world-entrance__caption h3{font-size:3.3cqw}
+  .world-entrance__caption p{font-size:clamp(8px,1.5cqw,11px);line-height:1.35}
+  .world-entrance__arrow{font-size:3.7cqw}
+  .world-signal__text{font-size:clamp(6px,1cqw,9px);letter-spacing:0}
+  [data-role=world-clear] .world-signal__text{font-size:clamp(6px,1cqw,9px)}
+  .home-scrapbook [data-role=games]>.scene-caption{right:3cqw;display:flex;justify-content:space-between}
+  .home-scrapbook [data-role=games]>.scene-caption span{white-space:normal}
+  .home-scrapbook .source-play{width:clamp(28px,7cqw,48px);height:clamp(28px,7cqw,48px);font-size:clamp(12px,3cqw,18px)}
+  .scrap-menu summary{min-width:32px;min-height:32px;align-content:center;gap:5px}
+  .scrap-menu nav{width:min(72cqw,280px);top:36px;font-size:clamp(12px,2cqw,14px);gap:8px}
+  .scrap-menu nav a{padding:8px}
 }

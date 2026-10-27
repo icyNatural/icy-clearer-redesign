@@ -25,8 +25,20 @@ export function validate(items, maximum = 100) {
         return { src: preview.src, alt: cleanText(preview.alt, 500) };
       });
     }
+    if (item.signals !== undefined && (!Array.isArray(item.signals) || item.signals.length < 1 || item.signals.length > 6 || new Set(item.signals).size !== item.signals.length || item.signals.some(signal => !['PLAY','VOICE','OBSERVE','MAKE','ARCHIVE','NOW'].includes(signal)))) throw new Error('Choose one or more valid Natural signals: PLAY, VOICE, OBSERVE, MAKE, ARCHIVE, NOW.');
+    if (item.tags !== undefined) {
+      if (!Array.isArray(item.tags) || item.tags.length > 30 || item.tags.some(tag => typeof tag !== 'string' || !tag.trim() || tag.length > 100)) throw new Error('Use at most 30 tags, each under 100 characters.');
+      item.tags = [...new Set(item.tags.map(tag => cleanText(tag, 100).trim()))];
+    }
+    if (item.era !== undefined && !['childhood','school','early','hoop era','music era','current','undated'].includes(item.era)) throw new Error('Invalid Natural era.');
+    if (item.temporal !== undefined) {
+      if (typeof item.temporal !== 'string' || item.temporal.length > 200) throw new Error('Keep approximate dates under 200 characters.');
+      item.temporal = cleanText(item.temporal, 200);
+    }
+    if (item.visibility !== undefined && !['public','hidden','draft'].includes(item.visibility)) throw new Error('Invalid visibility.');
+    if (item.curated !== undefined && typeof item.curated !== 'boolean') throw new Error('Invalid curation flag.');
     if (item.deleted === true) continue;
-    if (item.playOrder !== undefined && !bounded(item.playOrder, 0, 10000)) throw new Error('Invalid PLAY order.');
+    if (item.playOrder !== undefined && !bounded(item.playOrder, 0, 10000)) throw new Error('Invalid prominence.');
     if (item.featured !== undefined && typeof item.featured !== 'boolean') throw new Error('Invalid featured flag.');
     if (item.date !== undefined && (typeof item.date !== 'string' || (item.date !== '' && !/^\d{4}-\d{2}-\d{2}$/.test(item.date)))) throw new Error('Invalid photo date.');
     if (item.note !== undefined && (typeof item.note !== 'string' || item.note.length > 5000)) throw new Error('Keep notes under 5000 characters.');
@@ -94,6 +106,7 @@ export function validate(items, maximum = 100) {
     const result = Object.fromEntries(Object.entries(item).filter(([key]) => ['id','src','source','provider','videoId','metadata','overrides','kind','desktop','mobile','shape','objectPosition','rotation','z','label','href','group','deleted','fit','text','textSize','font','color','align','sceneStyle','parts','previewImages','featured','date','note','displaySrc','pixelWidth','pixelHeight'].includes(key)));
     if (result.note !== undefined) result.note = cleanText(result.note, 5000);
     if (item.playOrder !== undefined) result.playOrder = item.playOrder;
+    for (const key of ['signals','tags','era','temporal','visibility','curated']) if (item[key] !== undefined) result[key] = item[key];
     for (const key of ['desktop', 'mobile']) if (result[key]) result[key] = Object.fromEntries(['x', 'y', 'width', 'height'].map(k => [k, result[key][k]]));
     for (const key of ['label', 'group']) if (result[key] !== undefined) result[key] = cleanText(result[key], 200);
     return result;
@@ -152,7 +165,7 @@ export function localAuthor() {
           }
           if (req.url === '/__author/save') {
             if (busy) return send(409, { error: 'A save is already in progress. Try again.' });
-            const items = validate(body.items, body.room === 'moments' ? 500 : 100);
+            const items = validate(body.items, body.room === 'natural' ? 2000 : body.room === 'moments' ? 500 : 100);
             if (body.room !== 'home' && items.some(item => item.sceneStyle || item.parts || item.previewImages)) throw new Error('HOME composition belongs to HOME only.');
             if (body.room !== 'natural' && items.some(item => item.kind === 'native')) throw new Error('Native objects belong to Natural only.');
             const file = resolve(root, 'src/data/media', `${body.room}.json`);

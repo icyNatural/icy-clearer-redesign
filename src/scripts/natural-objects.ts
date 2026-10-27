@@ -22,13 +22,13 @@ export function applyNative(item: any, el: HTMLElement) {
 }
 export function renderNaturalObjects(items: any[]) {
   if (!document.querySelector('.natural-shell')) return;
-  if (!templates.size) document.querySelectorAll<HTMLElement>('[data-author-id^="natural-"]').forEach(el => templates.set(el.dataset.authorId!, el.cloneNode(true) as HTMLElement));
+  if (!templates.size) document.querySelectorAll<HTMLElement>('[data-author-id^="natural-"][data-native-text]').forEach(el => templates.set(el.dataset.authorId!, el.cloneNode(true) as HTMLElement));
   document.querySelectorAll('[data-native-copy]').forEach(el => el.remove());
   for (const [id, template] of templates) {
     const old = document.querySelector<HTMLElement>(`[data-author-id="${id}"]`);
     if (old) old.replaceWith(template.cloneNode(true));
   }
-  for (const item of items) {
+  for (const item of items.filter(item => item.kind === 'native')) {
     let el = document.querySelector<HTMLElement>(`[data-author-id="${item.id}"]`);
     if (!el && item.nativeId && templates.has(item.nativeId)) {
       const original = document.querySelector<HTMLElement>(`[data-author-id="${item.nativeId}"]`)!;

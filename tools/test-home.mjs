@@ -6,6 +6,7 @@ import assert from 'node:assert/strict';
 const require = createRequire(import.meta.url);
 const { chromium } = require(process.env.PLAYWRIGHT_PATH || 'playwright');
 const origin = process.env.HOME_TEST_ORIGIN || 'http://localhost:4321';
+const layoutOnly = process.env.HOME_TEST_LAYOUT_ONLY === '1';
 const manifest = resolve('src/data/media/home.json');
 const folder = resolve('public/media/home');
 const backup = await readFile(manifest);
@@ -33,7 +34,7 @@ async function select(name) {
   return el;
 }
 try {
-  for (const width of [360,390,430,852,1440]) {
+  for (const width of [320,360,390,430,700,701,852,1280,1440,1920]) {
     await page.setViewportSize({ width, height: 844 });
     await page.goto(origin + '/', { waitUntil: 'networkidle' });
     await page.evaluate(() => document.fonts.ready);
@@ -47,16 +48,33 @@ try {
       assert.equal(await slot(name).getByRole('link').getAttribute('href'), href);
       const b = await slot(name).boundingBox();
       assert.ok(b.x >= 0 && b.x + b.width <= width + 1 && b.height >= 100, `${name} usable frame at ${width}`);
+      assert.ok(await slot(name).locator('.world-entrance__caption').evaluate(el => {
+        const box = el.getBoundingClientRect();
+        return [...el.querySelectorAll('h3,p')].every(text => {
+          const bounds = text.getBoundingClientRect();
+          return bounds.left >= box.left - 1 && bounds.right <= box.right + 1 && bounds.bottom <= box.bottom + 1 && text.scrollWidth <= text.clientWidth + 1;
+        });
+      }), `${name} caption fits without clipping at ${width}`);
     }
     const boxes = await Promise.all(worlds.map(([name]) => slot(name).boundingBox()));
-    if (width <= 700) {
-      for (let i = 1; i < boxes.length; i++) assert.ok(boxes[i].y > boxes[i-1].y + boxes[i-1].height + 5, `vertical flow at ${width}`);
-      assert.equal(await slot('natural').evaluate(el => getComputedStyle(el).gridTemplateRows.split(' ').length), 1);
-    } else {
-      assert.ok(Math.abs(boxes[0].y - boxes[2].y) < 1);
-      assert.ok(boxes[0].x + boxes[0].width < boxes[1].x);
+    for (let i = 1; i < boxes.length; i++) {
+      assert.ok(boxes[i-1].x + boxes[i-1].width < boxes[i].x, `three left-to-right destinations at ${width}`);
     }
-    for (const id of ['home-handle','home-title','home-signature','home-intro-heading','home-sky','home-moments','home-games','home-sketch','home-portal']) assert.equal(await page.locator(`[data-author-id="${id}"]`).count(), 1);
+    const canvas = await page.locator('.home-scrapbook').boundingBox();
+    // The current authored frames are intentionally staggered, not equal-y rows.
+    for (const item of scene) {
+      const frame = page.locator(`[data-author-id="${item.id}"]`);
+      for (const [property,key,size] of [['left','x',canvas.width],['top','y',canvas.height],['width','width',canvas.width],['height','height',canvas.height]]) {
+        const actual = await frame.evaluate((el,property) => parseFloat(getComputedStyle(el)[property]), property);
+        assert.ok(Math.abs(actual - item.desktop[key] / 100 * size) < 1, `${item.id} preserves authored ${property} at ${width}`);
+      }
+    }
+    const frameBox = id => page.locator(`[data-author-id="home-${id}"]`).boundingBox();
+    const [games,mirror,sky,lens,explore] = await Promise.all(['games','portal','sky','sky-note','interest-heading'].map(frameBox));
+    assert.ok(games.x + games.width < mirror.x, `Games stays left of mirror at ${width}`);
+    assert.ok(sky.x < lens.x && sky.y < games.y, `Lens Capture stays beside upper hero at ${width}`);
+    assert.ok(explore.y > games.y + games.height && explore.y < boxes[0].y, `Explore separates collage and destinations at ${width}`);
+    for (const id of ['home-handle','home-title','home-signature','home-intro-heading','home-sky','home-games','home-portal']) assert.equal(await page.locator(`[data-author-id="${id}"]`).count(), 1);
     assert.ok((await page.locator('[data-author-id="home-title"]').textContent()).includes('CLEARER'));
     assert.equal(await page.getByRole('heading',{name:'Become, slowly.',exact:true}).count(),1);
     assert.equal(await slot('natural').locator('img').count(),3);
@@ -64,7 +82,8 @@ try {
     assert.equal(await slot('clear').locator('.world-signal__text span').count(),3);
     await page.screenshot({ path: resolve(output, `home-${width}.png`), fullPage: true });
   }
-  console.log('PASS three linked entrances, personal collage, vertical mobile / three-column desktop, no overflow or editor chrome: 360/390/430/852/1440');
+  console.log('PASS authored hero/Lens Capture, Games + mirror, Explore, three-column destinations, no caption clipping, overflow or editor chrome: 320/360/390/430/700/701/852/1280/1440/1920');
+  if (!layoutOnly) {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto(origin + '/?edit=1', { waitUntil: 'networkidle' });
   await page.locator('.author-panel').waitFor();
@@ -126,9 +145,14 @@ try {
   for (const [name] of worlds) assert.equal(await slot(name).getByRole('link').getAttribute('href'),'/worlds.html');
   assert.deepEqual(errors,[]);
   console.log('PASS all three: touch selection, move/resize, label/caption/link, layers, duplicate/delete/undo, real-media replacement, SAVE/reload, independent desktop/mobile');
+  }
+  assert.deepEqual(errors,[]);
 } finally {
-  await browser.close(); await writeFile(manifest,backup);
-  for (const file of await readdir(folder)) if (!files.has(file)) await unlink(resolve(folder,file));
+  await browser.close();
+  if (!layoutOnly) {
+    await writeFile(manifest,backup);
+    for (const file of await readdir(folder)) if (!files.has(file)) await unlink(resolve(folder,file));
+  }
   for (let i=0;i<protectedPaths.length;i++) assert.deepEqual(await readFile(protectedPaths[i]),protectedFiles[i],`${protectedPaths[i]} unchanged`);
 }
-console.log(`PASS other worlds untouched; original HOME restored after regression checks. Screenshots: ${output}`);
+console.log(`PASS other worlds untouched; HOME ${layoutOnly ? 'manifest never written (layout-only)' : 'restored after regression checks'}. Screenshots: ${output}`);

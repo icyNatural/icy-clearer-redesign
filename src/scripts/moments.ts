@@ -43,7 +43,12 @@ function render() {
   const id = new URLSearchParams(location.hash.slice(1)).get('moment');
   const index = items.findIndex((item: any) => item.id === id);
   if (index < 0 || document.body.classList.contains('is-authoring')) {
-    if (dialog.open) { dialog.close(); document.body.style.overflow = previousOverflow; opener?.focus({preventScroll:true}); }
+    if (dialog.open) {
+      dialog.close(); document.body.style.overflow = previousOverflow;
+      // A direct link has no opener for the browser to restore. Give focus a
+      // real destination rather than leaving it in the now-closed dialog.
+      (opener || document.querySelector<HTMLElement>('[data-moment-open]'))?.focus({preventScroll:true});
+    }
     return;
   }
   const item = items[index];
