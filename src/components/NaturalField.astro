@@ -1,0 +1,110 @@
+---
+import '../styles/natural-field.css';
+
+const { items } = Astro.props;
+
+const signals = [
+  { id: 'PLAY', label: 'PLAY', note: 'gaming · basketball · movement · compete' },
+  { id: 'VOICE', label: 'VOICE', note: 'music · rap · bars · lyrics · sound' },
+  { id: 'OBSERVE', label: 'OBSERVE', note: 'photography · nature · moments · notice' },
+  { id: 'ARCHIVE', label: 'ARCHIVE', note: 'childhood · diaries · notes · early versions' },
+  { id: 'MAKE', label: 'MAKE', note: 'drawing · clothing · software · experiments' },
+  { id: 'NOW', label: 'NOW', note: 'current work · recent media · in progress' },
+];
+
+const derivedSignals = (item) => {
+  if (Array.isArray(item.signals) && item.signals.length) return item.signals.map((s) => String(s).toUpperCase());
+  if (item.group === 'play-basketball' || item.group === 'play-gaming') return ['PLAY', 'NOW'];
+  if (item.group === 'play-other') return ['OBSERVE', 'NOW'];
+  return ['NOW'];
+};
+
+const artifactTitle = (item) => item.overrides?.title || item.metadata?.title || item.title || item.text || 'Untitled signal';
+const artifactAlt = (item) => item.overrides?.alt || item.metadata?.title || item.overrides?.title || 'Natural artifact';
+const artifactSrc = (item) => item.metadata?.thumbnail || item.src || item.source;
+const artifactHref = (item) => item.href || (item.kind === 'youtube' ? item.metadata?.canonicalUrl || item.source : undefined);
+const primarySignal = (item) => derivedSignals(item)[0] || 'NOW';
+const publicItems = items.filter((item) => !item.deleted && item.kind !== 'native' && item.kind !== 'placeholder' && item.curated !== false);
+const author = import.meta.env.DEV && import.meta.env.MODE === 'author';
+---
+
+<section class="natural-field" data-natural-field data-active-signal="ALL">
+  <header class="natural-mast">
+    <div>
+      <p class="natural-kicker">ICY / NATURAL</p>
+      <h1>NATURAL</h1>
+      <p class="natural-subline">a living archive of a mind in motion.</p>
+    </div>
+    <div class="natural-count" aria-label="Archive state">
+      <span>{publicItems.length} artifacts</span>
+      <span>always forming.</span>
+    </div>
+  </header>
+
+  <nav class="signal-rail" aria-label="Natural signals">
+    <button type="button" data-signal-select="ALL" aria-pressed="true"><span></span>ALL</button>
+    {signals.map((signal) => <button type="button" data-signal-select={signal.id} aria-pressed="false"><span></span>{signal.label}</button>)}
+  </nav>
+
+  <div class="signal-grid">
+    {signals.map((signal) => {
+      const artifacts = publicItems.filter((item) => derivedSignals(item).includes(signal.id));
+      return (
+        <section class:list={['signal-cluster', `signal-cluster--${signal.id.toLowerCase()}`]} data-signal-cluster={signal.id}>
+          <header class="signal-head">
+            <button type="button" data-signal-select={signal.id} aria-label={`Open ${signal.label} signal`}>
+              <span class="signal-mark" aria-hidden="true"></span>
+              <span>
+                <strong>{signal.label}</strong>
+                <small>{signal.note}</small>
+              </span>
+              <b aria-hidden="true">→</b>
+            </button>
+          </header>
+
+          <div class="signal-artifacts">
+            {artifacts.map((item, index) => {
+              const itemSignals = derivedSignals(item);
+              const primary = primarySignal(item) === signal.id;
+              const href = artifactHref(item);
+              const src = artifactSrc(item);
+              return (
+                <figure
+                  class:list={['signal-artifact', { 'signal-artifact--overflow': index > 3, 'signal-artifact--text': item.kind === 'text' }]}
+                  data-author-id={primary ? item.id : undefined}
+                  data-artifact-ref={!primary ? item.id : undefined}
+                  data-signals={itemSignals.join(' ')}
+                  data-artifact-kind={item.kind}
+                >
+                  {item.kind === 'text' ? (
+                    href ? <a class="artifact-text" href={href}><span>{item.text || artifactTitle(item)}</span><em>{item.overrides?.label || item.label || 'open signal'} ↗</em></a> : <div class="artifact-text"><span>{item.text || artifactTitle(item)}</span></div>
+                  ) : item.kind === 'video' ? (
+                    <video controls preload="none" playsinline poster={item.metadata?.thumbnail} src={item.src || item.source}></video>
+                  ) : src ? (
+                    href ? <a href={href} target={href.startsWith('http') ? '_blank' : undefined} rel={href.startsWith('http') ? 'noopener noreferrer' : undefined}><img src={src} alt={artifactAlt(item)} loading="lazy" decoding="async" /></a> : <img src={src} alt={artifactAlt(item)} loading="lazy" decoding="async" />
+                  ) : null}
+                  <figcaption>
+                    <strong>{artifactTitle(item)}</strong>
+                    <span>{itemSignals.join(' · ')}</span>
+                  </figcaption>
+                </figure>
+              );
+            })}
+            {artifacts.length === 0 && <div class="signal-empty" aria-hidden="true"><span>{signal.id}</span><small>{author ? 'ADD A SIGNAL IN LOCAL STUDIO' : 'FORMING'}</small></div>}
+          </div>
+        </section>
+      );
+    })}
+  </div>
+
+  <footer class="natural-footer">
+    <a href="/games.html">GAMING ↗</a>
+    <a href="/moments.html">MOMENTS ↗</a>
+    <a href="/clear.html">CLEAR ↗</a>
+    <span>signals overlap. artifacts stay themselves.</span>
+  </footer>
+</section>
+
+<script>
+  import '../scripts/natural-field';
+</script>
