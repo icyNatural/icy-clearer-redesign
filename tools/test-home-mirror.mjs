@@ -141,14 +141,14 @@ try {
   await page.waitForFunction(()=>document.querySelector('[data-living-mirror]').dataset.running==='false');
   assert.ok(await mirror().evaluate(el=>el.getAnimations({subtree:true}).every(a=>a.playState==='paused')));
   await page.setViewportSize({width,height:844});
-  // Preserve the existing HOME Games navigation exactly as requested.
+  // The Games card enters the human-facing layer; mirror routes stay independent.
   const gameLink=piece('home-games').locator('.room-piece__link');
-  assert.equal(await gameLink.getAttribute('href'),'/gaming/');
+  assert.equal(await gameLink.getAttribute('href'),'/games.html');
   await gameLink.scrollIntoViewIfNeeded();
   assert.ok(await gameLink.evaluate(el=>{const b=el.getBoundingClientRect();return document.elementFromPoint(b.x+b.width/2,b.y+b.height/2)?.closest('a')===el;}),'Mirror does not intercept Games');
   const worldLinks=[['natural','/natural.html'],['apps','/world.html'],['clear','/clear.html']];
   for(const [name,href] of worldLinks)assert.equal(await piece('home-world-'+name).getByRole('link').getAttribute('href'),href);
-  report.widths.push({width,overflow:false,animationsRunning:moving,imagesLoaded:true,gamesDestination:'/gaming/',gamesHitTarget:true});
+  report.widths.push({width,overflow:false,animationsRunning:moving,imagesLoaded:true,gamesDestination:'/games.html',gamesHitTarget:true});
   console.log('PASS '+width+': unchanged composition, five matching visuals/labels, first tap locks, second tap enters all five real routes, Back HOME, 15s reset, scroll/offscreen pause, Games/world links');
  }
  await page.setViewportSize({width:390,height:844});

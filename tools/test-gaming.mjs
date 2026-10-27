@@ -67,14 +67,18 @@ try {
   }
   await page.goto(origin + '/');
   const entrance = page.locator('[data-author-id="home-games"]');
-  assert.equal(await entrance.locator('.room-piece__link').getAttribute('href'), '/gaming/');
+  assert.equal(await entrance.locator('.room-piece__link').getAttribute('href'), '/games.html');
   assert.equal(await entrance.locator('[data-youtube]').getAttribute('data-youtube'), '68PbSDhCrxI');
   await entrance.locator('.room-piece__link').click({ force:true });
+  await page.waitForURL('**/games.html');
+  await page.locator('.system-link').click();
   await page.waitForURL('**/gaming/');
   await page.waitForFunction(() => window.GOS?.gos.context().booted);
   await page.goBack();
+  assert.equal(new URL(page.url()).pathname, '/games.html');
+  await page.goBack();
   assert.equal(new URL(page.url()).pathname, '/');
   assert.equal(await page.locator('.author-panel').count(), 0);
-  console.log('PASS HOME Games /gaming/ click, Naraka preview, Back, normal HOME');
+  console.log('PASS HOME Games → /games.html → /gaming/, Naraka preview, Back, normal HOME');
   assert.deepEqual(errors, []); assert.deepEqual(failed, []);
 } finally { await browser.close(); }

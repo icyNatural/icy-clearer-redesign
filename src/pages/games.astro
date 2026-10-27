@@ -1,0 +1,86 @@
+---
+import '../styles/foundation.css';
+import '../styles/games.css';
+import { naraka, gameplay, radar, clips, channel } from '../data/gaming';
+const dimensions = radar.points;
+---
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Gaming — Icy Clearer</title>
+    <meta name="description" content="My gameplay, my taste, my take. Real clips and the personal evaluation underneath them." />
+    <meta name="theme-color" content="#0b0e12" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <header class="gaming-nav">
+      <a href="/">← HOME</a>
+      <span>ICY CLEARER / GAMING</span>
+    </header>
+    <main id="main" class="gaming-shell" tabindex="-1">
+      <header class="gaming-intro">
+        <p class="eyebrow">The way I play</p>
+        <h1>Gaming<span>.</span></h1>
+        <p class="intro-line">In the moment.<br /><em>Then, my take.</em></p>
+        <p class="intro-note">My gameplay, my taste, and what stays with me.</p>
+      </header>
+
+      <article class="game-story" aria-labelledby="naraka-title">
+        <header class="story-heading">
+          <h2 id="naraka-title">{naraka.gameName}</h2>
+          <span class="eyebrow">01 / Gameplay → evaluation</span>
+        </header>
+        <figure class="gameplay">
+          <a class="watch-preview" href={gameplay.metadata.canonicalUrl} target="_blank" rel="noopener noreferrer" aria-label={`Watch ${gameplay.metadata.title} on YouTube (opens in a new tab)`}>
+            <img src={gameplay.metadata.thumbnail} alt={gameplay.overrides.alt} width="1280" height="723" fetchpriority="high" />
+            <span class="watch-action"><span aria-hidden="true">▶</span> WATCH ON YOUTUBE ↗</span>
+          </a>
+          <figcaption><span>{gameplay.metadata.title}</span><span>{gameplay.metadata.author} · YouTube</span></figcaption>
+        </figure>
+
+        <a class="story-connector" href="#naraka-evaluation"><span aria-hidden="true">↓</span> FROM THE GAMEPLAY TO MY TAKE</a>
+
+        <section id="naraka-evaluation" class="evaluation" aria-labelledby="evaluation-title">
+          <div class="take-copy">
+            <p class="eyebrow">My evaluation / {naraka.gameName}</p>
+            <h3 id="evaluation-title">The feeling,<br /><em>made visible.</em></h3>
+            <a class="score-link" href="/gaming/?view=history" aria-label={`${naraka.gameName}, ${naraka.score} out of 10. Open Gaming OS history`}><strong>{naraka.score.toFixed(1)}</strong><span>/ 10<br />MY TAKE ↗</span></a>
+            <p class="verdict">{naraka.verdict}</p>
+            <a class="text-link" href="/gaming/?view=history">FIND NARAKA IN HISTORY →</a>
+          </div>
+          <div class="radar-panel">
+            <a class="radar-link" href="/gaming/?view=history" aria-label="Explore Naraka's evaluation in Gaming OS history">
+              <svg viewBox="-34 -10 268 220" role="img" aria-labelledby="radar-title radar-desc" data-scale="0-10">
+                <title id="radar-title">{naraka.gameName} — {naraka.score} radar glyph</title>
+                <desc id="radar-desc">Fixed 0–10 scale, identical to Gaming OS. {dimensions.map(point => `${point.label}: ${point.value} out of 10`).join('; ')}.</desc>
+                {radar.rings.map(ring => <polygon class="radar-ring" points={ring.polygon} />)}
+                {dimensions.map(point => <line class="radar-spoke" x1="100" y1="100" x2={100 + Math.cos(point.angle) * 84} y2={100 + Math.sin(point.angle) * 84} />)}
+                <polygon class="radar-shape" points={radar.polygon} />
+                {dimensions.map(point => <circle class="radar-dot" cx={point.x} cy={point.y} r="2.4" />)}
+                {dimensions.map(point => <text class="radar-label" x={100 + Math.cos(point.angle) * 97} y={100 + Math.sin(point.angle) * 97} text-anchor={Math.cos(point.angle) > .3 ? 'start' : Math.cos(point.angle) < -.3 ? 'end' : 'middle'} dominant-baseline="middle">{point.label}</text>)}
+              </svg>
+            </a>
+            <p class="radar-note">Nine dimensions. One personal signal.<br />Same fixed 0–10 scale as Gaming OS.</p>
+            <details class="dimension-details"><summary>READ THE DIMENSION VALUES</summary><dl>{dimensions.map(point => <div><dt>{point.label}</dt><dd>{point.value} / 10</dd></div>)}</dl></details>
+          </div>
+        </section>
+
+        <a class="story-connector" href="#full-system"><span aria-hidden="true">↓</span> THE TAKE IS ONE PART OF THE SYSTEM</a>
+        <section id="full-system" class="system-entry" aria-labelledby="system-title">
+          <div><p class="eyebrow">Go deeper / the analytical layer</p><h2 id="system-title">Gaming OS<span>↗</span></h2><p>History, scores, signals, Taste Atlas, library, and recommendations. The structure underneath the play.</p></div>
+          <a class="system-link" href="/gaming/">ENTER GAMING OS →</a>
+        </section>
+      </article>
+
+      <section class="more-gameplay" aria-labelledby="more-title">
+        <header class="more-heading"><div><p class="eyebrow">More from my screen</p><h2 id="more-title">Other moments in play.</h2></div><a class="text-link" href={channel} target="_blank" rel="noopener noreferrer">MORE ON YOUTUBE ↗</a></header>
+        <div class="clip-list">
+          {clips.map(clip => <a class="clip" href={clip.metadata.canonicalUrl} target="_blank" rel="noopener noreferrer"><img src={clip.metadata.thumbnail} alt="" loading="lazy" width="480" height="270" /><div><p class="eyebrow">{clip.id === 'play-marvel' ? 'Marvel Rivals / Venom' : 'Gears E-Day'} · YouTube ↗</p><h3>{clip.metadata.title}</h3><p class="clip-author">{clip.metadata.author}</p></div><span class="clip-play" aria-hidden="true">▶</span></a>)}
+        </div>
+        <p class="media-note">Clips stand on their own here. No rating is attached without a verified evaluation.</p>
+      </section>
+      <footer class="gaming-footer"><a href="/">← HOME</a><p>Looking for the wider world of play?</p><a href="/natural.html#play">NATURAL PLAY ↗</a></footer>
+    </main>
+  </body>
+</html>

@@ -77,8 +77,30 @@ catalog settings: `icyNaturalGameOSCatalog`. Settings export format is
 `icyNaturalGameOS.export` with versioned `collections`. Public format is separately
 named `icyNaturalGameOS.public`, version 1, and must not be used as a private backup.
 
-HOME `home-games` links to `/gaming/`; its Naraka preview and Studio metadata stay
-intact. Natural PLAY remains the distinct expressive clips collection.
+HOME `home-games` links to `/games.html` (Gaming); its Naraka preview and Studio
+metadata stay intact. `/gaming/` remains Gaming OS. Natural PLAY remains the
+distinct expressive clips collection.
+
+## Human-facing Gaming layer
+
+`/games.html` follows the site's `.html` page convention and avoids confusing
+`/gaming.html` with the standalone `/gaming/` application. Gameplay leads down to
+Naraka's exact published 9.3 evaluation and then the full system entrance.
+`src/data/gaming.ts` reads only the checked-in public snapshot and executes its
+published `domain/glyph.js` engine at build time for identical fixed 0–10 radar
+geometry. The stored score is passed through, not recomputed. The SVG, verdict,
+dimension values and navigation all work without browser JavaScript.
+
+The rating/glyph links to `/gaming/?view=history`; the existing public router
+supports views, not record-specific query parameters. Select Naraka there to open
+its record. The broader entrance uses `/gaming/`. YouTube previews explicitly open
+real external videos, avoiding unreliable embeds. Metadata/posters are reused
+from HOME and Natural; the channel is the existing `introCopy.channel`. Three
+additional Gears/Marvel clips have no fabricated ratings. No Natural data is edited.
+
+Run `node tools/test-games.mjs` and `node tools/test-gaming.mjs` against the
+development server (`GAMING_TEST_ORIGIN` overrides the default). The first also
+compares HOME's manifest with the pre-change HEAD to verify destination-only changes.
 
 Before deploying, verify hosting serves `/gaming/index.html` at `/gaming/` with
 normal MIME types and no SPA rewrite interception. No deployment is performed by
