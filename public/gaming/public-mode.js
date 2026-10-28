@@ -56,19 +56,33 @@
     if (latest) root.loadHistoryItem(latest);
     var show = root.showTab;
     var applying = false;
+    var selectedExperience = latest && latest.__experienceId;
+    var loadHistoryItem = root.loadHistoryItem;
+    root.loadHistoryItem = function (item) {
+      selectedExperience = item.__experienceId;
+      loadHistoryItem(item);
+    };
     root.showTab = function (id, options) {
       if (tabs.indexOf(id) === -1) return;
       show(id, options);
       if (!applying) {
         var url = new URL(location.href);
         url.searchParams.set('view', id);
+        if (id === 'results' && selectedExperience) url.searchParams.set('experience', selectedExperience);
+        else url.searchParams.delete('experience');
         if (url.href !== location.href) history.pushState(null, '', url);
       }
     };
     function route() {
       applying = true;
-      var tab = new URL(location.href).searchParams.get('view') || 'dashboard';
-      root.showTab(tabs.indexOf(tab) === -1 ? 'dashboard' : tab);
+      var params = new URL(location.href).searchParams;
+      var tab = params.get('view') || 'dashboard';
+      var experience = params.get('experience');
+      if (tab === 'results' && experience) {
+        var item = root.getHistory().find(function (record) { return record.__experienceId === experience; });
+        if (item) root.loadHistoryItem(item);
+        else root.showTab('history');
+      } else root.showTab(tabs.indexOf(tab) === -1 ? 'dashboard' : tab);
       applying = false;
     }
     route();

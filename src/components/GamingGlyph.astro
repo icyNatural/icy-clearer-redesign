@@ -1,0 +1,21 @@
+---
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+const { experience } = Astro.props;
+// Extract the exact visual unit from Gaming OS at build time. Its stylesheet,
+// renderer and geometry remain the single sources; no second radar drawing.
+const source = readFileSync(resolve(process.cwd(), 'public/gaming/assets/css/styles.css'), 'utf8');
+const start = source.indexOf('/* Experience Glyph ');
+const end = source.indexOf('.history-glyph {', start);
+if (start < 0 || end < 0) throw new Error('Gaming OS glyph styles not found');
+const styles = source.slice(start, end);
+---
+<style is:inline set:html={styles} />
+<div class="gaming-rating-glyph" aria-hidden="true" data-gaming-glyph data-experience={JSON.stringify(experience)}></div>
+<script>
+  import '../../public/gaming/assets/js/domain/glyph.js';
+  import '../../public/gaming/assets/js/ui/glyph.js';
+  document.querySelectorAll<HTMLElement>('[data-gaming-glyph]').forEach(host => {
+    (window as any).GOS.glyph.mount(host, JSON.parse(host.dataset.experience!), { size: 'sm', labels: false, label: 'Naraka' });
+  });
+</script>

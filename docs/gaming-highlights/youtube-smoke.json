@@ -1,0 +1,40 @@
+{
+  "apiInitialized": true,
+  "playerCount": 1,
+  "status": "",
+  "stream": {
+    "video": true,
+    "time": 0,
+    "ready": 0,
+    "paused": false,
+    "error": ""
+  },
+  "streamingVerified": false,
+  "failures": [
+    {
+      "host": "rr2---sn-q4flrne6.googlevideo.com",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "host": "www.youtube-nocookie.com",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "host": "rr5---sn-ojq4f5-1f.googlevideo.com",
+      "error": "net::ERR_FAILED"
+    },
+    {
+      "host": "rr2---sn-q4flrne6.googlevideo.com",
+      "error": "net::ERR_FAILED"
+    },
+    {
+      "host": "rr5---sn-ojq4f5-1f.googlevideo.com",
+      "error": "net::ERR_FAILED"
+    },
+    {
+      "host": "rr2---sn-q4flrne6.googlevideo.com",
+      "error": "net::ERR_FAILED"
+    }
+  ],
+  "errors": []
+}

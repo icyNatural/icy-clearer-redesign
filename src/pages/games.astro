@@ -1,8 +1,8 @@
 ---
 import '../styles/foundation.css';
 import '../styles/games.css';
-import { naraka, gameplay, radar, clips, channel } from '../data/gaming';
-const dimensions = radar.points;
+import GamingGlyph from '../components/GamingGlyph.astro';
+import { naraka, gameplay, clips, highlights, channel, evaluationUrl } from '../data/gaming';
 ---
 <html lang="en">
   <head>
@@ -14,67 +14,47 @@ const dimensions = radar.points;
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
-    <header class="gaming-nav">
-      <a href="/">← HOME</a>
-      <span>ICY CLEARER / GAMING</span>
-    </header>
+    <header class="gaming-nav"><a href="/">← HOME</a><span>ICY CLEARER / GAMING</span></header>
     <main id="main" class="gaming-shell" tabindex="-1">
-      <header class="gaming-intro">
-        <h1>Gaming<span>.</span></h1>
-      </header>
-
+      <header class="gaming-intro"><h1>Gaming<span>.</span></h1></header>
       <article class="game-story" aria-labelledby="naraka-title">
-        <header class="story-heading">
-          <h2 id="naraka-title">{naraka.gameName}</h2>
-          <span class="eyebrow">01 / Gameplay → evaluation</span>
-        </header>
+        <header class="story-heading"><h2 id="naraka-title">{naraka.gameName}</h2><span class="eyebrow">01 / Gameplay → evaluation</span></header>
         <figure class="gameplay">
-          <a class="watch-preview" href={gameplay.metadata.canonicalUrl} target="_blank" rel="noopener noreferrer" aria-label={`Watch ${gameplay.metadata.title} on YouTube (opens in a new tab)`}>
+          <a class="watch-preview" style={`--media-aspect:${gameplay.metadata.aspect}`} href={gameplay.metadata.canonicalUrl} target="_blank" rel="noopener noreferrer" data-highlight="0" aria-label={`Play ${gameplay.metadata.title}, Naraka gameplay`}>
             <img src={gameplay.metadata.thumbnail} alt={gameplay.overrides.alt} width="1280" height="723" fetchpriority="high" />
-            <span class="watch-action"><span aria-hidden="true">▶</span> WATCH ↗</span>
+            <span class="watch-action" aria-hidden="true">▶</span>
           </a>
           <figcaption><span>{gameplay.metadata.title}</span><span>{gameplay.metadata.author} · YouTube</span></figcaption>
         </figure>
-
-        <a class="story-connector" href="#naraka-evaluation"><span aria-hidden="true">↓</span> MY TAKE</a>
-
+        <section class="highlights" aria-labelledby="highlights-title">
+          <header class="highlights-heading"><h3 id="highlights-title" class="eyebrow">HIGHLIGHTS</h3><div class="rail-controls" hidden data-rail-controls><span data-rail-position aria-live="polite">2 / 4</span><button type="button" data-rail-step="-1" aria-label="Previous highlight">←</button><button type="button" data-rail-step="1" aria-label="Next highlight">→</button></div></header>
+          <div class="highlight-rail" tabindex="0" role="region" aria-label="Gameplay highlights; scroll horizontally or use the arrow buttons" data-highlight-rail>
+            {clips.map((clip, index) => <a class="highlight-card" href={clip.metadata.canonicalUrl} target="_blank" rel="noopener noreferrer" data-highlight={index + 1} aria-label={`Play ${clip.metadata.title}`}>
+              <span class="highlight-preview" style={`--media-aspect:${clip.metadata.aspect}`}><img src={clip.metadata.thumbnail} alt="" loading="lazy" width="480" height="854" /><span class="clip-play" aria-hidden="true">▶</span></span>
+              <span class="highlight-caption"><span class="eyebrow">0{index + 2} / {index === 0 ? 'NARAKA' : index === 1 ? 'HALO' : 'GEARS'}</span><span class="highlight-title">{clip.metadata.title}</span></span>
+            </a>)}
+          </div>
+        </section>
         <section id="naraka-evaluation" class="evaluation" aria-labelledby="evaluation-title">
-          <div class="take-copy">
-            <h3 id="evaluation-title" class="eyebrow">MY TAKE / {naraka.gameName}</h3>
-            <a class="score-link" href="/gaming/?view=history" aria-label={`${naraka.gameName}, ${naraka.score} out of 10. Open Gaming OS history`}><strong>{naraka.score.toFixed(1)}</strong><span>/ 10<br />MY TAKE ↗</span></a>
+          <h3 id="evaluation-title" class="eyebrow">MY TAKE</h3>
+          <div class="take-content">
+            <div class="rating-signal"><a class="score-link" href={evaluationUrl} aria-label={`${naraka.gameName}, ${naraka.score} out of 10. View full evaluation`}><strong>{naraka.score.toFixed(1)}</strong><span>/ 10</span></a><GamingGlyph experience={naraka} /></div>
             <p class="verdict">{naraka.verdict}</p>
-            <a class="text-link" href="/gaming/?view=history">FIND NARAKA IN HISTORY →</a>
-          </div>
-          <div class="radar-panel">
-            <a class="radar-link" href="/gaming/?view=history" aria-label="Explore Naraka's evaluation in Gaming OS history">
-              <svg viewBox="-34 -10 268 220" role="img" aria-labelledby="radar-title radar-desc" data-scale="0-10">
-                <title id="radar-title">{naraka.gameName} — {naraka.score} radar glyph</title>
-                <desc id="radar-desc">Fixed 0–10 scale, identical to Gaming OS. {dimensions.map(point => `${point.label}: ${point.value} out of 10`).join('; ')}.</desc>
-                {radar.rings.map(ring => <polygon class="radar-ring" points={ring.polygon} />)}
-                {dimensions.map(point => <line class="radar-spoke" x1="100" y1="100" x2={100 + Math.cos(point.angle) * 84} y2={100 + Math.sin(point.angle) * 84} />)}
-                <polygon class="radar-shape" points={radar.polygon} />
-                {dimensions.map(point => <circle class="radar-dot" cx={point.x} cy={point.y} r="2.4" />)}
-                {dimensions.map(point => <text class="radar-label" x={100 + Math.cos(point.angle) * 97} y={100 + Math.sin(point.angle) * 97} text-anchor={Math.cos(point.angle) > .3 ? 'start' : Math.cos(point.angle) < -.3 ? 'end' : 'middle'} dominant-baseline="middle">{point.label}</text>)}
-              </svg>
-            </a>
-            <details class="dimension-details"><summary>READ THE DIMENSION VALUES</summary><dl>{dimensions.map(point => <div><dt>{point.label}</dt><dd>{point.value} / 10</dd></div>)}</dl></details>
+            <nav class="take-links" aria-label="Gaming evaluations"><a class="text-link" href={evaluationUrl}>VIEW FULL EVALUATION ↗</a><a class="text-link" href="/gaming/?view=history">VIEW MY OTHER GAME RATINGS →</a></nav>
           </div>
         </section>
-
-        <a class="story-connector" href="#full-system"><span aria-hidden="true">↓</span> FULL SYSTEM</a>
-        <section id="full-system" class="system-entry" aria-labelledby="system-title">
-          <div><h2 id="system-title">Gaming OS<span>↗</span></h2></div>
-          <a class="system-link" href="/gaming/">ENTER GAMING OS →</a>
-        </section>
+        <a class="story-connector" href="#full-system">FULL <span aria-hidden="true">↓</span> SYSTEM</a>
+        <section id="full-system" class="system-entry" aria-labelledby="system-title"><h2 id="system-title">Gaming OS<span aria-hidden="true">↗</span></h2><a class="system-link" href="/gaming/">ENTER GAMING OS →</a></section>
       </article>
-
-      <section class="more-gameplay" aria-labelledby="more-title">
-        <header class="more-heading"><h2 id="more-title">SCREEN SIGNAL / YOUTUBE</h2><a class="text-link" href={channel} target="_blank" rel="noopener noreferrer">MORE FROM CEE HAM ↗</a></header>
-        <div class="clip-list">
-          {clips.map(clip => <a class="clip" href={clip.metadata.canonicalUrl} target="_blank" rel="noopener noreferrer"><img src={clip.metadata.thumbnail} alt="" loading="lazy" width="480" height="854" /><div><p class="eyebrow">WATCH ↗</p><h3>{clip.metadata.title}</h3><p class="clip-author">{clip.metadata.author}</p></div><span class="clip-play" aria-hidden="true">▶</span></a>)}
-        </div>
-      </section>
+      <a class="channel-link text-link" href={channel} target="_blank" rel="noopener noreferrer">MORE FROM CEE HAM ↗</a>
       <footer class="gaming-footer"><a href="/">← HOME</a><a href="/natural.html#play">NATURAL PLAY ↗</a></footer>
     </main>
+    <dialog class="highlight-viewer" aria-labelledby="viewer-title" data-highlight-viewer>
+      <header class="viewer-header"><span data-viewer-position>1 / 4</span><h2 id="viewer-title"></h2><button type="button" class="viewer-close" data-viewer-close aria-label="Close highlight viewer" autofocus>×</button></header>
+      <div class="viewer-stage" data-viewer-stage><div class="viewer-media" data-viewer-media></div></div>
+      <footer class="viewer-footer"><button type="button" data-viewer-step="-1" aria-label="Previous video">←</button><div><span class="viewer-gesture-hint">SWIPE HIGHLIGHTS</span><p class="viewer-status" data-viewer-status role="status"></p><a class="text-link" data-viewer-source target="_blank" rel="noopener noreferrer">WATCH ON YOUTUBE ↗</a></div><button type="button" data-viewer-step="1" aria-label="Next video">→</button></footer>
+    </dialog>
+    <script type="application/json" data-gaming-highlights set:html={JSON.stringify(highlights.map(item => ({ id: item.videoId, title: item.metadata.title, thumbnail: item.metadata.thumbnail, url: item.metadata.canonicalUrl, aspect: item.metadata.aspect }))).replace(/</g, '\\u003c')} />
+    <script>import '../scripts/gaming-page';</script>
   </body>
 </html>
