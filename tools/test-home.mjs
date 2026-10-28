@@ -71,23 +71,43 @@ try {
     for (let i = 1; i < boxes.length; i++) {
       assert.ok(boxes[i-1].x + boxes[i-1].width < boxes[i].x, `three left-to-right destinations at ${width}`);
     }
-    const canvas = await page.locator('.home-scrapbook').boundingBox();
+    const canvas = await page.locator('.home-scrapbook>.media-room--overlay').boundingBox();
     // The current authored frames are intentionally staggered, not equal-y rows.
     for (const item of scene) {
       const frame = page.locator(`[data-author-id="${item.id}"]`);
       for (const [property,key,size] of [['left','x',canvas.width],['top','y',canvas.height],['width','width',canvas.width],['height','height',canvas.height]]) {
+        // Mobile captions extend below the width-scaled authored canvas.
+        if (width <= 700 && property === 'height' && item.id.startsWith('home-world-')) continue;
         const actual = await frame.evaluate((el,property) => parseFloat(getComputedStyle(el)[property]), property);
         assert.ok(Math.abs(actual - item.desktop[key] / 100 * size) < 1, `${item.id} preserves authored ${property} at ${width}`);
       }
     }
     const frameBox = id => page.locator(`[data-author-id="home-${id}"]`).boundingBox();
     const [games,mirror,sky,lens,explore] = await Promise.all(['games','portal','sky','sky-note','interest-heading'].map(frameBox));
+    const archive = await page.locator('.scrap-archive').boundingBox();
+    const title = await frameBox('title');
+    const body = await page.locator('.scene-intro-body').boundingBox();
+    assert.ok(archive.y + archive.height < title.y, `archive clears title at ${width}`);
+    assert.ok(body.y + body.height < games.y, `body clears Games at ${width}`);
+    for (const [name] of worlds) {
+      const card = slot(name);
+      const box = await card.boundingBox();
+      const preview = await card.locator('.world-preview').boundingBox();
+      assert.ok(Math.abs(preview.height / box.height - .58) < .02, `${name} preserves 58/42 media-caption ratio at ${width}`);
+      for (const selector of ['h3', 'p', '.world-entrance__arrow']) {
+        const text = await card.locator(selector).boundingBox();
+        assert.ok(text.y >= box.y && text.y + text.height <= box.y + box.height + 1, `${name} ${selector} stays inside at ${width}`);
+      }
+      if (width <= 700) assert.ok(Math.abs(box.height - boxes[0].height) < 1, `equal mobile card heights at ${width}`);
+    }
     assert.ok(games.x + games.width < mirror.x, `Games stays left of mirror at ${width}`);
     assert.ok(sky.x < lens.x && sky.y < games.y, `Lens Capture stays beside upper hero at ${width}`);
     assert.ok(explore.y > games.y + games.height && explore.y < boxes[0].y, `Explore separates collage and destinations at ${width}`);
     for (const id of ['home-handle','home-title','home-signature','home-intro-heading','home-sky','home-games','home-portal']) assert.equal(await page.locator(`[data-author-id="${id}"]`).count(), 1);
     assert.ok((await page.locator('[data-author-id="home-title"]').textContent()).includes('CLEARER'));
     assert.equal(await page.getByRole('heading',{name:'Become, slowly.',exact:true}).count(),1);
+    assert.equal(await page.getByRole('heading',{name:'∞ Infinite Mind',exact:true}).count(),1);
+    assert.ok(!(await page.locator('main').innerText()).includes('NATURAL\nBELOW'));
     assert.equal(await slot('natural').locator('img').count(),3);
     assert.equal(await slot('apps').locator('.world-orbit').count(),3);
     assert.equal(await slot('clear').locator('.world-signal__text span').count(),3);

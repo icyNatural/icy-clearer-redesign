@@ -12,7 +12,7 @@ try {
   const page = await browser.newPage(); const errors = [];
   page.on('pageerror', error => errors.push(error.message));
   for (const route of ['/', '/moments.html', '/games.html', '/clear.html', '/world.html', '/worlds.html', '/gaming/']) {
-    const widths = route === '/' ? [360, 390, 430, 1280, 1440, 1920] : [390, 1440];
+    const widths = route === '/' ? [320, 360, 390, 430, 700, 701, 1280, 1440, 1920] : [390, 1440];
     for (const width of widths) {
       await page.setViewportSize({ width, height: 900 });
       const response = await page.goto(origin + route);

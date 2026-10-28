@@ -6,6 +6,7 @@ let limit = 24;
 function renderField() {
   const root = document.querySelector<HTMLElement>('[data-natural-field]');
   if (!root) return;
+  root.querySelectorAll('video').forEach(video => video.pause());
   const editing = document.body.classList.contains('is-authoring');
   const items = orderedArtifacts(fieldItems.filter(editing ? isNaturalArtifact : publicArtifact));
   root.dataset.activeSignal = active;
@@ -45,7 +46,26 @@ if (root) {
     const target = event.target as HTMLElement;
     const button = target.closest<HTMLElement>('[data-signal-select]');
     if (button) { event.stopPropagation(); activate(button.dataset.signalSelect || 'ALL'); return; }
-    if (document.body.classList.contains('is-authoring') || target.closest('a,button,video,figure')) return;
+    if (document.body.classList.contains('is-authoring')) return;
+    const preview = target.closest<HTMLButtonElement>('button[data-video-src]');
+    if (preview) {
+      // Keep a single native player across overlapping signal references.
+      root.querySelectorAll('video').forEach(video => {
+        video.pause();
+        const original = (video as HTMLVideoElement & { preview?: HTMLButtonElement }).preview;
+        if (original) video.replaceWith(original); else video.remove();
+      });
+      const video = document.createElement('video') as HTMLVideoElement & { preview?: HTMLButtonElement };
+      video.controls = true; video.playsInline = true; video.preload = 'none';
+      video.src = preview.dataset.videoSrc!;
+      video.poster = preview.dataset.videoPoster || '';
+      video.setAttribute('aria-label', preview.getAttribute('aria-label') || 'Play artifact');
+      video.preview = preview;
+      preview.replaceWith(video);
+      void video.play().catch(() => { /* Native controls remain available if playback is blocked. */ });
+      return;
+    }
+    if (target.closest('a,button,video,figure')) return;
     const cluster = target.closest<HTMLElement>('[data-signal-cluster]');
     if (cluster) activate(cluster.dataset.signalCluster || 'ALL');
   });
