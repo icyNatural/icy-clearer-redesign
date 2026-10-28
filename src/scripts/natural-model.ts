@@ -1,12 +1,6 @@
 // Shared by static rendering, the visitor field, and Local Studio.
-export const signals = [
-  { id: 'PLAY', label: 'PLAY', note: 'gaming · basketball · movement · compete' },
-  { id: 'VOICE', label: 'VOICE', note: 'music · rap · bars · lyrics · sound' },
-  { id: 'OBSERVE', label: 'OBSERVE', note: 'photography · nature · moments · notice' },
-  { id: 'ARCHIVE', label: 'ARCHIVE', note: 'childhood · diaries · notes · early versions' },
-  { id: 'MAKE', label: 'MAKE', note: 'drawing · clothing · software · experiments' },
-  { id: 'NOW', label: 'NOW', note: 'current work · recent media · in progress' },
-];
+import { signals } from './natural-signals.ts';
+export { signals } from './natural-signals.ts';
 export const isNaturalArtifact = (item: any) => !item.deleted && item.kind !== 'native';
 export const publicArtifact = (item: any) => isNaturalArtifact(item) && item.kind !== 'placeholder' && item.curated !== false && (!item.visibility || item.visibility === 'public');
 export function artifactSignals(item: any): string[] {

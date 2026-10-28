@@ -3,12 +3,6 @@
   --nat-ink:#f4efe3;
   --nat-muted:#b8bbb1;
   --nat-line:rgba(238,235,221,.18);
-  --nat-play:#8ad26e;
-  --nat-voice:#ef806d;
-  --nat-observe:#79bfe8;
-  --nat-archive:#d6b06f;
-  --nat-make:#b6cf63;
-  --nat-now:#f1c56e;
 }
 html{background:var(--nat-bg)}
 .natural-document *{box-sizing:border-box}
@@ -52,15 +46,9 @@ body.natural-document::before{
   appearance:none;border:0;background:transparent;color:#c5c3bb;min-height:40px;padding:0;cursor:pointer;
   display:inline-flex;align-items:center;gap:8px;font:700 10px/1 var(--icy-mono);letter-spacing:.18em
 }
-.signal-rail button span{width:7px;height:7px;border-radius:50%;background:#777}
+.signal-rail button>span{width:7px;height:7px;border-radius:50%;background:#777}
 .signal-rail button[aria-pressed="true"]{color:#fff}
 .signal-rail button[aria-pressed="true"] span{box-shadow:0 0 18px currentColor}
-.signal-rail [data-signal-select="PLAY"] span{background:var(--nat-play)}
-.signal-rail [data-signal-select="VOICE"] span{background:var(--nat-voice)}
-.signal-rail [data-signal-select="OBSERVE"] span{background:var(--nat-observe)}
-.signal-rail [data-signal-select="ARCHIVE"] span{background:var(--nat-archive)}
-.signal-rail [data-signal-select="MAKE"] span{background:var(--nat-make)}
-.signal-rail [data-signal-select="NOW"] span{background:var(--nat-now)}
 .signal-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;align-items:start}
 .signal-cluster{
   --signal:#aaa;
@@ -73,12 +61,6 @@ body.natural-document::before{
   transition:transform .35s ease,opacity .35s ease,border-color .35s ease;
 }
 .signal-cluster::before{content:"";position:absolute;inset:8px;border:1px dashed color-mix(in srgb,var(--signal) 48%,transparent);border-radius:inherit;opacity:.5;pointer-events:none}
-.signal-cluster--play{--signal:var(--nat-play)}
-.signal-cluster--voice{--signal:var(--nat-voice)}
-.signal-cluster--observe{--signal:var(--nat-observe)}
-.signal-cluster--archive{--signal:var(--nat-archive)}
-.signal-cluster--make{--signal:var(--nat-make)}
-.signal-cluster--now{--signal:var(--nat-now)}
 .signal-cluster[hidden]{display:none}
 .signal-head{position:relative;z-index:4;min-width:0}
 .signal-head button{width:100%;display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;text-align:left;color:inherit;background:none;border:0;cursor:pointer;padding:0 4px 12px}
@@ -155,7 +137,7 @@ body.natural-document::before{
   .natural-subline{font-size:9px;line-height:1.6}
   .signal-rail{gap:4px 8px;margin-bottom:14px;padding:8px 0}
   .signal-rail button{font-size:8px;letter-spacing:.12em;gap:5px}
-  .signal-rail button span{width:6px;height:6px}
+  .signal-rail button>span{width:6px;height:6px}
   .signal-grid{gap:7px}
   .signal-cluster{padding:7px}
   .signal-cluster::before{inset:5px}
@@ -178,3 +160,37 @@ body.natural-document::before{
   .is-authoring .natural-field .signal-artifact figcaption{display:block}
 }
 @media(prefers-reduced-motion:reduce){.signal-cluster,.signal-artifact img{transition:none!important}}
+
+/* The six meanings share a frame family. Only the enclosure changes;
+   media frames retain native geometry and the measured responsive footprint. */
+.signal-cluster[data-signal-geometry=kinetic]{border-radius:18px 34px 18px 34px}
+.signal-cluster[data-signal-geometry=wave]{border-radius:30px 22px 32px 24px}
+.signal-cluster[data-signal-geometry=aperture]{border-radius:38px 38px 30px 30px}
+.signal-cluster[data-signal-geometry=layered]{border-radius:18px 24px 18px 24px}
+.signal-cluster[data-signal-geometry=layered]::before{border-style:double;border-width:3px}
+.signal-cluster[data-signal-geometry=constructive]{border-radius:26px 18px 30px 18px}
+.signal-cluster[data-signal-geometry=radiant]{border-radius:26px 38px 22px 38px}
+.signal-cluster.is-active{border-radius:32px}
+.signal-mark{display:grid;place-items:center;border:0;border-radius:0;box-shadow:none;color:var(--signal)}
+.signal-mark svg{display:block;width:100%;height:100%;overflow:visible}
+.signal-rail button .signal-rail-glyph{display:block;width:12px;height:12px;border-radius:0;background:none;color:var(--signal)}
+.signal-rail-glyph svg{display:block;width:100%;height:100%}
+.signal-rail button[aria-pressed=true] .signal-rail-glyph{box-shadow:none}
+.signal-meaning,.signal-emblem{display:none}
+.signal-cluster.is-active .signal-head{padding-right:100px}
+.signal-cluster.is-active .signal-meaning{display:block;margin:0 0 18px;padding-left:4px;color:var(--signal);font:11px/1.5 var(--icy-mono);text-transform:none;letter-spacing:.025em}
+.signal-cluster.is-active .signal-emblem{display:block;position:absolute;right:6px;top:0;width:82px;height:82px;color:var(--signal);opacity:.3;pointer-events:none}
+.signal-emblem svg{width:100%;height:100%}
+.signal-cluster.is-active .signal-mark svg{animation:signal-open .22s ease-out both}
+@keyframes signal-open{from{transform:scale(.7);opacity:.5}to{transform:scale(1);opacity:1}}
+@media(max-width:700px){
+ .signal-rail button .signal-rail-glyph{width:9px;height:9px}
+ .signal-rail button{gap:4px}
+ .signal-mark svg{width:14px;height:14px}
+ .signal-cluster.is-active .signal-mark svg{width:28px;height:28px}
+ .signal-cluster.is-active .signal-head{padding-right:68px}
+ .signal-cluster.is-active .signal-emblem{right:0;top:7px;width:60px;height:60px}
+ .signal-cluster.is-active .signal-head button{grid-template-columns:auto minmax(0,1fr);min-height:60px}
+ .signal-cluster.is-active .signal-head b{display:none}
+}
+@media(prefers-reduced-motion:reduce){.signal-cluster.is-active .signal-mark svg{animation:none}}

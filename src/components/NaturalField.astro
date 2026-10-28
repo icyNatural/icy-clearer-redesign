@@ -2,6 +2,8 @@
 import '../styles/natural-field.css';
 import { signals, artifactSignals, publicArtifact, orderedArtifacts, artifactMarkup } from '../scripts/natural-model';
 
+import { signalGlyph } from '../scripts/natural-signals';
+
 const { items } = Astro.props;
 
 const publicItems = orderedArtifacts(items.filter(publicArtifact));
@@ -22,24 +24,26 @@ const author = import.meta.env.DEV && import.meta.env.MODE === 'author';
   </header>
 
   <nav class="signal-rail" aria-label="Natural signals">
-    <button type="button" data-signal-select="ALL" aria-pressed="true"><span></span>ALL</button>
-    {signals.map((signal) => <button type="button" data-signal-select={signal.id} aria-pressed="false"><span></span>{signal.label}</button>)}
+    <button type="button" data-signal-select="ALL" aria-pressed="true"><span aria-hidden="true"></span>ALL</button>
+    {signals.map((signal) => <button type="button" data-signal-select={signal.id} aria-pressed="false" style={`--signal:${signal.color}`}><span class="signal-rail-glyph" aria-hidden="true" set:html={signalGlyph(signal)}></span>{signal.label}</button>)}
   </nav>
 
   <div class="signal-grid">
     {signals.map((signal) => {
       const artifacts = publicItems.filter((item) => artifactSignals(item).includes(signal.id));
       return (
-        <section class:list={['signal-cluster', `signal-cluster--${signal.id.toLowerCase()}`]} data-signal-cluster={signal.id}>
+        <section class:list={['signal-cluster', `signal-cluster--${signal.id.toLowerCase()}`]} data-signal-cluster={signal.id} data-signal-geometry={signal.geometryVariant} style={`--signal:${signal.color}`}>
           <header class="signal-head">
             <button type="button" data-signal-select={signal.id} aria-label={`Open ${signal.label} signal`}>
-              <span class="signal-mark" aria-hidden="true"></span>
+              <span class="signal-mark" aria-hidden="true" set:html={signalGlyph(signal)}></span>
               <span>
                 <strong>{signal.label}</strong>
                 <small>{signal.note}</small>
               </span>
               <b aria-hidden="true">→</b>
             </button>
+            <p class="signal-meaning">{signal.meaning}</p>
+            <span class="signal-emblem" aria-hidden="true" set:html={signalGlyph(signal)}></span>
           </header>
 
           <div class="signal-artifacts">
