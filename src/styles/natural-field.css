@@ -61,15 +61,14 @@ body.natural-document::before{
 .signal-rail [data-signal-select="ARCHIVE"] span{background:var(--nat-archive)}
 .signal-rail [data-signal-select="MAKE"] span{background:var(--nat-make)}
 .signal-rail [data-signal-select="NOW"] span{background:var(--nat-now)}
-.signal-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;align-items:stretch}
+.signal-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;align-items:start}
 .signal-cluster{
   --signal:#aaa;
-  position:relative;min-height:310px;overflow:hidden;isolation:isolate;
+  --natural-portrait-height:clamp(76px,12vw,164px);
+  position:relative;min-width:0;overflow:hidden;isolation:isolate;
   padding:18px;border:1px solid color-mix(in srgb,var(--signal) 38%,transparent);
-  border-radius:42% 58% 46% 54% / 32% 38% 62% 68%;
-  background:
-    radial-gradient(circle at 18% 12%,color-mix(in srgb,var(--signal) 20%,transparent),transparent 38%),
-    linear-gradient(145deg,rgba(8,13,12,.86),rgba(8,13,12,.7));
+  border-radius:25% 31% 27% 23% / 13% 16% 19% 17%;
+  background:radial-gradient(circle at 18% 12%,color-mix(in srgb,var(--signal) 20%,transparent),transparent 38%),linear-gradient(145deg,rgba(8,13,12,.86),rgba(8,13,12,.7));
   box-shadow:0 28px 90px rgba(0,0,0,.34),inset 0 0 0 1px rgba(255,255,255,.03),0 0 28px color-mix(in srgb,var(--signal) 13%,transparent);
   transition:transform .35s ease,opacity .35s ease,border-color .35s ease;
 }
@@ -81,150 +80,101 @@ body.natural-document::before{
 .signal-cluster--make{--signal:var(--nat-make)}
 .signal-cluster--now{--signal:var(--nat-now)}
 .signal-cluster[hidden]{display:none}
-.signal-cluster.is-active{grid-column:1/-1;min-height:520px;border-radius:54px}
-.signal-head{position:relative;z-index:4}
-.signal-head button{width:100%;display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:end;text-align:left;color:inherit;background:none;border:0;cursor:pointer;padding:0 4px 12px}
-.signal-mark{width:42px;height:42px;border:1px solid currentColor;border-radius:50%;box-shadow:inset 0 0 0 8px rgba(255,255,255,.02)}
-.signal-head strong{display:block;font:400 clamp(30px,3.2vw,56px)/.9 var(--icy-serif);letter-spacing:-.035em}
+.signal-head{position:relative;z-index:4;min-width:0}
+.signal-head button{width:100%;display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;text-align:left;color:inherit;background:none;border:0;cursor:pointer;padding:0 4px 12px}
+.signal-mark{width:32px;height:32px;border:1px solid currentColor;border-radius:50%;box-shadow:inset 0 0 0 8px rgba(255,255,255,.02)}
+.signal-head strong{display:block;font:400 clamp(26px,3.2vw,48px)/.95 var(--icy-serif);letter-spacing:-.035em}
 .signal-head small{display:block;margin-top:7px;color:#c8c4ba;font:600 9px/1.5 var(--icy-mono);letter-spacing:.13em;text-transform:uppercase}
 .signal-head b{font:400 28px/1 var(--icy-serif);color:var(--signal)}
-.signal-artifacts{position:relative;z-index:2;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;min-height:210px}
-.signal-artifact{position:relative;min-width:0;margin:0;overflow:hidden;background:#0f1513;border:1px solid rgba(255,255,255,.08);box-shadow:0 16px 38px rgba(0,0,0,.28)}
-.signal-artifact:nth-child(1){grid-row:span 2}
-.signal-artifact img,.signal-artifact video{display:block;width:100%;height:100%;min-height:96px;object-fit:cover}
-.signal-artifact a{display:block;height:100%;color:inherit}
+/* A collection window: one lead preview, then two contextual previews.
+   Each media frame uses manifest aspect, never a stretched grid track. */
+.signal-artifacts{position:relative;z-index:2;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:start;align-content:start;gap:8px;min-height:var(--natural-portrait-height)}
+.signal-artifact{position:relative;min-width:0;width:100%;margin:0;overflow:hidden;background:#0f1513;border:1px solid rgba(255,255,255,.08);box-shadow:0 16px 38px rgba(0,0,0,.28)}
+.signal-artifact:first-child{grid-column:1/-1}
+.signal-artifact[data-media-shape=portrait]{width:min(100%,calc(var(--natural-portrait-height) * var(--artifact-aspect)));justify-self:center}
+.artifact-preview{position:relative;aspect-ratio:var(--artifact-aspect);overflow:hidden}
+.artifact-preview img,.artifact-preview video{display:block;width:100%;height:100%;min-height:0;object-fit:cover}
+.artifact-preview video{object-fit:contain}
+.artifact-preview>a,.artifact-video-preview{position:relative;display:block;width:100%;height:100%;padding:0;border:0;background:transparent;color:inherit;cursor:pointer;text-decoration:none}
+.artifact-video-label{display:grid;place-items:center;height:100%;padding:8px;font:11px/1.4 var(--icy-mono)}
+.artifact-play{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:grid;place-items:center;width:clamp(22px,3vw,42px);aspect-ratio:1;border:1px solid #f4efe3b0;border-radius:50%;background:#08110ed9;color:#fff;font:clamp(10px,1.2vw,17px)/1 sans-serif;box-shadow:0 3px 16px #0006;pointer-events:none}
 .signal-artifact figcaption{position:absolute;left:0;right:0;bottom:0;padding:26px 10px 8px;background:linear-gradient(transparent,rgba(4,8,7,.92));pointer-events:auto}
 .signal-artifact summary{cursor:pointer;list-style:none;min-height:32px}
 .signal-artifact summary strong::after{content:' +'}
 .signal-artifact details[open] summary strong::after{content:' −'}
-.artifact-depth{max-height:140px;overflow:auto;font:10px/1.6 var(--icy-mono);overflow-wrap:anywhere}
-.artifact-depth a{min-height:44px;display:flex;align-items:center}
+.signal-artifact figcaption strong{display:block;font:600 11px/1.4 var(--icy-mono);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.signal-artifact figcaption span{display:block;margin-top:5px;color:#c4c0b8;font:600 8px/1.4 var(--icy-mono);letter-spacing:.12em}
+.artifact-depth{max-height:160px;overflow:auto;font:11px/1.6 var(--icy-mono);overflow-wrap:anywhere}
+.artifact-depth a{min-height:44px;display:flex;align-items:center;color:inherit}
 .signal-artifact--private{opacity:.55}.signal-artifact--private::before{content:'STUDIO ONLY';position:absolute;top:4px;left:4px;z-index:2;font:8px var(--icy-mono)}
 .signal-more{display:block;margin:20px auto 0;min-height:44px;background:transparent;border:1px solid var(--nat-line);color:var(--nat-ink);padding:10px 18px;font:10px var(--icy-mono);cursor:pointer}
-.is-authoring .natural-shell{width:calc(100% - 310px);margin-left:0}
-.signal-artifact figcaption strong{display:block;font:600 11px/1.2 var(--icy-mono);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.signal-artifact figcaption span{display:block;margin-top:4px;color:#c4c0b8;font:600 8px/1 var(--icy-mono);letter-spacing:.12em}
-.signal-artifact--overflow{display:none}
-.signal-cluster.is-active .signal-artifacts{grid-template-columns:repeat(4,minmax(0,1fr));min-height:360px}
-.signal-cluster.is-active .signal-artifact--overflow{display:block}
-.signal-cluster.is-active .signal-artifact:nth-child(1){grid-row:span 2;grid-column:span 2}
-.signal-artifact--text{display:grid;min-height:160px;background:linear-gradient(135deg,color-mix(in srgb,var(--signal) 18%,#0b1110),#0a0f0e)}
-.artifact-text{display:flex!important;flex-direction:column;justify-content:flex-end;padding:18px;text-decoration:none}
-.artifact-text span{font:400 clamp(22px,3vw,42px)/.95 var(--icy-serif)}
-.artifact-text em{margin-top:12px;font:600 9px/1.2 var(--icy-mono);font-style:normal;letter-spacing:.16em;text-transform:uppercase;color:var(--signal)}
-.signal-empty{min-height:170px;display:grid;place-items:center;text-align:center;border:1px dashed color-mix(in srgb,var(--signal) 36%,transparent);color:#8e918a}
+.signal-artifact--text{display:grid;min-height:120px;background:linear-gradient(135deg,color-mix(in srgb,var(--signal) 18%,#0b1110),#0a0f0e)}
+.artifact-text{display:flex;flex-direction:column;justify-content:flex-end;padding:18px;text-decoration:none}
+.artifact-text span{font:400 clamp(22px,3vw,42px)/1.1 var(--icy-serif);overflow-wrap:anywhere}
+.signal-empty{min-height:var(--natural-portrait-height);grid-column:1/-1;display:grid;place-content:center;gap:12px;text-align:center;border:1px dashed color-mix(in srgb,var(--signal) 36%,transparent);color:#8e918a}
 .signal-empty span{font:400 28px/1 var(--icy-serif)}
 .signal-empty small{font:600 8px/1.3 var(--icy-mono);letter-spacing:.18em}
+/* Selected signals expose their actual media and readable metadata in flow.
+   Landscape previews span two columns; portrait sources remain portrait. */
+.signal-cluster.is-active{grid-column:1/-1;--natural-portrait-height:clamp(220px,40vw,440px);border-radius:32px}
+.signal-cluster.is-active .signal-artifacts{grid-template-columns:repeat(4,minmax(0,1fr));gap:18px;min-height:0}
+.signal-cluster.is-active .signal-artifact:first-child{grid-column:auto}
+.signal-cluster.is-active .signal-artifact[data-media-shape=landscape]{grid-column:span 2}
+.signal-cluster.is-active .signal-artifact figcaption{position:relative;padding:12px;background:rgba(4,8,7,.8)}
+.signal-cluster.is-active .signal-artifact summary{min-height:44px}
+.signal-cluster.is-active .signal-artifact figcaption strong{font-size:12px;white-space:normal}
+.signal-cluster.is-active .signal-artifact figcaption span{font-size:10px}
 .natural-footer{display:flex;flex-wrap:wrap;gap:18px 28px;align-items:center;margin-top:28px;padding-top:18px;border-top:1px solid var(--nat-line);font:600 10px/1.5 var(--icy-mono);letter-spacing:.12em;text-transform:uppercase}
 .natural-footer a{color:#e9e4d8;text-decoration:none}
 .natural-footer span{margin-left:auto;color:#8e918a}
+.is-authoring .natural-shell{width:calc(100% - 310px);margin-left:0}
 .is-authoring .signal-artifact[data-author-id]{outline:1px dashed rgba(207,231,255,.45);outline-offset:2px}
 .is-authoring .signal-artifact[data-author-id].author-selected{outline:2px solid var(--icy-focus);z-index:20}
 @media (hover:hover) and (pointer:fine){
   .signal-cluster:hover{transform:translateY(-4px)}
-  .signal-artifact a:hover img{transform:scale(1.025)}
+  .artifact-video-preview:hover img{transform:scale(1.025)}
   .signal-artifact img{transition:transform .3s ease}
 }
 @media(max-width:900px){
   .natural-shell{padding-inline:14px}
   .natural-mast{align-items:flex-start}
   .natural-count{display:none}
-  .signal-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
-  .signal-cluster{min-height:245px;padding:13px;border-radius:34% 66% 38% 62% / 31% 34% 66% 69%}
-  .signal-head strong{font-size:clamp(17px,3.9vw,36px)}
+  .signal-grid{gap:12px}
+  .signal-cluster{padding:12px}
+  .signal-head button{gap:6px}
+  .signal-head strong{font-size:clamp(20px,3.6vw,32px)}
   .signal-head small{font-size:7px}
-  .signal-mark{width:34px;height:34px}
-  .signal-artifacts{min-height:160px}
-  .signal-artifact figcaption{padding:20px 7px 6px}
-  .signal-artifact figcaption strong{font-size:9px}
-  .signal-artifact figcaption span{font-size:7px}
-  .signal-cluster.is-active{min-height:440px}
-  .signal-cluster.is-active .signal-artifacts{grid-template-columns:repeat(2,minmax(0,1fr));min-height:320px}
+  .signal-mark{width:20px;height:20px}
+  .signal-cluster.is-active .signal-artifacts{grid-template-columns:repeat(2,minmax(0,1fr))}
   .natural-footer span{width:100%;margin-left:0}
 }
-@media(max-width:430px){
-  .natural-shell{padding-top:70px;padding-inline:10px}
-  .natural-mast h1{font-size:clamp(58px,20vw,86px)}
-  .natural-subline{font-size:9px}
-  .signal-rail{gap:4px 12px;margin-bottom:14px}
-  .signal-rail button{font-size:8px}
-
-  /* Keep the desktop 3-across logic, but fit it to the phone instead of
-     preserving desktop-height capsules. Six signals resolve as a compact 3 × 2 field. */
-  .signal-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
-  .signal-cluster{
-    min-height:0;
-    aspect-ratio:.78;
-    padding:7px;
-    display:grid;
-    grid-template-rows:auto minmax(0,1fr);
-    border-radius:25% 31% 27% 23% / 13% 16% 19% 17%;
-  }
+@media(max-width:700px){
+  .natural-shell{padding:70px 10px 32px}
+  .natural-mast{margin-bottom:20px}
+  .natural-mast h1{font-size:clamp(58px,20vw,100px)}
+  .natural-subline{font-size:9px;line-height:1.6}
+  .signal-rail{gap:4px 8px;margin-bottom:14px;padding:8px 0}
+  .signal-rail button{font-size:8px;letter-spacing:.12em;gap:5px}
+  .signal-rail button span{width:6px;height:6px}
+  .signal-grid{gap:7px}
+  .signal-cluster{padding:7px}
   .signal-cluster::before{inset:5px}
-  .signal-head{min-width:0}
-  .signal-head button{
-    grid-template-columns:auto minmax(0,1fr);
-    align-items:center;
-    gap:5px;
-    min-height:38px;
-    padding:0 0 5px;
-  }
-  .signal-mark{width:12px;height:12px}
-  .signal-head strong{font-size:clamp(17px,5.1vw,22px);line-height:.9}
+  .signal-head button{grid-template-columns:auto minmax(0,1fr);gap:4px;min-height:32px;padding:0 0 6px}
+  .signal-mark{width:10px;height:10px}
+  .signal-head strong{font-size:clamp(15px,4.3vw,26px)}
   .signal-head b,.signal-head small{display:none}
-
-  .signal-artifacts{
-    min-height:0;
-    height:100%;
-    gap:3px;
-    grid-template-columns:repeat(2,minmax(0,1fr));
-    grid-template-rows:repeat(2,minmax(0,1fr));
-    overflow:hidden;
-  }
-  .signal-artifact{min-height:0;height:auto}
-  .signal-artifact:nth-child(1){grid-row:span 2}
-  .signal-artifact img,.signal-artifact video{
-    width:100%;
-    height:100%;
-    min-height:0;
-    object-fit:cover;
-  }
-  .signal-artifact figcaption{padding:13px 3px 3px}
-  .signal-artifact figcaption strong{font-size:6.5px}
-  .signal-artifact figcaption span{display:none}
-
-  .signal-empty{
-    min-height:0;
-    height:100%;
-    grid-column:1/-1;
-    padding:4px;
-  }
-  .signal-empty span{font-size:15px}
-  .signal-empty small{font-size:5.5px;letter-spacing:.12em}
-
-  /* A chosen signal can still expand into a deep view; only the ALL field is
-     forced into the fitted 3 × 2 composition. */
-  .signal-cluster.is-active{
-    aspect-ratio:auto;
-    min-height:440px;
-    padding:12px;
-    border-radius:30px;
-  }
-  .signal-cluster.is-active .signal-head button{min-height:52px}
-  .signal-cluster.is-active .signal-mark{width:22px;height:22px}
+  .signal-artifacts{gap:4px}
+  .natural-field[data-active-signal=ALL] .signal-artifact figcaption{display:none}
+  .signal-empty span{font-size:clamp(14px,3.8vw,24px)}
+  .signal-empty small{font-size:7px;letter-spacing:.1em}
+  .signal-cluster.is-active{padding:12px;border-radius:24px}
+  .signal-cluster.is-active .signal-head button{min-height:64px;grid-template-columns:auto minmax(0,1fr) auto;gap:10px}
+  .signal-cluster.is-active .signal-mark{width:24px;height:24px}
   .signal-cluster.is-active .signal-head strong{font-size:34px}
-  .signal-cluster.is-active .signal-artifacts{
-    min-height:330px;
-    height:auto;
-    grid-template-columns:repeat(2,minmax(0,1fr));
-    grid-template-rows:none;
-    gap:6px;
-    overflow:visible;
-  }
-  .signal-cluster.is-active .signal-artifact img,
-  .signal-cluster.is-active .signal-artifact video{min-height:110px}
-  .signal-cluster.is-active .signal-artifact figcaption strong{font-size:9px}
-  .signal-cluster.is-active .signal-artifact figcaption span{display:block;font-size:7px}
+  .signal-cluster.is-active .signal-head small,.signal-cluster.is-active .signal-head b{display:block}
+  .signal-cluster.is-active .signal-head small{font-size:9px}
+  .signal-cluster.is-active .signal-artifacts{gap:10px}
+  .is-authoring .natural-shell{width:100%}
+  .is-authoring .natural-field .signal-artifact figcaption{display:block}
 }
-@media(max-width:700px){.is-authoring .natural-shell{width:100%}}
 @media(prefers-reduced-motion:reduce){.signal-cluster,.signal-artifact img{transition:none!important}}

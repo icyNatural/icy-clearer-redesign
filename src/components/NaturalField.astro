@@ -43,7 +43,7 @@ const author = import.meta.env.DEV && import.meta.env.MODE === 'author';
           </header>
 
           <div class="signal-artifacts">
-            {artifacts.slice(0, 4).map(item => <Fragment set:html={artifactMarkup(item, signal.id)} />)}
+            {artifacts.slice(0, 3).map(item => <Fragment set:html={artifactMarkup(item, signal.id)} />)}
             {artifacts.length === 0 && <div class="signal-empty" aria-hidden="true"><span>{signal.id}</span><small>{author ? 'ADD A SIGNAL IN LOCAL STUDIO' : 'FORMING'}</small></div>}
           </div>
         </section>

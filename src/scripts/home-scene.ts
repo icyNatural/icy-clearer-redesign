@@ -41,13 +41,15 @@ export function homeEntrance(item: any) {
   if (!world) return '';
   const label = value(item, 'label') || value(item, 'title');
   const description = value(item, 'description');
+  const descriptionParts = description.split(' · ');
+  const descriptionMarkup = descriptionParts.length > 1 ? descriptionParts.map((part: string, index: number) => `<span class="world-entrance__term">${escape(part)}${index < descriptionParts.length - 1 ? ' ·' : ''}</span>`).join(' ') : escape(description);
   const image = (src: string, alt: string, primary = false) => `<img class="${primary ? 'world-preview__primary' : 'world-preview__detail'}" src="${escape(src)}" alt="${escape(alt)}" loading="lazy" draggable="false" />`;
   const src = item.kind === 'video' ? '' : item.src || item.metadata?.thumbnail || (item.kind === 'image' ? item.source : '');
   const details = src ? (item.previewImages || []).map((preview: any) => image(preview.src, preview.alt || '')).join('') : '';
   const hasMedia = !!src || item.kind === 'video';
   const signal = `<div class="world-signal" aria-hidden="true"><i class="world-orbit world-orbit--one"></i><i class="world-orbit world-orbit--two"></i><i class="world-orbit world-orbit--three"></i><i class="world-orbit__core"></i><div class="world-signal__text">${(item.parts || []).map((part: string) => `<span>${escape(part)}</span>`).join('')}</div></div>`;
   const media = item.kind === 'video' ? `<video src="${escape(item.src || item.source || '')}" muted playsinline preload="metadata" aria-label="${escape(value(item, 'alt'))}"></video>` : src ? image(src, value(item, 'alt'), true) + details : signal;
-  return `<div class="world-preview${details ? ' world-preview--collage' : ''}" data-has-media="${hasMedia}">${media}</div><figcaption class="world-entrance__caption"><h3>${escape(label)}</h3><p>${escape(description)}</p><span class="world-entrance__arrow" aria-hidden="true">⟶</span></figcaption>${item.href ? `<a class="room-piece__link world-entrance__link" href="${escape(item.href)}" aria-label="${escape(label)}"></a>` : ''}`;
+  return `<div class="world-preview${details ? ' world-preview--collage' : ''}" data-has-media="${hasMedia}">${media}</div><figcaption class="world-entrance__caption"><h3>${escape(label)}</h3><p>${descriptionMarkup}</p><span class="world-entrance__arrow" aria-hidden="true">⟶</span></figcaption>${item.href ? `<a class="room-piece__link world-entrance__link" href="${escape(item.href)}" aria-label="${escape(label)}"></a>` : ''}`;
 }
 export function homeContent(item: any) {
   const text = escape(item.text || '');

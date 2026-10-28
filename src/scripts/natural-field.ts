@@ -3,9 +3,19 @@ export { artifactSignals, isNaturalArtifact } from './natural-model';
 let fieldItems: any[] = [];
 let active = 'ALL';
 let limit = 24;
+let playing: { host: HTMLElement; preview: Node[]; video: HTMLVideoElement } | undefined;
+function stopPlayback() {
+  if (!playing) return;
+  playing.video.pause();
+  playing.video.removeAttribute('src');
+  playing.video.load();
+  playing.host.replaceChildren(...playing.preview);
+  playing = undefined;
+}
 function renderField() {
   const root = document.querySelector<HTMLElement>('[data-natural-field]');
   if (!root) return;
+  stopPlayback();
   const editing = document.body.classList.contains('is-authoring');
   const items = orderedArtifacts(fieldItems.filter(editing ? isNaturalArtifact : publicArtifact));
   root.dataset.activeSignal = active;
@@ -15,7 +25,7 @@ function renderField() {
     cluster.hidden = !editing && active !== 'ALL' && active !== signal;
     cluster.classList.toggle('is-active', active === signal);
     const members = items.filter(item => artifactSignals(item).includes(signal));
-    const count = editing ? members.length : active === signal ? limit : 4;
+    const count = editing ? members.length : active === signal ? limit : 3;
     const stream = cluster.querySelector<HTMLElement>('.signal-artifacts')!;
     stream.innerHTML = members.slice(0, count).map(item => artifactMarkup(item, signal)).join('') || `<div class="signal-empty"><span>${signal}</span><small>FORMING</small></div>`;
     cluster.querySelector('.signal-more')?.remove();
@@ -43,6 +53,34 @@ if (root) {
   };
   root.addEventListener('click', event => {
     const target = event.target as HTMLElement;
+    let preview = target.closest<HTMLButtonElement>('[data-play-natural-video]');
+    if (preview && !document.body.classList.contains('is-authoring')) {
+      event.preventDefault();
+      // A native player needs more room than a collection-window thumbnail.
+      // Enter that same signal first, preserving Back and the single renderer.
+      if (active === 'ALL') {
+        const artifact = preview.closest<HTMLElement>('.signal-artifact')!;
+        const id = artifact.dataset.authorId || artifact.dataset.artifactRef;
+        activate(preview.closest<HTMLElement>('[data-signal-cluster]')!.dataset.signalCluster!);
+        preview = [...root.querySelectorAll<HTMLButtonElement>('[data-play-natural-video]')].find(button => {
+          const item = button.closest<HTMLElement>('.signal-artifact')!;
+          return (item.dataset.authorId || item.dataset.artifactRef) === id && !item.closest<HTMLElement>('[data-signal-cluster]')!.hidden;
+        }) || null;
+        if (!preview) return;
+      }
+      stopPlayback();
+      const host = preview.closest<HTMLElement>('.artifact-preview')!;
+      const video = document.createElement('video');
+      video.src = preview.dataset.playNaturalVideo!;
+      if (preview.dataset.poster) video.poster = preview.dataset.poster;
+      video.controls = true; video.playsInline = true; video.preload = 'none';
+      video.setAttribute('aria-label', preview.getAttribute('aria-label') || 'Play video');
+      playing = { host, preview: [...host.childNodes], video };
+      host.replaceChildren(video);
+      video.focus();
+      video.play().catch(() => { /* Native controls remain available if play is deferred. */ });
+      return;
+    }
     const button = target.closest<HTMLElement>('[data-signal-select]');
     if (button) { event.stopPropagation(); activate(button.dataset.signalSelect || 'ALL'); return; }
     if (document.body.classList.contains('is-authoring') || target.closest('a,button,video,figure')) return;
