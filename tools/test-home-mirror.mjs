@@ -1,121 +1,68 @@
-// Autonomous mirror checks; opt in to isolated Local Studio persistence checks.
+// Natural-only portal checks, including the existing Local Studio controls.
 import assert from 'node:assert/strict';
 import { createRequire } from 'node:module';
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import { resolve } from 'node:path';
-import { setTimeout as wait } from 'node:timers/promises';
+import { createHash } from 'node:crypto';
 const { chromium } = createRequire(import.meta.url)(process.env.PLAYWRIGHT_PATH || 'playwright');
-const origin = process.env.HOME_MIRROR_TEST_ORIGIN || 'http://127.0.0.1:4347';
+const origin = process.env.HOME_MIRROR_TEST_ORIGIN || 'http://localhost:4321';
 const editor = process.env.HOME_MIRROR_TEST_EDITOR === '1';
 assert.ok(!editor || ['localhost', '127.0.0.1'].includes(new URL(origin).hostname));
 const manifest = resolve('src/data/media/home.json');
 const backup = await readFile(manifest);
-const output = resolve(process.env.HOME_MIRROR_TEST_OUTPUT || process.env.TEMP || '.', 'icy-home-cycle');
+const output = resolve(process.env.HOME_MIRROR_TEST_OUTPUT || process.env.TEMP || '.', 'icy-home-portal');
 await mkdir(output, { recursive: true });
-const worlds = [
-  ['natural', '/natural.html', '.living-mirror__photo--organic'],
-  ['moments', '/moments.html', '.living-mirror__photo--water'],
-  ['apps', '/world.html', '.living-mirror__geometry--apps'],
-  ['clear', '/clear.html', '.living-mirror__geometry--clear'],
-  ['gaming', '/games.html', '.living-mirror__photo--gaming'],
-];
 const browser = await chromium.launch({ headless: true });
 const errors = [];
 async function tab(options = {}) {
   const page = await browser.newPage({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, ...options });
   page.on('pageerror', error => errors.push(error.message));
-  await page.route(/^https:\/\/fonts\.(googleapis|gstatic)\.com\//, route => route.abort());
   await page.clock.install();
-  await page.clock.pauseAt(new Date());
   return page;
 }
-async function poll(check, message) {
-  for (let i = 0; i < 200; i++) { if (await check()) return; await wait(50); }
-  assert.fail(message);
-}
 const mirror = page => page.locator('[data-living-mirror]').first();
-async function ready(page) {
-  await poll(async () => await mirror(page).getAttribute('data-portal-ready') === 'true', 'Mirror initializes');
-  await mirror(page).scrollIntoViewIfNeeded();
-  await poll(async () => await mirror(page).getAttribute('data-running') === 'true', 'Mirror is onscreen and running');
-}
 async function home(page) {
-  await page.goto(origin + '/', { waitUntil: 'domcontentloaded' });
-  await ready(page);
-  await page.clock.runFor(1400);
-  assert.equal(await mirror(page).getAttribute('data-phase'), 'stable');
+  await page.goto(origin + '/', { waitUntil: 'networkidle' });
+  await page.waitForFunction(() => document.querySelector('[data-living-mirror]')?.dataset.portalReady === 'true');
+  await mirror(page).scrollIntoViewIfNeeded();
 }
 try {
-  for (const width of [360, 390, 430]) {
+  for (const width of [360, 390, 430, 1440]) {
     const page = await tab({ viewport: { width, height: 844 } });
     await home(page);
-    for (let i = 0; i < worlds.length; i++) {
-      const [signal, href, visual] = worlds[i];
-      assert.equal(await mirror(page).getAttribute('data-reflection'), signal);
-      assert.equal(await mirror(page).getAttribute('data-destination'), href);
-      assert.match(await mirror(page).innerText(), /ENTER →/);
-      // Let compositor transitions finish before checking resolved opacity.
-      await wait(1400);
-      assert.ok(await mirror(page).locator(visual).evaluate(el => +getComputedStyle(el).opacity) >= .6);
-      assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
-      await page.screenshot({ path: resolve(output, `${width}-${signal}.png`) });
-      await page.clock.runFor(i === 0 ? 5400 : 5500);
-      assert.equal(await mirror(page).getAttribute('data-phase'), 'resolving');
-      // A transition tap must not navigate, even if the finger stays down until stable.
-      await mirror(page).dispatchEvent('pointerdown', { pointerType: 'touch', pointerId: 1, isPrimary: true, button: 0 });
-      await page.clock.runFor(1300);
-      await mirror(page).dispatchEvent('pointerup', { pointerType: 'touch', pointerId: 1 });
-      await mirror(page).dispatchEvent('click');
-      assert.equal(new URL(page.url()).pathname, '/');
-      await mirror(page).evaluate(el => el.blur());
-    }
-    // One tap enters each visible destination; Back restores an autonomous HOME.
-    for (let i = 0; i < worlds.length; i++) {
-      await home(page);
-      if (i) await page.clock.runFor(i * 6800);
-      assert.equal(await mirror(page).getAttribute('data-destination'), worlds[i][1]);
-      await Promise.all([page.waitForURL(origin + worlds[i][1], { waitUntil: 'domcontentloaded' }), mirror(page).tap()]);
-      await page.goBack({ waitUntil: 'domcontentloaded' });
-      await mirror(page).waitFor();
-      await poll(async () => await mirror(page).getAttribute('data-portal-ready') === 'true', 'Back restores HOME');
+    assert.equal(await mirror(page).getAttribute('href'), '/natural.html');
+    assert.equal(await mirror(page).getAttribute('data-destination'), '/natural.html');
+    assert.equal(await mirror(page).getAttribute('data-reflection'), 'natural');
+    assert.equal(await mirror(page).getAttribute('data-running'), 'false');
+    assert.equal(await mirror(page).getAttribute('aria-label'), 'Natural portal — enter');
+    assert.match(await mirror(page).innerText(), /NATURAL\s+ENTER →/);
+    await page.clock.runFor(60000);
+    assert.equal(await mirror(page).getAttribute('data-reflection'), 'natural', 'portal never cycles back to old worlds');
+    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
+    await mirror(page).tap();
+    await page.waitForURL('**/natural.html');
+    await page.goBack();
+    await mirror(page).waitFor();
+    for (const key of ['Enter', 'Space']) {
+      await mirror(page).focus();
+      await mirror(page).press(key);
+      await page.waitForURL('**/natural.html');
+      await page.goBack();
     }
     await page.close();
-    console.log(`PASS ${width}: autonomous five worlds, visual lock, transition guard, one-tap routes, Back, overflow`);
+    console.log(`PASS ${width}: stable Natural-only portal, one-tap and Enter/Space, Back, no overflow`);
   }
-  const desktop = await tab({ viewport: { width: 1440, height: 1000 }, isMobile: false, hasTouch: false });
-  await home(desktop);
-  await mirror(desktop).hover();
-  const signal = await mirror(desktop).getAttribute('data-reflection');
-  await desktop.clock.runFor(30000);
-  assert.equal(await mirror(desktop).getAttribute('data-reflection'), signal);
-  await desktop.mouse.move(0, 0);
-  await desktop.clock.runFor(6800);
-  assert.notEqual(await mirror(desktop).getAttribute('data-reflection'), signal);
-  for (const key of ['Enter', 'Space']) {
-    await home(desktop);
-    await mirror(desktop).focus();
-    await desktop.clock.runFor(30000);
-    assert.equal(await mirror(desktop).getAttribute('data-reflection'), 'natural');
-    await Promise.all([desktop.waitForURL(origin + '/natural.html', { waitUntil: 'domcontentloaded' }), mirror(desktop).press(key)]);
-  }
-  await desktop.close();
-  console.log('PASS desktop hover pause/resume, keyboard focus freeze, Enter/Space one-step entry');
   const reduced = await tab({ reducedMotion: 'reduce' });
-  await reduced.goto(origin + '/', { waitUntil: 'domcontentloaded' });
-  await poll(async () => await mirror(reduced).getAttribute('data-portal-ready') === 'true', 'Reduced initializes');
-  await mirror(reduced).scrollIntoViewIfNeeded(); await wait(150);
-  await reduced.clock.runFor(1);
+  await home(reduced);
+  await reduced.clock.runFor(60000);
   assert.equal(await mirror(reduced).getAttribute('data-phase'), 'stable');
-  await reduced.clock.runFor(5501);
-  assert.equal(await mirror(reduced).getAttribute('data-reflection'), 'moments');
-  assert.equal(await mirror(reduced).getAttribute('data-phase'), 'stable');
-  await Promise.all([reduced.waitForURL(origin + '/moments.html', { waitUntil: 'domcontentloaded' }), mirror(reduced).tap()]);
+  assert.equal(await mirror(reduced).getAttribute('href'), '/natural.html');
   await reduced.close();
-  console.log('PASS reduced motion stepped cycle and one-tap entry');
+  console.log('PASS reduced motion retains stable Natural destination');
   if (editor) {
-    const page = await tab();
+    const page = await browser.newPage({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
+    page.on('pageerror', error => errors.push(error.message));
     await page.goto(origin + '/?edit=1', { waitUntil: 'domcontentloaded' });
-    await page.clock.resume();
     await page.locator('.author-panel').waitFor();
     const piece = page.locator('[data-author-id="home-portal"]');
     const action = name => page.locator(`[data-action="${name}"]`);
@@ -133,9 +80,12 @@ try {
     await action('duplicate').click(); assert.equal(await page.locator('[data-living-mirror]').count(), 2);
     await action('delete').click(); await action('undo').click(); await action('redo').click();
     const saved = page.waitForResponse(r => r.url().endsWith('/__author/save'));
-    const reload = page.waitForNavigation({ waitUntil: 'domcontentloaded' });
-    await action('save').click(); assert.equal((await saved).status(), 200); await reload;
-    await page.reload({ waitUntil: 'domcontentloaded' }); await page.locator('.author-panel').waitFor();
+    await action('save').click(); assert.equal((await saved).status(), 200);
+    // HMR and Studio can both initiate a reload. Verify the saved revision
+    // reaches the hydrated page instead of racing the first navigation event.
+    const revision = createHash('sha256').update(await readFile(manifest)).digest('hex');
+    await page.waitForFunction(revision => document.querySelector('[data-media-room="home"]')?.dataset.revision === revision && document.querySelector('.author-panel'), revision);
+    await page.reload({ waitUntil: 'networkidle' }); await page.locator('.author-panel').waitFor();
     assert.equal(await mirror(page).getAttribute('href'), '/natural.html');
     assert.equal(JSON.parse(await readFile(manifest)).find(i => i.id === 'home-portal').mobile.width, 32);
     await page.close();

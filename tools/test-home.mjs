@@ -7,6 +7,7 @@ const require = createRequire(import.meta.url);
 const { chromium } = require(process.env.PLAYWRIGHT_PATH || 'playwright');
 const origin = process.env.HOME_TEST_ORIGIN || 'http://localhost:4321';
 const layoutOnly = process.env.HOME_TEST_LAYOUT_ONLY === '1';
+const editorOnly = process.env.HOME_TEST_EDITOR_ONLY === '1';
 const manifest = resolve('src/data/media/home.json');
 const folder = resolve('public/media/home');
 const backup = await readFile(manifest);
@@ -34,7 +35,7 @@ async function select(name) {
   return el;
 }
 try {
-  for (const width of [320,360,390,430,700,701,852,1280,1440,1920]) {
+  for (const width of editorOnly ? [] : [320,360,390,430,700,701,852,1280,1440,1920]) {
     await page.setViewportSize({ width, height: 844 });
     await page.goto(origin + '/', { waitUntil: 'networkidle' });
     await page.evaluate(() => document.fonts.ready);
@@ -49,8 +50,8 @@ try {
         return { size: parseFloat(style.fontSize), line: parseFloat(style.lineHeight), family: style.fontFamily };
       }));
       for (const text of copy) {
-        assert.ok(text.size >= (width < 360 ? 10 : 12) && text.size <= 14, `readable mobile sentence copy at ${width}`);
-        assert.ok(text.line >= text.size * 1.19, `comfortable sentence leading at ${width}`);
+        assert.ok(text.size >= 12 && text.size <= Math.max(14, width * .0213) + .1, `readable mobile sentence copy at ${width}`);
+        assert.ok(text.line >= text.size * 1.39, `comfortable sentence leading at ${width}`);
         assert.ok(text.family.includes('JetBrains Mono'), `authored monospace retained at ${width}`);
       }
     }
@@ -61,63 +62,80 @@ try {
       assert.ok(b.x >= 0 && b.x + b.width <= width + 1 && b.height >= 100, `${name} usable frame at ${width}`);
       assert.ok(await slot(name).locator('.world-entrance__caption').evaluate(el => {
         const box = el.getBoundingClientRect();
-        return [...el.querySelectorAll('h3,p')].every(text => {
+        return [...el.querySelectorAll('h3,p,.world-entrance__arrow')].every(text => {
           const bounds = text.getBoundingClientRect();
-          return bounds.left >= box.left - 1 && bounds.right <= box.right + 1 && bounds.bottom <= box.bottom + 1 && text.scrollWidth <= text.clientWidth + 1;
+          return bounds.left >= box.left - 1 && bounds.right <= box.right + 1 && bounds.top >= box.top - 1 && bounds.bottom <= box.bottom + 1 && text.scrollWidth <= text.clientWidth + 1;
         });
       }), `${name} caption fits without clipping at ${width}`);
+      assert.ok(await slot(name).evaluate(el => {
+        const box = el.getBoundingClientRect();
+        const preview = el.querySelector('.world-preview').getBoundingClientRect();
+        const copy = el.querySelector('p').getBoundingClientRect();
+        const arrow = el.querySelector('.world-entrance__arrow').getBoundingClientRect();
+        return Math.abs(preview.height / (box.height - 2) - .58) < .006 && copy.bottom + 2 <= arrow.top;
+      }), `${name} retains 58/42 media/caption with separate arrow space at ${width}`);
     }
     const boxes = await Promise.all(worlds.map(([name]) => slot(name).boundingBox()));
     for (let i = 1; i < boxes.length; i++) {
       assert.ok(boxes[i-1].x + boxes[i-1].width < boxes[i].x, `three left-to-right destinations at ${width}`);
     }
-    const canvas = await page.locator('.home-scrapbook>.media-room--overlay').boundingBox();
-    // The current authored frames are intentionally staggered, not equal-y rows.
+    const canvas = await page.locator('.home-scrapbook').boundingBox();
+    if (width <= 700) {
+      const heights = boxes.map(box => box.height);
+      // Once the type floor needs extra room, all three share the same height.
+      if (await page.locator('main').evaluate(el => parseFloat(el.style.getPropertyValue('--home-card-growth')) > 0))
+        assert.ok(Math.max(...heights) - Math.min(...heights) < 1, `equal expanded card geometry at ${width}`);
+    }
+    // Desktop is the exact authored source. Mobile retains horizontal anchors
+    // and media widths while text clearance is allowed to extend the paper.
     for (const item of scene) {
       const frame = page.locator(`[data-author-id="${item.id}"]`);
       for (const [property,key,size] of [['left','x',canvas.width],['top','y',canvas.height],['width','width',canvas.width],['height','height',canvas.height]]) {
-        // Mobile captions extend below the width-scaled authored canvas.
-        if (width <= 700 && property === 'height' && item.id.startsWith('home-world-')) continue;
+        if (width <= 700 && (['top','height'].includes(property) || property === 'width' && ['archive','intro-body'].includes(item.sceneStyle))) continue;
         const actual = await frame.evaluate((el,property) => parseFloat(getComputedStyle(el)[property]), property);
         assert.ok(Math.abs(actual - item.desktop[key] / 100 * size) < 1, `${item.id} preserves authored ${property} at ${width}`);
       }
     }
     const frameBox = id => page.locator(`[data-author-id="home-${id}"]`).boundingBox();
     const [games,mirror,sky,lens,explore] = await Promise.all(['games','portal','sky','sky-note','interest-heading'].map(frameBox));
-    const archive = await page.locator('.scrap-archive').boundingBox();
-    const title = await frameBox('title');
-    const body = await page.locator('.scene-intro-body').boundingBox();
-    assert.ok(archive.y + archive.height < title.y, `archive clears title at ${width}`);
-    assert.ok(body.y + body.height < games.y, `body clears Games at ${width}`);
-    for (const [name] of worlds) {
-      const card = slot(name);
-      const box = await card.boundingBox();
-      const preview = await card.locator('.world-preview').boundingBox();
-      assert.ok(Math.abs(preview.height / box.height - .58) < .02, `${name} preserves 58/42 media-caption ratio at ${width}`);
-      for (const selector of ['h3', 'p', '.world-entrance__arrow']) {
-        const text = await card.locator(selector).boundingBox();
-        assert.ok(text.y >= box.y && text.y + text.height <= box.y + box.height + 1, `${name} ${selector} stays inside at ${width}`);
-      }
-      if (width <= 700) assert.ok(Math.abs(box.height - boxes[0].height) < 1, `equal mobile card heights at ${width}`);
-    }
     assert.ok(games.x + games.width < mirror.x, `Games stays left of mirror at ${width}`);
     assert.ok(sky.x < lens.x && sky.y < games.y, `Lens Capture stays beside upper hero at ${width}`);
-    assert.ok(explore.y > games.y + games.height && explore.y < boxes[0].y, `Explore separates collage and destinations at ${width}`);
+    assert.ok(explore.y > Math.max(games.y + games.height, mirror.y + mirror.height) && explore.y + explore.height < boxes[0].y, `Infinite Mind separates collage and destinations at ${width}`);
+    assert.equal(await page.getByRole('heading', { name: '∞ Infinite Mind', exact: true }).count(), 1);
+    assert.doesNotMatch(await page.locator('main').innerText(), /Explore my mind|NATURAL BELOW/);
+    if (width <= 700) {
+      const archive = await page.locator('.scrap-archive').boundingBox();
+      const title = await page.locator('.scrap-title').boundingBox();
+      const body = await page.locator('.scene-intro-body').boundingBox();
+      assert.ok(archive.y + archive.height + 12 <= title.y, `archive clears ICY CLEARER at ${width}`);
+      assert.ok(archive.x + archive.width + 5 <= sky.x, `archive clears the rotated photo edge at ${width}`);
+      assert.ok(body.y + body.height + 12 <= games.y, `readable body clears Games at ${width}`);
+      const cue = page.locator('.scrap-portal-note');
+      assert.match(await cue.innerText(), /INFINITE\s+MIND\s+↓/);
+      assert.ok(await cue.evaluate(el => parseFloat(getComputedStyle(el).fontSize) >= 9), 'readable related directional cue');
+    }
     for (const id of ['home-handle','home-title','home-signature','home-intro-heading','home-sky','home-games','home-portal']) assert.equal(await page.locator(`[data-author-id="${id}"]`).count(), 1);
     assert.ok((await page.locator('[data-author-id="home-title"]').textContent()).includes('CLEARER'));
     assert.equal(await page.getByRole('heading',{name:'Become, slowly.',exact:true}).count(),1);
-    assert.equal(await page.getByRole('heading',{name:'∞ Infinite Mind',exact:true}).count(),1);
-    assert.ok(!(await page.locator('main').innerText()).includes('NATURAL\nBELOW'));
     assert.equal(await slot('natural').locator('img').count(),3);
     assert.equal(await slot('apps').locator('.world-orbit').count(),3);
     assert.equal(await slot('clear').locator('.world-signal__text span').count(),3);
-    await page.screenshot({ path: resolve(output, `home-${width}.png`), fullPage: true });
+    await page.screenshot({ path: resolve(output, `home-${width}.jpg`), fullPage: true, quality: 85 });
   }
-  console.log('PASS authored hero/Lens Capture, Games + mirror, Explore, three-column destinations, no caption clipping, overflow or editor chrome: 320/360/390/430/700/701/852/1280/1440/1920');
+  if (!editorOnly) console.log('PASS desktop geometry, readable archive/body clearance, signature/Lens, Games + Natural portal, Infinite Mind, three-across 58/42 cards, visible arrows, no clipping/overflow: 320/360/390/430/700/701/852/1280/1440/1920');
   if (!layoutOnly) {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto(origin + '/?edit=1', { waitUntil: 'networkidle' });
   await page.locator('.author-panel').waitFor();
+  for (const [name] of worlds) {
+    const item = scene.find(item => item.id === `home-world-${name}`);
+    assert.ok(await slot(name).evaluate((el, position) => {
+      const canvas = el.parentElement.getBoundingClientRect();
+      const box = el.getBoundingClientRect();
+      return Math.abs(box.x - canvas.x - position.x / 100 * canvas.width) < 1
+        && Math.abs(box.y - canvas.y - position.y / 100 * canvas.height) < 1;
+    }, item.mobile), `${name} starts in its saved Studio mobile frame before selection`);
+  }
   for (const [name] of worlds) {
     const el = await select(name);
     for (const control of ['replace','duplicate','delete','front','back']) assert.ok(await action(control).isVisible());
@@ -150,7 +168,9 @@ try {
     const chooser = page.waitForEvent('filechooser'); await action('file').click();
     const upload = page.waitForResponse(response => response.url().endsWith('/__author/upload'));
     await (await chooser).setFiles({ name:`entrance-${name}.jpg`, mimeType:'image/jpeg', buffer:await readFile('public/media/home/life/19797-sunset-poster.jpg') });
-    const media = await (await upload).json();
+    const uploaded = await upload;
+    assert.equal(uploaded.status(), 200, 'Studio upload succeeds');
+    const media = await uploaded.json();
     await page.waitForFunction(({id,src}) => document.querySelector(`[data-author-id="home-world-${id}"] img`)?.getAttribute('src') === src && document.querySelectorAll(`[data-author-id="home-world-${id}"] img`).length === 1, {id:name,src:media.src});
     assert.equal(await el.getAttribute('data-role'), `world-${name}`);
     assert.equal(await el.getByRole('heading').textContent(), `Edited ${name}`);

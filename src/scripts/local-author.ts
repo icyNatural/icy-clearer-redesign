@@ -256,9 +256,7 @@ export function start() {
     }
     if (p) for (const [key, value] of Object.entries({ left: p.x, top: p.y, width: p.width, height: p.height })) el.style.setProperty(key, `${value}%`, 'important');
     el.style.setProperty('transform', `rotate(${item.rotation || 0}deg)`, 'important');
-    // Selected HOME doors must clear neighboring saved mobile frames so their
-    // resize handles remain reachable. This is editor-only, never saved layering.
-    el.style.setProperty('z-index', String(el === selected && room === 'home' && homeWorld(item) ? 1000 + (item.z ?? 1) : el === selected && room !== 'home' && !moments ? 1000 : (item.z ?? 1)), 'important');
+    el.style.setProperty('z-index', String(el === selected && room !== 'home' && !moments ? 1000 : (item.z ?? 1)), 'important');
     el.style.animation = 'none';
     const inside = el.querySelector<HTMLElement>('.piece__in'); if (inside) inside.style.setProperty('transform', 'none', 'important');
     const radius = ({ rectangle: '2px', arch: '48% 48% 2px 2px', round: '50%', organic: '43% 57% 61% 39% / 56% 37% 63% 44%' } as any)[item.shape] || '2px';
