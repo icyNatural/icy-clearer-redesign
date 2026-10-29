@@ -51,8 +51,8 @@ import { naraka, gameplay, clips, highlights, channel, evaluationUrl } from '../
     </main>
     <dialog class="highlight-viewer" aria-labelledby="viewer-title" data-highlight-viewer>
       <header class="viewer-header"><span data-viewer-position>1 / 4</span><h2 id="viewer-title"></h2><button type="button" class="viewer-close" data-viewer-close aria-label="Close highlight viewer" autofocus>×</button></header>
-      <div class="viewer-stage" data-viewer-stage><div class="viewer-media" data-viewer-media></div></div>
-      <footer class="viewer-footer"><button type="button" data-viewer-step="-1" aria-label="Previous video">←</button><div><span class="viewer-gesture-hint">SWIPE HIGHLIGHTS</span><p class="viewer-status" data-viewer-status role="status"></p><a class="text-link" data-viewer-source target="_blank" rel="noopener noreferrer">WATCH ON YOUTUBE ↗</a></div><button type="button" data-viewer-step="1" aria-label="Next video">→</button></footer>
+      <div class="viewer-stage" data-viewer-stage><div class="viewer-surface"><div class="viewer-media" data-viewer-media></div><div class="viewer-swipe-zone viewer-swipe-zone--left" data-swipe-zone aria-hidden="true"></div><div class="viewer-swipe-zone viewer-swipe-zone--right" data-swipe-zone aria-hidden="true"></div></div></div>
+      <footer class="viewer-footer"><button type="button" data-viewer-step="-1" aria-label="Previous video">←</button><div><span class="viewer-gesture-hint">SWIPE VIDEO EDGES · WATCH IN CENTER</span><p class="viewer-status" data-viewer-status role="status"></p><a class="text-link" data-viewer-source target="_blank" rel="noopener noreferrer">WATCH ON YOUTUBE ↗</a></div><button type="button" data-viewer-step="1" aria-label="Next video">→</button></footer>
     </dialog>
     <script type="application/json" data-gaming-highlights set:html={JSON.stringify(highlights.map(item => ({ id: item.videoId, title: item.metadata.title, thumbnail: item.metadata.thumbnail, url: item.metadata.canonicalUrl, aspect: item.metadata.aspect }))).replace(/</g, '\\u003c')} />
     <script>import '../scripts/gaming-page';</script>

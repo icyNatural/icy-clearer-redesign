@@ -1,11 +1,19 @@
 // Shared by static rendering, the visitor field, and Local Studio.
 import { signals } from './natural-signals.ts';
 export { signals } from './natural-signals.ts';
+// Shared by static rendering, visitor refreshes and Studio; membership is unchanged.
+export function signalLayout(items: any[]) {
+  const count = items.length;
+  return count === 0 ? 'forming' : count === 1 ? 'hero' : count === 2 ? 'split' : count === 3 ? 'lead' : count === 4 ? 'quad' : 'mosaic';
+}
 export const isNaturalArtifact = (item: any) => !item.deleted && item.kind !== 'native';
 export const publicArtifact = (item: any) => isNaturalArtifact(item) && item.kind !== 'placeholder' && item.curated !== false && (!item.visibility || item.visibility === 'public');
 export function artifactSignals(item: any): string[] {
-  const fallback = item.group === 'play-other' ? ['OBSERVE', 'NOW'] : item.group?.startsWith('play-') ? ['PLAY', 'NOW'] : ['NOW'];
-  return [...new Set<string>(Array.isArray(item.signals) && item.signals.length ? item.signals.map((id: string) => String(id).toUpperCase()).filter((id: string) => signals.some(signal => signal.id === id)) : fallback)];
+  const explicit = Array.isArray(item.signals) ? item.signals.map((id: string) => String(id).toUpperCase()).filter((id: string) => signals.some(signal => signal.id === id)) : [];
+  // NOW is an authored statement of current activity, not an overflow bucket.
+  // Keep legacy topical groups discoverable without asserting current attention.
+  const legacy = item.group === 'play-other' ? ['OBSERVE'] : item.group?.startsWith('play-') ? ['PLAY'] : [];
+  return [...new Set<string>(explicit.length ? explicit : legacy)];
 }
 export const artifactTitle = (item: any) => item.overrides?.title || item.metadata?.title || item.title || item.text || 'Untitled signal';
 export const orderedArtifacts = (items: any[]) => [...items].sort((a, b) => Number(!!b.featured) - Number(!!a.featured) || (a.playOrder ?? 1000) - (b.playOrder ?? 1000));

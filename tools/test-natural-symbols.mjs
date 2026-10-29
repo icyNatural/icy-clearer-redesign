@@ -4,7 +4,7 @@ import {mkdir} from 'node:fs/promises';
 import {signals,signalGlyph,infiniteMindIdentity} from '../src/scripts/natural-signals.ts';
 const {chromium}=createRequire(import.meta.url)(process.env.PLAYWRIGHT_PATH||'playwright');
 const origin=process.env.NATURAL_TEST_ORIGIN||'http://localhost:4321';
-const output='docs/natural-symbols';await mkdir(output,{recursive:true});
+const output=process.env.NATURAL_SYMBOL_OUTPUT||'docs/natural-symbols';await mkdir(output,{recursive:true});
 assert.deepEqual(signals.map(s=>s.symbol),['◈','∿','𓂀','🗃','⊕','⟡']);
 assert.equal(infiniteMindIdentity.symbol,'∞');
 for(const signal of signals){assert.match(signalGlyph(signal),/aria-hidden="true"/);assert.doesNotMatch(signalGlyph(signal),/<text|<image|<use/);}

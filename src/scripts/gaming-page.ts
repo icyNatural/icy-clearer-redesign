@@ -138,20 +138,27 @@ function initGaming(items: Highlight[]) {
   dialog.addEventListener('keydown', event => {
     if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') { event.preventDefault(); step(event.key === 'ArrowLeft' ? -1 : 1); }
   });
-  // The matte/header/footer accept gestures; the cross-origin player's own
-  // surface retains its native playback, seeking and fullscreen controls.
-  let drag: { x: number; y: number; id: number } | undefined;
+  // Narrow touch-only video edges extend the existing matte gesture surface.
+  // Cross-origin iframe events cannot bubble; center and bottom stay uncovered.
+  let drag: { x: number; y: number; id: number; time: number; vertical: boolean } | undefined;
   dialog.addEventListener('pointerdown', event => {
-    if (event.button !== 0 || (event.target as HTMLElement).closest('a,button,iframe')) return;
-    drag = { x: event.clientX, y: event.clientY, id: event.pointerId };
+    if (!event.isPrimary || event.button !== 0 || (event.target as HTMLElement).closest('a,button,iframe')) return;
+    drag = { x: event.clientX, y: event.clientY, id: event.pointerId, time: performance.now(), vertical: false };
     (event.target as HTMLElement).setPointerCapture(event.pointerId);
+  });
+  dialog.addEventListener('pointermove', event => {
+    if (!drag || event.pointerId !== drag.id) return;
+    const dx = Math.abs(event.clientX - drag.x), dy = Math.abs(event.clientY - drag.y);
+    if (dy > 12 && dy > dx) drag.vertical = true;
   });
   dialog.addEventListener('pointerup', event => {
     if (!drag || event.pointerId !== drag.id) return;
+    if (drag.vertical || performance.now() - drag.time > 1000) { drag = undefined; return; }
     const dx = event.clientX - drag.x, dy = event.clientY - drag.y; drag = undefined;
     if (Math.abs(dx) >= 48 && Math.abs(dx) > Math.abs(dy) * 1.4) step(dx < 0 ? 1 : -1);
   });
   dialog.addEventListener('pointercancel', () => { drag = undefined; });
+  dialog.addEventListener('lostpointercapture', () => { drag = undefined; });
   window.addEventListener('popstate', () => { const index = indexFromURL(); if (index < 0) closeUI(); else open(index, null, false); });
   document.addEventListener('visibilitychange', () => { if (document.hidden) pause(); });
   window.addEventListener('pagehide', stop);

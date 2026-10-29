@@ -68,6 +68,14 @@ h1 span, .system-entry h2 span { color: #a8c8ba; }
 .viewer-stage { min-height: 0; min-width: 0; display: flex; align-items: center; justify-content: center; }
 .viewer-media { flex: none; background: #080b0d center / cover no-repeat; }
 .viewer-media iframe { display: block; width: 100%; height: 100%; border: 0; }
+.viewer-surface { position: relative; flex: none; }
+.viewer-swipe-zone { display: none; }
+@media (pointer: coarse) {
+  /* Leave the center play button and bottom 64px of YouTube controls native. */
+  .viewer-swipe-zone { display: block; position: absolute; z-index: 2; top: 12px; bottom: 64px; width: min(18%, 48px); touch-action: pan-y; }
+  .viewer-swipe-zone--left { left: 0; }
+  .viewer-swipe-zone--right { right: 0; }
+}
 .viewer-header, .viewer-stage, .viewer-footer { touch-action: pan-y; user-select: none; }
 .viewer-footer { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .viewer-footer > div { flex: 1; text-align: center; min-width: 0; }

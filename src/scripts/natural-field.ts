@@ -1,4 +1,4 @@
-import { signals, artifactSignals, publicArtifact, isNaturalArtifact, orderedArtifacts, artifactMarkup } from './natural-model';
+import { signals, artifactSignals, publicArtifact, isNaturalArtifact, orderedArtifacts, artifactMarkup, signalLayout } from './natural-model';
 export { artifactSignals, isNaturalArtifact } from './natural-model';
 let fieldItems: any[] = [];
 let active = 'ALL';
@@ -25,8 +25,10 @@ function renderField() {
     cluster.hidden = !editing && active !== 'ALL' && active !== signal;
     cluster.classList.toggle('is-active', active === signal);
     const members = items.filter(item => artifactSignals(item).includes(signal));
-    const count = editing ? members.length : active === signal ? limit : 3;
+    const count = editing ? members.length : active === signal ? limit : 6;
     const stream = cluster.querySelector<HTMLElement>('.signal-artifacts')!;
+    stream.dataset.layout = signalLayout(members.slice(0, count));
+    cluster.dataset.itemCount = String(members.length);
     stream.innerHTML = members.slice(0, count).map(item => artifactMarkup(item, signal)).join('') || `<div class="signal-empty"><span>${signal}</span><small>FORMING</small></div>`;
     cluster.querySelector('.signal-more')?.remove();
     if (!editing && active === signal && members.length > count) {

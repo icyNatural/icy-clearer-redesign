@@ -3,6 +3,8 @@ import { readFile, mkdir } from 'node:fs/promises';
 import { createRequire } from 'node:module';
 import { execFileSync } from 'node:child_process';
 import vm from 'node:vm';
+import { fileURLToPath } from 'node:url';
+import { join } from 'node:path';
 
 const { chromium } = createRequire(import.meta.url)(process.env.PLAYWRIGHT_PATH || 'playwright');
 const origin = process.env.GAMING_TEST_ORIGIN || 'http://127.0.0.1:4347';
@@ -18,7 +20,7 @@ const items = [home.find(item => item.id === 'home-games'), ...['play-naraka-due
 const box = vm.createContext({});
 vm.runInContext(await read('public/gaming/assets/js/domain/glyph.js'), box);
 const expected = box.GOS.glyphEngine.geometry(record.scores, { score: record.score });
-const output = new URL('../docs/gaming-highlights/', import.meta.url).pathname;
+const output = process.env.GAMING_TEST_OUTPUT || fileURLToPath(new URL('../docs/gaming-highlights/', import.meta.url));
 await mkdir(output, { recursive: true });
 // Deterministic boundary test, not a claim of third-party streaming success.
 // The real YouTube API is exercised separately by test-games-live.mjs.
@@ -60,7 +62,7 @@ try {
     for (const image of await page.locator('img').all()) { await image.scrollIntoViewIfNeeded(); await image.evaluate(node => node.decode()); }
     await page.locator('[data-highlight-rail]').evaluate(node => node.scrollTo({ left: 0, behavior: 'instant' }));
     await page.evaluate(() => scrollTo({ top: 0, behavior: 'instant' }));
-    await page.screenshot({ path: output + `page-${width}.jpg`, fullPage: true });
+    await page.screenshot({ path: join(output, `page-${width}.jpg`), fullPage: true });
     if (width < 760) {
       await page.locator('[data-rail-step="1"]').click();
       await page.waitForFunction(() => document.querySelector('[data-highlight-rail]').scrollLeft > 100);
@@ -94,17 +96,56 @@ try {
     const dimensions = await page.locator('[data-viewer-media]').boundingBox();
     assert.ok(Math.abs(dimensions.width / dimensions.height - items[0].metadata.aspect) < .01, 'landscape stays landscape');
     await page.evaluate(() => { window.__players.at(-1).time = 18.75; });
-    // Swipe on the matte/header, leaving the YouTube player's controls native.
+    // Real touch starts inside the video edge; center/bottom still hit iframe.
+    if (width < 700) {
+      assert.ok(await page.locator('[data-viewer-media]').evaluate(node => {
+        const r = node.getBoundingClientRect();
+        return document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2)?.tagName === 'IFRAME'
+          && document.elementFromPoint(r.x + 12, r.bottom - 24)?.tagName === 'IFRAME';
+      }), 'YouTube center and bottom controls remain uncovered');
+      const cdp = await context.newCDPSession(page);
+      // Detaching the rail's CDP session resets Chromium touch emulation.
+      await cdp.send('Emulation.setTouchEmulationEnabled', { enabled: true });
+      const edge = await page.locator('.viewer-swipe-zone--right').boundingBox();
+      assert.ok(edge, 'touch video edge is present');
+      const x = edge.x + edge.width / 2, y = edge.y + edge.height / 2;
+      const gesture = async (points, delay = 0, cancel = false) => {
+        await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x, y }] });
+        if (delay) await page.waitForTimeout(delay);
+        for (const [dx, dy] of points) await cdp.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ x: x + dx, y: y + dy }] });
+        await cdp.send('Input.dispatchTouchEvent', { type: cancel ? 'touchCancel' : 'touchEnd', touchPoints: [] });
+        assert.equal(await page.locator('[data-viewer-position]').textContent(), '1 / 4', 'rejected gestures do not navigate');
+      };
+      await gesture([[-20, 0]]);
+      await gesture([[0, 30], [-90, 40]]);
+      await gesture([[-100, 0]], 1100);
+      await gesture([[-100, 0]], 0, true);
+      await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x, y }] });
+      for (let i = 1; i <= 8; i++) {
+        await cdp.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ x: x - 100 * i / 8, y }] });
+        await page.waitForTimeout(16);
+      }
+      await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+      await cdp.detach();
+    } else {
+    // Desktop retains the existing matte/header gesture and keyboard support.
     const header = await page.locator('.viewer-header').boundingBox();
     await page.mouse.move(header.x + header.width * .7, header.y + 12); await page.mouse.down();
     await page.mouse.move(header.x + header.width * .25, header.y + 12, { steps: 8 }); await page.mouse.up();
+    }
     await page.waitForFunction(() => window.__players.length === 2 && window.__players.at(-1).played > 0);
     assert.equal(await page.locator('[data-viewer-position]').textContent(), '2 / 4');
     assert.ok(await page.evaluate(() => window.__players[0].destroyed && window.__players[0].paused > 0));
     const vertical = await page.locator('[data-viewer-media]').boundingBox();
     assert.ok(Math.abs(vertical.width / vertical.height - .5625) < .01, 'Short remains vertical');
+    assert.ok(await page.locator('[data-viewer-media]').evaluate(node => {
+      const r = node.getBoundingClientRect();
+      return document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2)?.tagName === 'IFRAME'
+        && document.elementFromPoint(r.x + 12, r.bottom - 24)?.tagName === 'IFRAME';
+    }), 'portrait YouTube center and bottom controls remain uncovered');
+    await page.screenshot({ path: join(output, `viewer-${width}.jpg`) });
     for (const label of ['Next video', 'Next video']) await page.getByRole('button', { name: label, exact: true }).click();
-    await page.waitForFunction(() => window.__players.at(-1).options.videoId === 'mdhgL77UL7Y');
+    await page.waitForFunction(() => window.__players.at(-1).options.videoId === 'mdhgL77UL7Y' && window.__players.at(-1).played > 0);
     assert.equal(await page.locator('iframe').count(), 1, 'rapid changes leave one player');
     assert.equal(await page.locator('[data-viewer-position]').textContent(), '4 / 4');
     assert.ok(await page.getByRole('button', { name: 'Next video', exact: true }).isDisabled());

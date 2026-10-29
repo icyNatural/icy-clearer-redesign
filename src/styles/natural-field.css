@@ -68,11 +68,21 @@ body.natural-document::before{
 .signal-head strong{display:block;font:400 clamp(26px,3.2vw,48px)/.95 var(--icy-serif);letter-spacing:-.035em}
 .signal-head small{display:block;margin-top:7px;color:#c8c4ba;font:600 9px/1.5 var(--icy-mono);letter-spacing:.13em;text-transform:uppercase}
 .signal-head b{font:400 28px/1 var(--icy-serif);color:var(--signal)}
-/* A collection window: one lead preview, then two contextual previews.
+/* Count-based collection windows, bounded to six previews in ALL.
    Each media frame uses manifest aspect, never a stretched grid track. */
-.signal-artifacts{position:relative;z-index:2;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:start;align-content:start;gap:8px;min-height:var(--natural-portrait-height)}
+.signal-artifacts{position:relative;z-index:2;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:start;align-content:start;gap:8px;min-height:0}
 .signal-artifact{position:relative;min-width:0;width:100%;margin:0;overflow:hidden;background:#0f1513;border:1px solid rgba(255,255,255,.08);box-shadow:0 16px 38px rgba(0,0,0,.28)}
-.signal-artifact:first-child{grid-column:1/-1}
+.signal-artifacts[data-layout=hero],.signal-artifacts[data-layout=forming]{grid-template-columns:minmax(0,1fr)}
+.signal-artifacts[data-layout=lead]>.signal-artifact:first-child,.signal-artifacts[data-layout=mosaic]>.signal-artifact:first-child{grid-column:1/-1}
+.signal-artifacts[data-layout=hero]{--natural-portrait-height:clamp(110px,22vw,330px)}
+@media(min-width:901px){
+  .natural-field[data-active-signal=ALL] .signal-artifacts[data-layout=mosaic]{grid-template-columns:repeat(6,minmax(0,1fr))}
+  .natural-field[data-active-signal=ALL] .signal-artifacts[data-layout=mosaic]>.signal-artifact:not(:first-child){grid-column:span 3}
+  .natural-field[data-active-signal=ALL] .signal-artifacts[data-layout=mosaic]:has(>.signal-artifact:nth-child(6))>.signal-artifact:nth-child(n+2):nth-child(-n+4){grid-column:span 2}
+  .natural-field[data-active-signal=ALL] .signal-artifacts[data-layout=mosaic]>.signal-artifact:first-child{--natural-portrait-height:220px}
+  .natural-field[data-active-signal=ALL] .signal-artifacts[data-layout=mosaic] figcaption{display:none}
+  .natural-field[data-active-signal=ALL] .signal-empty{min-height:84px}
+}
 .signal-artifact[data-media-shape=portrait]{width:min(100%,calc(var(--natural-portrait-height) * var(--artifact-aspect)));justify-self:center}
 .artifact-preview{position:relative;aspect-ratio:var(--artifact-aspect);overflow:hidden}
 .artifact-preview img,.artifact-preview video{display:block;width:100%;height:100%;min-height:0;object-fit:cover}
@@ -102,6 +112,11 @@ body.natural-document::before{
 .signal-cluster.is-active .signal-artifacts{grid-template-columns:repeat(4,minmax(0,1fr));gap:18px;min-height:0}
 .signal-cluster.is-active .signal-artifact:first-child{grid-column:auto}
 .signal-cluster.is-active .signal-artifact[data-media-shape=landscape]{grid-column:span 2}
+.signal-cluster.is-active .signal-artifacts[data-layout=hero]{grid-template-columns:minmax(0,1fr);max-width:860px;margin-inline:auto}
+.signal-cluster.is-active .signal-artifacts[data-layout=split],.signal-cluster.is-active .signal-artifacts[data-layout=quad],.signal-cluster.is-active .signal-artifacts[data-layout=lead]{grid-template-columns:repeat(2,minmax(0,1fr))}
+.signal-cluster.is-active .signal-artifacts[data-layout=lead]>.signal-artifact:first-child{grid-column:1/-1}
+.signal-cluster.is-active .signal-artifacts[data-layout=lead]>.signal-artifact:not(:first-child){grid-column:auto}
+.signal-cluster.is-active .signal-artifacts[data-layout=hero]>.signal-artifact,.signal-cluster.is-active .signal-artifacts[data-layout=split]>.signal-artifact,.signal-cluster.is-active .signal-artifacts[data-layout=quad]>.signal-artifact{grid-column:auto}
 .signal-cluster.is-active .signal-artifact figcaption{position:relative;padding:12px;background:rgba(4,8,7,.8)}
 .signal-cluster.is-active .signal-artifact summary{min-height:44px}
 .signal-cluster.is-active .signal-artifact figcaption strong{font-size:12px;white-space:normal}
@@ -128,6 +143,7 @@ body.natural-document::before{
   .signal-head small{font-size:7px}
   .signal-mark{width:20px;height:20px}
   .signal-cluster.is-active .signal-artifacts{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .signal-cluster.is-active .signal-artifacts[data-layout=hero]{grid-template-columns:minmax(0,1fr)}
   .natural-footer span{width:100%;margin-left:0}
 }
 @media(max-width:700px){
@@ -146,6 +162,7 @@ body.natural-document::before{
   .signal-head strong{font-size:clamp(15px,4.3vw,26px)}
   .signal-head b,.signal-head small{display:none}
   .signal-artifacts{gap:4px}
+  .natural-field[data-active-signal=ALL] .signal-artifacts[data-layout=mosaic]{--natural-portrait-height:clamp(44px,12vw,80px)}
   .natural-field[data-active-signal=ALL] .signal-artifact figcaption{display:none}
   .signal-empty span{font-size:clamp(14px,3.8vw,24px)}
   .signal-empty small{font-size:7px;letter-spacing:.1em}
