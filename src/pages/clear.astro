@@ -1,290 +1,241 @@
 ---
-import "../styles/clear.css";
-import MediaRoom from "../components/MediaRoom.astro";
-import ClearVault from "../components/ClearVault.astro";
-
-// The written layer is read from the pages themselves — never listed by hand.
-const pieceModules = import.meta.glob(
-  "../pages/{models,modes,system,doctrines}/*.md",
+// ICY CLEAR / personal philosophy. A first-person perspective, not a doctrine.
+const elements = [
   {
-    eager: true,
-  },
-);
-
-type Piece = {
-  dir: string;
-  n: string;
-  label: string;
-  title: string;
-  chain: string;
-  read: string;
-  href: string;
-};
-
-const pieceDirs = ["models", "modes", "system", "doctrines"];
-
-const pieces = Object.entries(pieceModules)
-  .map(([path, mod]) => {
-    const parts = path.split("/");
-    const dir = parts[parts.length - 2];
-    const slug = parts[parts.length - 1].replace(/\.md$/, "");
-    const fm =
-      (mod as { frontmatter?: Record<string, string> }).frontmatter ?? {};
-    const isModel = dir === "models";
-    return {
-      dir,
-      rank: pieceDirs.indexOf(dir),
-      key: fm.idx ?? (isModel ? "M-99" : (fm.title ?? slug)),
-      n: fm.idx ?? "",
-      label: fm.domain ?? fm.category ?? "",
-      title: fm.title ?? slug,
-      chain: (isModel ? fm.chain : fm.purpose) ?? "",
-      read: (isModel ? (fm.changes ?? fm.description) : fm.description) ?? "",
-      href: `/${dir}/${slug}.html`,
-    };
-  })
-  .sort((a, b) => a.rank - b.rank || a.key.localeCompare(b.key));
-
-const numbered = (list: typeof pieces): Piece[] =>
-  list.map((p, i) => ({
-    dir: p.dir,
-    n: p.n || String(i + 1).padStart(2, "0"),
-    label: p.label,
-    title: p.title,
-    chain: p.chain,
-    read: p.read,
-    href: p.href,
-  }));
-
-const models = numbered(pieces.filter((p) => p.dir === "models"));
-const modes = numbered(pieces.filter((p) => p.dir === "modes"));
-const systems = numbered(pieces.filter((p) => p.dir === "system"));
-const doctrines = numbered(pieces.filter((p) => p.dir === "doctrines"));
-
-const paths = [
-  {
-    intent: "I noticed something.",
-    route: "Seeing Before Naming · Observation log",
-    href: "/models/seeing-before-naming.html",
+    number: '01',
+    title: 'Resources',
+    subtitle: 'The means',
+    description: 'Money, time, energy, health, knowledge, tools, and relationships all give me possibilities. I want to use them, not confuse the act of accumulating them with the act of living.'
   },
   {
-    intent: "I am reacting strongly.",
-    route: "State modes · Energy Engine · Clear Again",
-    href: "/modes/parasympathetic-lead-mode.html",
+    number: '02',
+    title: 'Security',
+    subtitle: 'The continuity',
+    description: 'I want enough stability to meet my responsibilities, absorb setbacks, and keep exploring. Security protects the life I want to participate in; it is not the whole purpose of that life.'
   },
   {
-    intent: "I want to understand a pattern.",
-    route: "Reaction to Pattern · Systems",
-    href: "/models/from-reaction-to-pattern.html",
+    number: '03',
+    title: 'Freedom',
+    subtitle: 'The choice',
+    description: 'I want meaningful room to choose where my time and attention go. More resources can open doors, but the doors matter more than the number.'
   },
   {
-    intent: "I need to make a decision.",
-    route: "Clear first, then decide · Trajectory",
-    href: "/doctrines/clear-first-then-decide.html",
+    number: '04',
+    title: 'Creation',
+    subtitle: 'The expression',
+    description: 'I like turning curiosity into experiments, software, art, ideas, and new abilities. Not everything I make needs a market, a finish line, or a reason beyond wanting to try.'
   },
   {
-    intent: "I want to inspect my state.",
-    route: "Energy Engine · Coherence vs Entropy",
-    href: "https://phases.icynatural.now",
-    external: true,
+    number: '05',
+    title: 'Living',
+    subtitle: 'The participation',
+    description: 'Studying something new, taking a course, building, playing, moving, traveling, noticing the world, being with people: these are not delays before life begins. They are life.'
   },
   {
-    intent: "I want to investigate an idea.",
-    route: "Questions are seeking devices · Mind → system",
-    href: "/doctrines/questions-are-seeking-devices.html",
+    number: '06',
+    title: 'Renewal',
+    subtitle: 'The return',
+    description: 'Rest, reflection, and changing direction belong to development. I do not need to be improving or producing every moment. Enjoyment without an output is still meaningful.'
   },
 ];
 ---
-
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1, viewport-fit=cover"
-    />
-    <title>Icy Clear — See clearly before you explain.</title>
-    <meta
-      name="description"
-      content="Four operable instruments for observation, models, scale and boundaries. Enter Icy Clear’s encoded philosophical environment."
-    />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>ICY CLEAR — Life as Continuous Development</title>
+    <meta name="description" content="A personal philosophy of resources, security, freedom, creation, renewal and living. Development is part of my life, not preparation for it." />
     <meta name="theme-color" content="#090c0d" />
-    <meta property="og:title" content="Icy Clear" />
-    <meta property="og:description" content="See clearly before you explain." />
+    <meta property="og:title" content="ICY CLEAR — Life as Continuous Development" />
+    <meta property="og:description" content="My perspective, still developing. Learning, making, experiencing, and being alive are the process." />
     <meta property="og:type" content="website" />
-    <link
-      rel="preload"
-      href="/clear/fonts/bodoni.woff2"
-      as="font"
-      type="font/woff2"
-      crossorigin
-    />
-    <link
-      rel="preload"
-      href="/clear/fonts/barlow.woff2"
-      as="font"
-      type="font/woff2"
-      crossorigin
-    />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preload" href="/clear/fonts/bodoni.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/clear/fonts/barlow.woff2" as="font" type="font/woff2" crossorigin />
   </head>
+  <body>
+    <a class="skip" href="#main">Skip to philosophy</a>
+    <header class="topbar">
+      <a class="brand" href="/" aria-label="Return to ICY CLEARER home">ICY <strong>CLEAR</strong><span> / A PERSONAL LENS</span></a>
+      <nav aria-label="Page navigation">
+        <a href="#framework">Framework</a>
+        <a href="#enough">Enough</a>
+        <a href="#perspective">Perspective</a>
+      </nav>
+    </header>
 
-  <body
-    class="clear-vault"
-    data-clear-author={
-      import.meta.env.DEV && import.meta.env.MODE === "author"
-        ? "true"
-        : "false"
-    }
-  >
-    <ClearVault />
-    <div class="vault-archive">
-      <section
-        class="index"
-        id="index"
-        data-sec="index"
-        aria-labelledby="indexq"
-      >
-        <header class="ex__head">
-          <p class="eyebrow">SOURCE ARCHIVE / UNABRIDGED</p>
-          <h2 class="ex__q" id="indexq">
-            The written record.
-          </h2>
-        </header>
-        <p class="note index__note">
-          Models, operating modes and doctrine. No unlock required.
-        </p>
+    <main id="main">
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="orbital orbital-one" aria-hidden="true"></div>
+        <div class="orbital orbital-two" aria-hidden="true"></div>
+        <div class="hero-copy">
+          <p class="kicker">PERSONAL FRAMEWORK <span class="dot">·</span> AN OPEN PROCESS</p>
+          <h1 id="hero-title">Life as<br /><em>continuous</em><br />development.</h1>
+          <p class="hero-lede">I don't see development as a phase I must complete before I can start living. Learning, experimenting, creating, exploring, and enjoying the process <strong>are already ways of living.</strong></p>
+          <a class="quiet-link" href="#framework">Explore the framework <span aria-hidden="true">↓</span></a>
+        </div>
+        <p class="hero-side">NOT A FINISH LINE<br />NOT A SET OF INSTRUCTIONS<br />A WAY I CURRENTLY SEE</p>
+      </section>
 
-        <div class="folds">
-          <details class="fold" id="models">
-            <summary class="fold__sum">
-              <span class="label">Models</span>
-              <span class="idx">{models.length}</span>
-            </summary>
-            <div class="fold__body">
-              <ul class="rows rows--tight">
-                {models.map((m) => (
-                  <li class="row-item">
-                    <a class="row row--link" href={m.href}>
-                      <span class="row__n idx">{m.n}</span>
-                      <span class="row__body">
-                        <span class="label">{m.label}</span>
-                        <span class="d-md row__head">{m.title}</span>
-                        {m.chain && <span class="chain">{m.chain}</span>}
-                        <span class="read row__read">{m.read}</span>
-                      </span>
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </details>
-
-          <details class="fold" id="modes">
-            <summary class="fold__sum">
-              <span class="label">Modes</span>
-              <span class="idx">{modes.length}</span>
-            </summary>
-            <div class="fold__body">
-              <ul class="rows rows--tight">
-                {modes.map((m) => (
-                  <li class="row-item">
-                    <a class="row row--link" href={m.href}>
-                      <span class="row__n idx">{m.n}</span>
-                      <span class="row__body">
-                        <span class="label">{m.label}</span>
-                        <span class="d-md row__head">{m.title}</span>
-                        {m.chain && <span class="chain">{m.chain}</span>}
-                        <span class="read row__read">{m.read}</span>
-                      </span>
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </details>
-
-          <details class="fold" id="systems">
-            <summary class="fold__sum">
-              <span class="label">Systems</span>
-              <span class="idx">{systems.length}</span>
-            </summary>
-            <div class="fold__body">
-              <ul class="rows rows--tight">
-                {systems.map((s) => (
-                  <li class="row-item">
-                    <a class="row row--link" href={s.href}>
-                      <span class="row__n idx">{s.n}</span>
-                      <span class="row__body">
-                        <span class="label">{s.label}</span>
-                        <span class="d-md row__head">{s.title}</span>
-                        {s.chain && <span class="chain">{s.chain}</span>}
-                        <span class="read row__read">{s.read}</span>
-                      </span>
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </details>
-
-          <details class="fold" id="doctrines">
-            <summary class="fold__sum">
-              <span class="label">Doctrines</span>
-              <span class="idx">{doctrines.length}</span>
-            </summary>
-            <div class="fold__body">
-              <ul class="rows rows--tight">
-                {doctrines.map((d) => (
-                  <li class="row-item">
-                    <a class="row row--link" href={d.href}>
-                      <span class="row__n idx">{d.n}</span>
-                      <span class="row__body">
-                        <span class="label">{d.label}</span>
-                        <span class="d-md row__head">{d.title}</span>
-                        {d.chain && <span class="chain">{d.chain}</span>}
-                        <span class="read row__read">{d.read}</span>
-                      </span>
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </details>
-
-          <details class="fold" id="paths">
-            <summary class="fold__sum">
-              <span class="label">Paths by intent</span>
-              <span class="idx">{paths.length}</span>
-            </summary>
-            <div class="fold__body">
-              <ul class="paths">
-                {paths.map((p) => (
-                  <li>
-                    <a
-                      class="path"
-                      href={p.href}
-                      target={p.external ? "_blank" : undefined}
-                      rel={p.external ? "noopener" : undefined}
-                    >
-                      <span class="path__intent">{p.intent}</span>
-                      <span class="path__route">{p.route}</span>
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </details>
+      <section class="thesis shell" aria-labelledby="thesis-title">
+        <p class="section-index">THE CENTER / 00</p>
+        <div>
+          <h2 id="thesis-title">The means are not<br /><em>the destination.</em></h2>
+          <p>I want money to take courses, develop abilities, build things, explore places, and do what I enjoy. I value resources for the possibilities they protect and open—not simply for the size of what I possess.</p>
+          <blockquote>“Development is not preparation for my life. Development is part of my life.”</blockquote>
         </div>
       </section>
-    </div>
-    <footer class="vault-footer">
-      <span>ICY CLEAR / BECOMING IS THE STATE</span>
-      <a href="#doctrine-index">REOPEN THE INQUIRY ↑</a>
+
+      <section class="framework shell" id="framework" aria-labelledby="framework-title">
+        <div class="section-heading">
+          <p class="section-index">A WORKING FRAMEWORK / 01–06</p>
+          <h2 id="framework-title">What makes<br /><em>life possible.</em></h2>
+          <p>These ideas support one another. I don't see them as a ladder everyone must climb—or as stages I finish once and leave behind.</p>
+        </div>
+        <div class="concepts">
+          {elements.map((element) => (
+            <article class="concept">
+              <div class="concept-top"><span>{element.number} / {element.subtitle}</span><span aria-hidden="true">↗</span></div>
+              <h3>{element.title}</h3>
+              <p>{element.description}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section class="enough" id="enough" aria-labelledby="enough-title">
+        <div class="shell enough-grid">
+          <div>
+            <p class="section-index">THE BALANCE / 07</p>
+            <h2 id="enough-title">What is<br /><em>enough?</em></h2>
+          </div>
+          <div class="enough-copy">
+            <p>I don't want an arbitrary number to become my only destination. I want to know what the resources are actually for.</p>
+            <p><strong>Enough isn't a universal amount.</strong> It's a changing balance: when accumulating more may contribute less to genuine security and possibility than the time, attention, freedom, or experiences it costs.</p>
+            <p class="subtle">That doesn't make security optional. My responsibilities, real expenses, and future needs remain part of the answer. I can protect tomorrow without permanently postponing today.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="process shell" aria-labelledby="process-title">
+        <p class="section-index">NO FINAL FORM / ONGOING</p>
+        <h2 id="process-title">A process I can<br /><em>keep returning to.</em></h2>
+        <div class="sequence" aria-label="An ongoing, non-linear process">
+          <span>Notice</span><span>Explore</span><span>Learn</span><span>Create</span><span>Experience</span><span>Reflect</span><span>Renew</span>
+        </div>
+        <p>Sometimes I follow curiosity into a new skill. Sometimes I build something from it. Sometimes I rest, play, or simply appreciate what is already here. None of that needs to be preparation for a future version of living.</p>
+      </section>
+
+      <section class="perspective shell" id="perspective" aria-labelledby="perspective-title">
+        <p class="section-index">THE PERSPECTIVE / STILL EVOLVING</p>
+        <h2 id="perspective-title">This is how<br /><em>I see.</em></h2>
+        <div>
+          <p>I'm not here to wake anyone up, tell people what to believe, or hand out a formula for life. I want a place to express what I notice, what I question, what I make, and how my understanding changes.</p>
+          <p>I don't need a final version of myself. I want to remain able to become.</p>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <span>ICY CLEAR / LIFE AS CONTINUOUS DEVELOPMENT</span>
+      <a href="/">RETURN HOME ↑</a>
+      <span>A LIVING FRAMEWORK, NOT A DOCTRINE</span>
     </footer>
-    <MediaRoom room="clear" overlay />
-    <script>
-      import "../scripts/clear-exhibits";
-    </script>
   </body>
 </html>
+
+<style is:global>
+  @font-face { font-family: 'Clear Bodoni'; src: url('/clear/fonts/bodoni.woff2') format('woff2'); font-weight: 400; font-display: swap; }
+  @font-face { font-family: 'Clear Bodoni'; src: url('/clear/fonts/bodoni-italic.woff2') format('woff2'); font-style: italic; font-weight: 400; font-display: swap; }
+  @font-face { font-family: 'Clear Narrow'; src: url('/clear/fonts/barlow.woff2') format('woff2'); font-weight: 400; font-display: swap; }
+  @font-face { font-family: 'Clear Mono'; src: url('/clear/fonts/plex-mono.woff2') format('woff2'); font-weight: 400; font-display: swap; }
+  :root { color-scheme: dark; font-synthesis: none; --bg:#090c0d; --paper:#e4e8df; --quiet:#a4b1af; --accent:#9dcfe4; --line:#9cb3ab30; }
+  *,*::before,*::after { box-sizing:border-box; }
+  html { scroll-behavior:smooth; scroll-padding-top:75px; }
+  body { background:var(--bg); color:var(--paper); margin:0; font:19px/1.55 'Clear Narrow', Arial, sans-serif; -webkit-font-smoothing:antialiased; }
+  ::selection { background:var(--accent); color:var(--bg); }
+  a { color:inherit; text-decoration:none; }
+  a:focus-visible { outline:2px solid var(--accent); outline-offset:5px; }
+  h1,h2,h3,p,blockquote { margin:0; font-weight:400; }
+  h1,h2,h3,blockquote { font-family:'Clear Bodoni', Didot, Georgia, serif; }
+  em { font-weight:400; color:#b8cabe; }
+  .skip { position:absolute; top:-100px; left:16px; z-index:100; background:var(--paper);color:var(--bg);padding:12px 18px; }
+  .skip:focus { top:12px; }
+  .topbar { min-height:74px; display:flex; justify-content:space-between; align-items:center; gap:20px; padding:13px clamp(22px,5vw,75px); border-bottom:1px solid var(--line); position:relative; z-index:2; }
+  .brand,.section-index,.kicker,.hero-side,.quiet-link,.concept-top,.footer,.topbar nav,.sequence { font-family:'Clear Mono', monospace; }
+  .brand { letter-spacing:.05em; font-size:15px; white-space:nowrap; }
+  .brand strong { color:var(--accent); font-weight:400; }
+  .brand span { color:var(--quiet); font-size:10px; }
+  .topbar nav { display:flex; align-items:center; gap:clamp(14px,2.6vw,38px); font-size:11px; color:var(--quiet); }
+  .topbar nav a { padding:12px 0; }
+  .topbar nav a:hover,.footer a:hover,.quiet-link:hover { color:var(--accent); }
+  .shell { max-width:1380px; margin-inline:auto; padding-inline:clamp(22px,6vw,85px); }
+  .hero { min-height:min(790px,90svh); position:relative; isolation:isolate; overflow:hidden; padding:clamp(90px,11vw,165px) clamp(22px,6vw,85px) 105px; display:flex; align-items:center; background:radial-gradient(ellipse at 78% 48%,#29516a25,transparent 51%),radial-gradient(ellipse at 28% 4%,#81977915,transparent 50%); }
+  .hero-copy { position:relative; z-index:1; max-width:940px; }
+  .kicker,.section-index { font-size:11px; line-height:1.5; letter-spacing:.13em; color:var(--accent); }
+  .dot { margin-inline:9px; color:var(--quiet); }
+  .hero h1 { font-size:clamp(62px,9.7vw,151px); line-height:.97; letter-spacing:-.055em; margin:31px 0; }
+  .hero h1 em { color:#bad4cc; }
+  .hero-lede { max-width:650px; font-size:clamp(19px,2.1vw,26px); line-height:1.42; color:var(--quiet); }
+  .hero-lede strong { color:var(--paper); font-weight:400; }
+  .quiet-link { display:inline-flex; gap:20px; align-items:center; font-size:11px; letter-spacing:.07em; margin-top:39px; border-bottom:1px solid var(--line); padding-bottom:10px; }
+  .quiet-link span { font-size:21px; line-height:1; }
+  .hero-side { position:absolute; right:clamp(22px,6vw,85px); bottom:39px; font-size:9px; letter-spacing:.11em; line-height:1.75; color:#82928f; text-align:right; }
+  .orbital { position:absolute; z-index:0; pointer-events:none; border:1px solid #a4c8ca16; border-radius:50%; width:min(68vw,820px); aspect-ratio:1; right:-14%; top:50%; transform:translateY(-50%) rotate(-25deg); }
+  .orbital::after { content:''; position:absolute; inset:11%; border-radius:50%; border:1px dashed #c0d5d21c; }
+  .orbital-two { width:min(45vw,580px); right:-6%; border-color:#bdd6d314; transform:translateY(-50%) rotate(35deg); }
+  .thesis { display:grid; grid-template-columns:minmax(130px,.65fr) minmax(0,2fr); gap:36px; border-top:1px solid var(--line); padding-block:115px 135px; }
+  .thesis h2,.section-heading h2,.enough h2,.process h2,.perspective h2 { font-size:clamp(49px,6.3vw,100px); line-height:1.02; letter-spacing:-.045em; }
+  .thesis p:not(.section-index) { margin-top:34px; max-width:750px; font-size:clamp(20px,2.2vw,28px); line-height:1.4; color:var(--quiet); }
+  .thesis blockquote { font-size:clamp(26px,3.5vw,52px); line-height:1.18; letter-spacing:-.025em; margin-top:78px; border-left:2px solid var(--accent); padding-left:27px; max-width:800px; }
+  .framework { border-top:1px solid var(--line); padding-block:90px 145px; }
+  .section-heading { display:grid; grid-template-columns:minmax(140px,.65fr) minmax(0,2fr); align-items:start; gap:22px 36px; margin-bottom:55px; }
+  .section-heading h2 { grid-column:2; }
+  .section-heading > p:last-child { grid-column:2; max-width:580px; font-size:21px; color:var(--quiet); }
+  .concepts { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); border-top:1px solid var(--line); border-left:1px solid var(--line); }
+  .concept { min-height:310px; padding:25px clamp(22px,3.5vw,50px) 45px; border-bottom:1px solid var(--line); border-right:1px solid var(--line); background:linear-gradient(135deg,#8298920a,transparent 65%); }
+  .concept-top { display:flex; justify-content:space-between; color:var(--accent); font-size:10px; letter-spacing:.08em; text-transform:uppercase; }
+  .concept-top span:last-child { color:#7b9893; font-size:17px; }
+  .concept h3 { font-size:clamp(43px,4.5vw,72px); line-height:1.1; letter-spacing:-.035em; margin:45px 0 16px; }
+  .concept p { color:var(--quiet); font-size:19px; line-height:1.48; max-width:520px; }
+  .enough { padding-block:135px 155px; background:linear-gradient(110deg,#182327,#0d1415 80%); border-top:1px solid var(--line); border-bottom:1px solid var(--line); }
+  .enough-grid { display:grid; grid-template-columns:1fr 1fr; gap:60px; }
+  .enough h2 { margin-top:26px; }
+  .enough-copy { padding-top:28px; max-width:600px; }
+  .enough-copy p { font-size:clamp(21px,2.3vw,29px); line-height:1.42; margin-bottom:28px; }
+  .enough-copy strong { color:var(--accent); font-weight:400; }
+  .enough-copy .subtle { color:var(--quiet); font-size:19px; }
+  .process { padding-block:140px; border-bottom:1px solid var(--line); }
+  .process h2 { margin-top:29px; }
+  .sequence { display:flex; flex-wrap:wrap; gap:13px; margin:65px 0 32px; }
+  .sequence span { display:inline-flex; align-items:center; gap:13px; color:var(--accent); font-size:12px; border:1px solid var(--line); padding:12px 16px; }
+  .sequence span:not(:last-child)::after { content:'↝'; margin-left:12px; color:var(--quiet); }
+  .process > p:last-child { max-width:720px; color:var(--quiet); font-size:23px; }
+  .perspective { display:grid; grid-template-columns:minmax(140px,.65fr) minmax(0,2fr); gap:25px 36px; padding-block:125px 145px; }
+  .perspective h2 { grid-column:2; }
+  .perspective > div { grid-column:2; max-width:750px; }
+  .perspective > div p { font-size:clamp(22px,2.45vw,31px); line-height:1.43; margin-top:26px; }
+  .perspective > div p:last-child { color:var(--accent); }
+  .footer { padding:26px clamp(22px,6vw,85px); border-top:1px solid var(--line); display:flex; justify-content:space-between; align-items:center; gap:25px; flex-wrap:wrap; font-size:10px; line-height:1.5; color:var(--quiet); letter-spacing:.05em; }
+  .footer a { color:var(--paper); }
+  @media (max-width:760px) {
+    .topbar { align-items:flex-start; flex-direction:column; gap:5px; }
+    .topbar nav { gap:24px; }
+    .hero { min-height:660px; padding-top:90px; }
+    .hero h1 { font-size:clamp(56px,12vw,88px); }
+    .orbital { right:-55%; width:115vw; }
+    .hero-side { bottom:20px; }
+    .thesis,.section-heading,.enough-grid,.perspective { display:block; }
+    .thesis,.framework,.enough,.process,.perspective { padding-block:80px; }
+    .thesis h2,.section-heading h2,.enough h2,.process h2,.perspective h2 { margin-top:25px; }
+    .thesis blockquote { margin-top:45px; }
+    .section-heading > p:last-child { margin-top:25px; }
+    .concepts { grid-template-columns:1fr; }
+    .concept { min-height:unset; padding-block:25px 40px; }
+    .concept h3 { margin-top:35px; }
+    .enough-copy { padding-top:35px; }
+    .perspective > div { margin-top:28px; }
+  }
+  @media (prefers-reduced-motion:reduce) { html {scroll-behavior:auto;} }
+</style>
