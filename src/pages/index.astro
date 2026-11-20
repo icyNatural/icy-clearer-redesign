@@ -1,6 +1,11 @@
 ---
-// HOME — INTRO / TITLE SCREEN. Leads into WORLD at /world.html.
+// HOME — Living Archive & Individual Worlds.
+// Production builds emit LivingHome only. Local Studio (`npm run edit` with
+// `/?edit=1`) swaps synchronously to HomeScrapbook so home.json authoring works.
 import HomeScrapbook from "../components/home/HomeScrapbook.astro";
+import LivingHome from "../components/home/LivingHome.astro";
+
+const authorMode = import.meta.env.DEV && import.meta.env.MODE === 'author';
 ---
 
 <html lang="en">
@@ -8,18 +13,40 @@ import HomeScrapbook from "../components/home/HomeScrapbook.astro";
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Icy Clearer — Become, slowly.</title>
-  <meta name="description" content="Icy Clearer — a personal collage of images, games, sound and experiments. See for yourself, then enter the world." />
-  <meta name="theme-color" content="#eeece6" />
-  <meta property="og:title" content="Icy Clearer — See for yourself." />
-  <meta property="og:description" content="Images · Games · Sound · Experiments. See for yourself, then enter the world." />
+  <meta name="description" content="Icy Clearer — a living archive of gaming, basketball, photography, music, creations, and personal perspective." />
+  <meta name="theme-color" content="#f2ebde" />
+  <meta property="og:title" content="Icy Clearer — Become, slowly." />
+  <meta property="og:description" content="Gaming · Basketball · Moments · Music · Creations · How I See It." />
   <meta property="og:type" content="profile" />
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <link rel="alternate icon" href="/favicon.ico" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=IM+FELL+English:ital@0;1&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet" />
+  {authorMode && <script is:inline>
+    if (new URLSearchParams(location.search).get('edit') === '1') {
+      document.documentElement.classList.add('icy-studio-mode');
+    }
+  </script>}
+  {authorMode && <style is:inline>
+    html.icy-studio-mode [data-living-wrapper] { display: none !important; }
+    html:not(.icy-studio-mode) [data-studio-wrapper] { display: none !important; }
+  </style>}
 </head>
 <body>
-  <HomeScrapbook />
+  {authorMode ? (
+    <>
+      <div data-living-wrapper><LivingHome /></div>
+      <div data-studio-wrapper><HomeScrapbook /></div>
+      <script is:inline>
+        (() => {
+          const editing = new URLSearchParams(location.search).get('edit') === '1';
+          document.querySelector(editing ? '[data-living-wrapper]' : '[data-studio-wrapper]')?.remove();
+        })();
+      </script>
+    </>
+  ) : (
+    <LivingHome />
+  )}
 </body>
 </html>

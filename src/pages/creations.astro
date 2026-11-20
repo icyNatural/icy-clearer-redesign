@@ -1,0 +1,628 @@
+---
+import { creationsWorld, materialStudies } from '../data/living-worlds';
+import CreationPreview from '../components/home/CreationPreview.astro';
+
+const works = creationsWorld.works;
+const initial = works[0];
+const dabShapes = [
+  '56% 44% 40% 60% / 50% 56% 44% 50%',
+  '44% 56% 52% 48% / 58% 42% 58% 42%',
+  '62% 38% 46% 54% / 44% 58% 42% 56%',
+  '48% 52% 60% 40% / 54% 46% 54% 46%',
+  '52% 48% 44% 56% / 60% 40% 52% 48%',
+  '42% 58% 55% 45% / 46% 54% 46% 54%',
+  '58% 42% 48% 52% / 52% 48% 60% 40%',
+  '46% 54% 42% 58% / 56% 44% 48% 52%',
+];
+---
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Creations — Interactive Pigment Palette · Icy Clearer</title>
+  <meta name="description" content="Select a pigment or material to explore real software, websites, instruments, and visual craft built by Icy Clearer." />
+  <meta name="theme-color" content="#f1e9d8" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet" />
+</head>
+<body class="atelier-body" data-atelier style={`--pigment:${initial.pigmentHex};--surface:${initial.pigmentSurface}`}>
+  <a class="skip-link" href="#main">Skip to creations</a>
+
+  <header class="atelier-nav">
+    <a href="/#creations">← HOME</a>
+    <nav aria-label="Creations navigation">
+      <a href="#palette">Pigment Palette</a>
+      <a href="#craft">Physical Craft</a>
+      <a href="/world.html">App World Atlas ↗</a>
+      <a href="https://github.com/icynatural" target="_blank" rel="noopener noreferrer">GitHub ↗</a>
+    </nav>
+  </header>
+
+  <main id="main" class="atelier-shell" tabindex="-1">
+    <header class="atelier-hero">
+      <p class="mono kicker">ICY CLEARER / CREATIONS &amp; INTERFACES</p>
+      <h1>Creations<span>.</span></h1>
+      <p class="hero-lead">
+        Touch a pigment to pull a project onto the workbench. Every swatch connects to a real application, live interface, or physical craft study — never a mock placeholder.
+      </p>
+    </header>
+
+    <section class="studio-workspace" id="palette" aria-label="Interactive pigment palette">
+      <div class="palette-tray">
+        <p class="mono tray-label">01 / MIX &amp; SELECT A PIGMENT · {works.length} WORKS</p>
+        <div class="tray-wells" role="tablist" aria-label="Select creation by pigment">
+          {works.map((work, index) => (
+            <button
+              type="button"
+              role="tab"
+              class="well"
+              data-work-select={work.id}
+              aria-selected={index === 0 ? 'true' : 'false'}
+              tabindex={index === 0 ? 0 : -1}
+              style={`--well-color:${work.pigmentHex};--well-shape:${dabShapes[index % dabShapes.length]}`}
+            >
+              <span class="well__dab" aria-hidden="true"></span>
+              <span class="well__meta">
+                <strong>{work.title}</strong>
+                <small>{work.pigmentName} · {work.status}</small>
+              </span>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <article class="workbench" aria-live="polite">
+        <div class="workbench__frame">
+          {works.map((work, index) => (
+            <div
+              class:list={['bench-visual', { 'is-active': index === 0 }]}
+              data-bench-visual={work.id}
+            >
+              <CreationPreview work={work} interactiveStudies />
+            </div>
+          ))}
+        </div>
+
+        <div class="workbench__copy">
+          <p class="mono bench-kicker" data-bench-meta>
+            {initial.pigmentName} · {initial.kind} · {initial.status}
+          </p>
+          <h2 data-bench-title>{initial.title}</h2>
+          <p class="bench-phil" data-bench-philosophy>“{initial.philosophy}”</p>
+          <p class="bench-desc" data-bench-desc>{initial.description}</p>
+
+          <div class="bench-actions">
+            <a
+              class="bench-launch"
+              data-bench-launch
+              href={initial.href}
+              target={initial.external ? '_blank' : undefined}
+              rel={initial.external ? 'noopener noreferrer' : undefined}
+            >
+              <span data-bench-launch-label>Launch {initial.title}</span> ↗
+            </a>
+            <a class="bench-secondary" href="/world.html">View in Orbital Atlas →</a>
+          </div>
+
+          <div class="bench-related" data-bench-related>
+            <span class="mono">Connected pigments:</span>
+            <div class="bench-related__list" data-bench-related-list></div>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <section class="craft-section" id="craft" aria-labelledby="craft-title">
+      <p class="mono kicker">02 / VISUAL &amp; PHYSICAL CRAFT STUDIES</p>
+      <h2 id="craft-title">Handmade drawings alongside software.</h2>
+      <p class="craft-lead">
+        Garment proportions, tactile weave experiments, and botanical notes from the Natural studio — each clickable to inspect closely on the drafting bench above.
+      </p>
+
+      <div class="craft-bench">
+        {materialStudies.map((study, idx) => (
+          <button
+            type="button"
+            class={`craft-piece craft-piece--${idx}`}
+            data-jump-study={idx}
+            aria-label={`Inspect ${study.title} on the workbench`}
+          >
+            <img src={study.src} alt={study.alt} loading="lazy" />
+            <span>
+              <strong>{study.title}</strong>
+              <small>{study.subtitle}</small>
+            </span>
+          </button>
+        ))}
+      </div>
+    </section>
+  </main>
+
+  <footer class="atelier-footer mono">
+    <a href="/#creations">← RETURN TO LIVING HOME</a>
+    <div>
+      <a href="/world.html">APP WORLD ATLAS ↗</a>
+      <a href="/gaming/">GAMING OS ↗</a>
+      <a href="/clear.html">HOW I SEE IT ↗</a>
+    </div>
+  </footer>
+
+  <script is:inline type="application/json" data-atelier-works set:html={JSON.stringify(works).replace(/</g, '\\u003c')} />
+
+  <script>
+    const body = document.querySelector<HTMLElement>('[data-atelier]')!;
+    const works: any[] = JSON.parse(document.querySelector('[data-atelier-works]')?.textContent || '[]');
+    const wells = [...document.querySelectorAll<HTMLButtonElement>('[data-work-select]')];
+    const visuals = [...document.querySelectorAll<HTMLElement>('[data-bench-visual]')];
+    const metaEl = document.querySelector<HTMLElement>('[data-bench-meta]')!;
+    const titleEl = document.querySelector<HTMLElement>('[data-bench-title]')!;
+    const philEl = document.querySelector<HTMLElement>('[data-bench-philosophy]')!;
+    const descEl = document.querySelector<HTMLElement>('[data-bench-desc]')!;
+    const launchEl = document.querySelector<HTMLAnchorElement>('[data-bench-launch]')!;
+    const launchLabel = document.querySelector<HTMLElement>('[data-bench-launch-label]')!;
+    const relatedList = document.querySelector<HTMLElement>('[data-bench-related-list]')!;
+    const studyImg = document.querySelector<HTMLImageElement>('[data-active-study-img]');
+    const studyBtns = [...document.querySelectorAll<HTMLButtonElement>('[data-study-pick]')];
+
+    function pickStudy(index: number) {
+      const btn = studyBtns[index];
+      if (!btn || !studyImg) return;
+      studyImg.src = btn.dataset.studySrc || '';
+      studyImg.alt = btn.dataset.studyAlt || '';
+      studyBtns.forEach((other, i) => other.setAttribute('aria-pressed', String(i === index)));
+    }
+
+    studyBtns.forEach((btn, idx) => btn.addEventListener('click', () => pickStudy(idx)));
+
+    function selectWork(id: string, syncUrl = true) {
+      const work = works.find((item) => item.id === id) || works[0];
+      if (!work) return;
+      body.style.setProperty('--pigment', work.pigmentHex);
+      body.style.setProperty('--surface', work.pigmentSurface);
+      wells.forEach((well) => {
+        const active = well.dataset.workSelect === work.id;
+        well.setAttribute('aria-selected', String(active));
+        well.tabIndex = active ? 0 : -1;
+      });
+      visuals.forEach((v) => v.classList.toggle('is-active', v.dataset.benchVisual === work.id));
+      metaEl.textContent = `${work.pigmentName} · ${work.kind} · ${work.status}`;
+      titleEl.textContent = work.title;
+      philEl.textContent = `“${work.philosophy}”`;
+      descEl.textContent = work.description;
+      if (work.id === 'material-studies') {
+        launchEl.href = '#craft';
+        launchEl.removeAttribute('target');
+        launchEl.removeAttribute('rel');
+        launchLabel.textContent = 'Browse Physical Craft Below';
+      } else {
+        launchEl.href = work.href;
+        if (work.external) {
+          launchEl.target = '_blank';
+          launchEl.rel = 'noopener noreferrer';
+        } else {
+          launchEl.removeAttribute('target');
+          launchEl.removeAttribute('rel');
+        }
+        launchLabel.textContent = `Launch ${work.title}`;
+      }
+
+      relatedList.replaceChildren();
+      (work.relatedIds || []).forEach((relId: string) => {
+        const rel = works.find((item) => item.id === relId);
+        if (!rel) return;
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'related-chip';
+        btn.style.setProperty('--chip-color', rel.pigmentHex);
+        btn.innerHTML = `<i aria-hidden="true"></i>${rel.title}`;
+        btn.addEventListener('click', () => selectWork(rel.id));
+        relatedList.append(btn);
+      });
+
+      if (syncUrl) {
+        const url = new URL(location.href);
+        url.searchParams.set('work', work.id);
+        history.replaceState(history.state, '', url);
+      }
+    }
+
+    wells.forEach((well, idx) => {
+      well.addEventListener('click', () => selectWork(well.dataset.workSelect!));
+      well.addEventListener('keydown', (event) => {
+        if (!['ArrowRight', 'ArrowDown', 'ArrowLeft', 'ArrowUp'].includes(event.key)) return;
+        event.preventDefault();
+        const delta = event.key === 'ArrowRight' || event.key === 'ArrowDown' ? 1 : -1;
+        const next = wells[(idx + delta + wells.length) % wells.length];
+        next.focus();
+        selectWork(next.dataset.workSelect!);
+      });
+    });
+
+    document.querySelectorAll<HTMLButtonElement>('[data-jump-study]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        selectWork('material-studies');
+        pickStudy(Number(btn.dataset.jumpStudy || 0));
+        document.getElementById('palette')?.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+      });
+    });
+
+    const requested = new URLSearchParams(location.search).get('work') || location.hash.slice(1);
+    selectWork(requested || works[0]?.id, false);
+  </script>
+
+  <style is:global>
+    :root {
+      --paper: #f1e9d8;
+      --ink: #182d28;
+      --muted: #4c5750;
+      --line: rgba(24, 45, 40, .15);
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    html { scroll-behavior: smooth; background: var(--paper); }
+    body.atelier-body {
+      margin: 0;
+      background:
+        radial-gradient(ellipse at 76% 18%, color-mix(in srgb, var(--pigment) 15%, transparent), transparent 56%),
+        var(--paper);
+      color: var(--ink);
+      font-family: 'EB Garamond', Georgia, serif;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: clip;
+      transition: background .5s ease;
+    }
+    astro-dev-toolbar { display: none; }
+    a { color: inherit; text-decoration: none; }
+    a:focus-visible, button:focus-visible { outline: 2px solid var(--pigment); outline-offset: 4px; }
+    .skip-link { position: fixed; top: -120px; left: 16px; z-index: 100; padding: 12px 16px; background: var(--ink); color: var(--paper); font: 12px 'JetBrains Mono', monospace; }
+    .skip-link:focus { top: 14px; }
+    .mono { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: .13em; text-transform: uppercase; }
+    .kicker { color: var(--pigment); margin: 0 0 10px; }
+
+    .atelier-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 14px 24px;
+      padding: 18px clamp(20px, 5vw, 72px);
+      border-bottom: 1px solid var(--line);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      letter-spacing: .13em;
+      text-transform: uppercase;
+    }
+    .atelier-nav nav { display: flex; flex-wrap: wrap; gap: 14px 26px; color: var(--muted); }
+    .atelier-nav a { display: inline-flex; align-items: center; min-height: 44px; transition: color .2s ease; }
+    .atelier-nav a:hover { color: var(--pigment); }
+
+    .atelier-shell {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: clamp(44px, 6vw, 84px) clamp(20px, 5vw, 72px) clamp(64px, 8vw, 108px);
+    }
+    .atelier-hero {
+      padding-bottom: clamp(36px, 5vw, 60px);
+      border-bottom: 1px solid var(--line);
+    }
+    .atelier-hero h1 {
+      margin: 0;
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-weight: 400;
+      font-size: clamp(60px, 10vw, 144px);
+      line-height: .86;
+      letter-spacing: -.055em;
+    }
+    .atelier-hero h1 span { color: var(--pigment); }
+    .hero-lead {
+      margin: 20px 0 0;
+      max-width: 54ch;
+      font-size: clamp(20px, 1.85vw, 24px);
+      line-height: 1.48;
+      color: var(--muted);
+    }
+
+    .studio-workspace {
+      display: grid;
+      grid-template-columns: minmax(270px, .82fr) minmax(0, 1.18fr);
+      gap: clamp(32px, 5vw, 72px);
+      align-items: start;
+      padding-block: clamp(40px, 5.5vw, 72px);
+      border-bottom: 1px solid var(--line);
+    }
+    .tray-label { margin: 0 0 18px; color: var(--muted); }
+    .tray-wells {
+      display: grid;
+      gap: 6px;
+    }
+    .well {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      width: 100%;
+      min-height: 56px;
+      padding: 8px 12px 8px 8px;
+      border: 0;
+      border-bottom: 1px solid rgba(24, 45, 40, .09);
+      background: transparent;
+      color: var(--ink);
+      text-align: left;
+      cursor: pointer;
+      transition: transform .22s ease, background .22s ease;
+    }
+    .well:hover { transform: translateX(4px); }
+    .well[aria-selected="true"] {
+      background: color-mix(in srgb, var(--well-color) 11%, transparent);
+    }
+    .well__dab {
+      width: 40px;
+      height: 36px;
+      flex: none;
+      background: var(--well-color);
+      border-radius: var(--well-shape);
+      box-shadow: inset -4px -5px 10px rgba(0, 0, 0, .24), inset 4px 4px 7px rgba(255, 255, 255, .28), 0 6px 14px rgba(34, 26, 14, .18);
+      transition: transform .28s ease, box-shadow .28s ease;
+    }
+    .well[aria-selected="true"] .well__dab {
+      transform: scale(1.14) rotate(-6deg);
+      box-shadow: 0 0 0 3px var(--paper), 0 0 0 4.5px var(--well-color), 0 10px 20px rgba(26, 20, 12, .22);
+    }
+    .well__meta { display: grid; gap: 2px; }
+    .well__meta strong { font-family: 'Cormorant Garamond', Georgia, serif; font-weight: 600; font-size: 23px; line-height: 1.05; }
+    .well__meta small { font-family: 'JetBrains Mono', monospace; font-size: 9.5px; letter-spacing: .1em; color: var(--muted); }
+
+    .workbench__frame {
+      position: relative;
+      aspect-ratio: 16 / 10;
+      width: 100%;
+      overflow: hidden;
+      background: var(--surface);
+      box-shadow: 12px 24px 56px rgba(42, 32, 18, .18);
+      transition: background .45s ease;
+    }
+    .bench-visual {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .38s ease;
+    }
+    .bench-visual.is-active { opacity: 1; pointer-events: auto; }
+    .bench-visual > img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+    .studies-viewer {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: grid;
+      grid-template-rows: minmax(0, 1fr) auto;
+      background: #eee8d5;
+    }
+    .studies-viewer img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      padding: 12px;
+      display: block;
+    }
+    .studies-switcher {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding: 10px 12px;
+      background: rgba(241, 233, 216, .92);
+      border-top: 1px solid var(--line);
+    }
+    .studies-switcher button {
+      min-height: 36px;
+      padding: 6px 12px;
+      border: 1px solid var(--line);
+      background: transparent;
+      color: var(--ink);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      cursor: pointer;
+    }
+    .studies-switcher button[aria-pressed="true"] {
+      background: #182d28;
+      color: #f4ecdc;
+      border-color: #182d28;
+    }
+
+    .bench-instrument {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: grid;
+      place-items: center;
+      background:
+        radial-gradient(circle at 35% 30%, rgba(255, 255, 255, .64), transparent 58%),
+        var(--inst-surface);
+    }
+    .bench-orbits {
+      position: relative;
+      width: min(52%, 230px);
+      aspect-ratio: 1;
+      display: grid;
+      place-items: center;
+    }
+    .bench-orbits i {
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      border: 1px solid color-mix(in srgb, var(--inst-color) 52%, transparent);
+    }
+    .bench-orbits i:nth-child(2) { inset: 15%; transform: rotate(32deg) scaleY(.58); }
+    .bench-orbits i:nth-child(3) { inset: 15%; transform: rotate(-32deg) scaleY(.58); }
+    .bench-orbits span {
+      position: relative;
+      z-index: 2;
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      background: var(--inst-color);
+      color: #faf6ee;
+      display: grid;
+      place-items: center;
+      font-size: 28px;
+      box-shadow: 0 0 0 11px rgba(255, 255, 255, .52);
+    }
+    .bench-strata {
+      width: 76%;
+      display: grid;
+      gap: 14px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      letter-spacing: .1em;
+    }
+    .bench-strata span {
+      display: flex;
+      justify-content: space-between;
+      padding-bottom: 10px;
+      border-bottom: 1px solid color-mix(in srgb, var(--inst-color) 42%, transparent);
+    }
+    .bench-foot {
+      position: absolute;
+      left: 18px;
+      bottom: 14px;
+      margin: 0;
+      font-size: 10px;
+      color: color-mix(in srgb, #182d28 72%, var(--inst-color));
+    }
+
+    .workbench__copy { margin-top: 26px; }
+    .bench-kicker { color: var(--pigment); margin: 0; }
+    .workbench__copy h2 {
+      margin: 8px 0 8px;
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-weight: 500;
+      font-size: clamp(38px, 4.4vw, 60px);
+      line-height: .96;
+      letter-spacing: -.03em;
+    }
+    .bench-phil { margin: 0 0 12px; font: italic clamp(22px, 2vw, 27px)/1.25 'Cormorant Garamond', Georgia, serif; color: #344741; }
+    .bench-desc { margin: 0; max-width: 58ch; font-size: 20px; line-height: 1.52; color: var(--muted); }
+
+    .bench-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 26px; margin-top: 24px; }
+    .bench-launch {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      min-height: 48px;
+      padding: 12px 24px;
+      background: var(--pigment);
+      color: #fbf7ef;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11.5px;
+      letter-spacing: .13em;
+      text-transform: uppercase;
+      transition: transform .22s ease, opacity .22s ease;
+    }
+    .bench-launch:hover { transform: translateY(-2px); opacity: .94; }
+    .bench-secondary {
+      display: inline-flex;
+      align-items: center;
+      min-height: 44px;
+      border-bottom: 1px solid rgba(24, 45, 40, .35);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    .bench-related {
+      margin-top: 28px;
+      padding-top: 18px;
+      border-top: 1px solid var(--line);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px 14px;
+      color: var(--muted);
+    }
+    .bench-related__list { display: flex; flex-wrap: wrap; gap: 10px; }
+    .related-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 36px;
+      padding: 6px 12px;
+      border: 1px solid var(--line);
+      background: transparent;
+      color: var(--ink);
+      font-family: 'EB Garamond', Georgia, serif;
+      font-size: 17px;
+      cursor: pointer;
+    }
+    .related-chip i { width: 11px; height: 11px; border-radius: 50%; background: var(--chip-color); display: inline-block; }
+    .related-chip:hover { border-color: var(--chip-color); }
+
+    .craft-section {
+      padding-top: clamp(50px, 6vw, 82px);
+    }
+    .craft-section h2 {
+      margin: 0;
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-weight: 400;
+      font-size: clamp(36px, 4.8vw, 62px);
+      line-height: .98;
+      letter-spacing: -.035em;
+    }
+    .craft-lead { margin: 14px 0 34px; max-width: 56ch; font-size: 20px; line-height: 1.5; color: var(--muted); }
+
+    .craft-bench {
+      display: grid;
+      grid-template-columns: 1.05fr 1.15fr .95fr;
+      gap: clamp(20px, 3.5vw, 40px);
+      align-items: end;
+    }
+    .craft-piece {
+      padding: 10px 10px 16px;
+      border: 0;
+      background: #f9f3e7;
+      color: var(--ink);
+      text-align: left;
+      cursor: pointer;
+      box-shadow: 8px 18px 36px rgba(48, 38, 22, .16);
+      transition: transform .4s cubic-bezier(.22, 1, .36, 1);
+    }
+    .craft-piece--0 { transform: rotate(-2.2deg); }
+    .craft-piece--1 { transform: rotate(1.6deg) translateY(-10px); }
+    .craft-piece--2 { transform: rotate(-1.4deg); }
+    .craft-piece:hover, .craft-piece:focus-visible { transform: rotate(0deg) translateY(-6px); }
+    .craft-piece img { display: block; width: 100%; height: auto; }
+    .craft-piece span { display: grid; gap: 3px; margin-top: 12px; }
+    .craft-piece strong { font-family: 'Cormorant Garamond', Georgia, serif; font-weight: 600; font-size: 24px; }
+    .craft-piece small { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: .08em; color: var(--muted); }
+
+    .atelier-footer {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 28px clamp(20px, 5vw, 72px) 48px;
+      border-top: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 14px 24px;
+      color: var(--muted);
+    }
+    .atelier-footer div { display: flex; flex-wrap: wrap; gap: 14px 24px; }
+    .atelier-footer a { display: inline-flex; align-items: center; min-height: 44px; }
+    .atelier-footer a:hover { color: var(--pigment); }
+
+    @media (max-width: 880px) {
+      .studio-workspace, .craft-bench { grid-template-columns: 1fr; }
+      .craft-piece--0, .craft-piece--1, .craft-piece--2 { transform: none; max-width: 420px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      * { transition: none !important; animation: none !important; }
+    }
+  </style>
+</body>
+</html>

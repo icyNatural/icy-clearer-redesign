@@ -1,0 +1,337 @@
+---
+import type { CreationWork } from '../../data/living-worlds';
+import { materialStudies } from '../../data/living-worlds';
+
+interface Props {
+  work: CreationWork;
+  interactiveStudies?: boolean;
+}
+
+const { work, interactiveStudies = false } = Astro.props;
+---
+
+{work.visualType === 'studies' && interactiveStudies ? (
+  <div class="cp-studies-viewer">
+    <img data-active-study-img src={materialStudies[0].src} alt={materialStudies[0].alt} />
+    <div class="cp-studies-switcher" role="group" aria-label="Switch handmade craft study">
+      {materialStudies.map((study, idx) => (
+        <button
+          type="button"
+          data-study-pick={idx}
+          data-study-src={study.src}
+          data-study-alt={study.alt}
+          aria-pressed={idx === 0 ? 'true' : 'false'}
+        >
+          {study.title}
+        </button>
+      ))}
+    </div>
+  </div>
+) : work.visualType === 'studies' ? (
+  <div class="cp-surface cp-surface--studies">
+    <img src={work.previewSrc} alt={work.previewAlt || work.title} decoding="async" />
+  </div>
+) : work.visualType === 'photo' ? (
+  <div class="cp-photo-frame" style={`--cp-color:${work.pigmentHex}`}>
+    <img src={work.previewSrc} alt={work.previewAlt || work.title} decoding="async" />
+    <span class="cp-viewfinder" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+    <span class="cp-photo-tag">LENS · PHOTOGGRESSION</span>
+  </div>
+) : work.visualType === 'scanner' ? (
+  <div class="cp-photo-frame cp-photo-frame--scanner" style={`--cp-color:${work.pigmentHex}`}>
+    <img src={work.previewSrc} alt={work.previewAlt || work.title} decoding="async" />
+    <span class="cp-scan-reticle" aria-hidden="true"></span>
+    <span class="cp-photo-tag">◈ SPECIMEN OBSERVATION · ICYVISION</span>
+  </div>
+) : work.visualType === 'gaming' ? (
+  <div class="cp-photo-frame cp-photo-frame--gaming" style={`--cp-color:${work.pigmentHex}`}>
+    <img src={work.previewSrc} alt={work.previewAlt || work.title} decoding="async" />
+    <span class="cp-photo-tag">◈ GAMING OS · 9 PUBLISHED RATINGS</span>
+  </div>
+) : work.visualType === 'orbit' ? (
+  <div class="cp-instrument cp-instrument--phases" style={`--cp-color:${work.pigmentHex};--cp-surface:${work.pigmentSurface}`}>
+    <svg class="cp-phase-svg" viewBox="0 0 560 220" aria-hidden="true">
+      <line x1="36" y1="168" x2="524" y2="168" stroke="currentColor" stroke-opacity=".18" stroke-dasharray="3 5" />
+      <path d="M36,154 C112,150 144,96 226,74 C296,55 346,38 408,58 C456,74 486,124 524,148" fill="none" stroke="var(--cp-color)" stroke-width="2.4" />
+      <circle cx="64" cy="149" r="5" fill="var(--cp-surface)" stroke="var(--cp-color)" stroke-width="2" />
+      <circle cx="176" cy="96" r="5" fill="var(--cp-surface)" stroke="var(--cp-color)" stroke-width="2" />
+      <circle cx="298" cy="57" r="7" fill="var(--cp-color)" />
+      <circle cx="408" cy="58" r="5" fill="var(--cp-surface)" stroke="var(--cp-color)" stroke-width="2" />
+      <circle cx="502" cy="136" r="5" fill="var(--cp-surface)" stroke="var(--cp-color)" stroke-width="2" />
+    </svg>
+    <div class="cp-phase-labels" aria-hidden="true">
+      <span>Recovery</span><span>Flow</span><strong>Radiance</strong><span>Surge</span><span>Settle</span>
+    </div>
+    <div class="cp-caption"><span>◉ ENERGY ENGINE · PHASE CURVE</span><span>phases.icynatural.now</span></div>
+  </div>
+) : work.visualType === 'strata' ? (
+  <div class="cp-instrument cp-instrument--strata" style={`--cp-color:${work.pigmentHex};--cp-surface:${work.pigmentSurface}`}>
+    <div class="cp-strata">
+      <span><b>01 / ROOT</b><em>etymological origin</em></span>
+      <span><b>02 / DRIFT</b><em>semantic shifts across time</em></span>
+      <span><b>03 / FIELD</b><em>living usage across disciplines</em></span>
+    </div>
+    <div class="cp-caption"><span>☰ SEMANTIC ARCHAEOLOGY</span><span>language.icynatural.now</span></div>
+  </div>
+) : work.visualType === 'aperture' ? (
+  <div class="cp-instrument cp-instrument--aperture" style={`--cp-color:${work.pigmentHex};--cp-surface:${work.pigmentSurface}`}>
+    <svg class="cp-reticle-svg" viewBox="0 0 260 160" aria-hidden="true">
+      <circle cx="130" cy="80" r="58" fill="none" stroke="var(--cp-color)" stroke-opacity=".42" />
+      <circle cx="130" cy="80" r="24" fill="none" stroke="var(--cp-color)" stroke-width="1.5" />
+      <path d="M130 10V36M130 124V150M42 80H84M176 80H218" stroke="var(--cp-color)" stroke-opacity=".55" />
+      <circle cx="130" cy="80" r="4" fill="var(--cp-color)" />
+    </svg>
+    <p class="cp-aperture-steps" aria-hidden="true">OBSERVE &nbsp;→&nbsp; RECORD &nbsp;→&nbsp; RETAIN BEFORE INTERPRETATION</p>
+    <div class="cp-caption"><span>◬ REALITY CAPTURE</span><span>reality.icynatural.now</span></div>
+  </div>
+) : (
+  <div class="cp-instrument cp-instrument--sandbox" style={`--cp-color:${work.pigmentHex};--cp-surface:${work.pigmentSurface}`}>
+    <div class="cp-draft-shapes" aria-hidden="true">
+      <span class="cp-draft-a"></span>
+      <span class="cp-draft-b"></span>
+      <span class="cp-draft-c">{work.glyph}</span>
+    </div>
+    <div class="cp-caption"><span>◇ PLAYGROUND · SANDBOX</span><span>playground.icynatural.now</span></div>
+  </div>
+)}
+
+<style is:global>
+  .cp-surface--studies {
+    width: 100%;
+    height: 100%;
+    background: #eee8d5;
+    display: grid;
+    place-items: center;
+    padding: 12px;
+  }
+  .cp-surface--studies img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+  }
+  .cp-studies-viewer {
+    width: 100%;
+    height: 100%;
+    display: grid;
+    grid-template-rows: minmax(0, 1fr) auto;
+    background: #eee8d5;
+  }
+  .cp-studies-viewer img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: 12px;
+    display: block;
+  }
+  .cp-studies-switcher {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 10px 12px;
+    background: rgba(241, 233, 216, .94);
+    border-top: 1px solid rgba(24, 45, 40, .14);
+  }
+  .cp-studies-switcher button {
+    min-height: 36px;
+    padding: 6px 12px;
+    border: 1px solid rgba(24, 45, 40, .2);
+    background: transparent;
+    color: #182d28;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+  .cp-studies-switcher button[aria-pressed="true"] {
+    background: #182d28;
+    color: #f4ecdc;
+    border-color: #182d28;
+  }
+
+  .cp-photo-frame {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: #121817;
+  }
+  .cp-photo-frame img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .cp-viewfinder {
+    position: absolute;
+    inset: 14px;
+    pointer-events: none;
+  }
+  .cp-viewfinder i {
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    border-color: rgba(255, 252, 244, .75);
+    border-style: solid;
+    border-width: 0;
+  }
+  .cp-viewfinder i:nth-child(1) { top: 0; left: 0; border-top-width: 1.5px; border-left-width: 1.5px; }
+  .cp-viewfinder i:nth-child(2) { top: 0; right: 0; border-top-width: 1.5px; border-right-width: 1.5px; }
+  .cp-viewfinder i:nth-child(3) { bottom: 0; left: 0; border-bottom-width: 1.5px; border-left-width: 1.5px; }
+  .cp-viewfinder i:nth-child(4) { bottom: 0; right: 0; border-bottom-width: 1.5px; border-right-width: 1.5px; }
+
+  .cp-scan-reticle {
+    position: absolute;
+    left: 36%;
+    top: 41%;
+    width: 78px;
+    height: 78px;
+    transform: translate(-50%, -50%);
+    border: 1.5px dashed rgba(240, 248, 232, .85);
+    border-radius: 50%;
+    box-shadow: 0 0 0 1px rgba(24, 45, 32, .35);
+    pointer-events: none;
+  }
+  .cp-photo-tag {
+    position: absolute;
+    left: 14px;
+    bottom: 12px;
+    padding: 6px 10px;
+    background: rgba(12, 18, 17, .76);
+    color: #f4ecdd;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9.5px;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+  }
+
+  .cp-instrument {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px 24px 44px;
+    background:
+      radial-gradient(circle at 32% 28%, rgba(255, 255, 255, .66), transparent 58%),
+      var(--cp-surface);
+    color: #182d28;
+  }
+  .cp-phase-svg {
+    width: 100%;
+    max-width: 480px;
+    height: auto;
+  }
+  .cp-phase-labels {
+    width: 100%;
+    max-width: 480px;
+    display: flex;
+    justify-content: space-between;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9.5px;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: #4d5a54;
+    margin-top: 2px;
+  }
+  .cp-phase-labels strong {
+    color: var(--cp-color);
+    font-weight: 500;
+  }
+  .cp-strata {
+    width: 84%;
+    display: grid;
+    gap: 13px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: clamp(9.5px, 1vw, 11.5px);
+    letter-spacing: .09em;
+  }
+  .cp-strata span {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding-bottom: 9px;
+    border-bottom: 1px solid color-mix(in srgb, var(--cp-color) 42%, transparent);
+  }
+  .cp-strata em {
+    font-family: 'EB Garamond', Georgia, serif;
+    font-size: 16px;
+    letter-spacing: 0;
+    color: #3f4b44;
+  }
+  .cp-reticle-svg {
+    width: min(70%, 260px);
+    height: auto;
+  }
+  .cp-aperture-steps {
+    margin: 6px 0 0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9.5px;
+    letter-spacing: .12em;
+    color: #3a4f59;
+    text-align: center;
+  }
+  .cp-instrument--sandbox {
+    background-image:
+      linear-gradient(to right, rgba(47, 138, 116, .08) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(47, 138, 116, .08) 1px, transparent 1px),
+      radial-gradient(circle at 30% 30%, rgba(255, 255, 255, .64), transparent 60%);
+    background-size: 24px 24px, 24px 24px, auto;
+    background-color: var(--cp-surface);
+  }
+  .cp-draft-shapes {
+    position: relative;
+    width: 210px;
+    height: 130px;
+    display: grid;
+    place-items: center;
+  }
+  .cp-draft-a {
+    position: absolute;
+    left: 16px;
+    top: 14px;
+    width: 112px;
+    height: 76px;
+    border: 1.5px solid color-mix(in srgb, var(--cp-color) 65%, transparent);
+    transform: rotate(-7deg);
+  }
+  .cp-draft-b {
+    position: absolute;
+    right: 14px;
+    bottom: 10px;
+    width: 108px;
+    height: 108px;
+    border: 1.5px dashed color-mix(in srgb, var(--cp-color) 55%, transparent);
+    border-radius: 50%;
+  }
+  .cp-draft-c {
+    position: relative;
+    z-index: 2;
+    width: 58px;
+    height: 58px;
+    border-radius: 50%;
+    background: var(--cp-color);
+    color: #faf6ee;
+    display: grid;
+    place-items: center;
+    font-size: 24px;
+    box-shadow: 0 0 0 9px rgba(255, 255, 255, .52);
+  }
+  .cp-caption {
+    position: absolute;
+    left: 16px;
+    right: 16px;
+    bottom: 12px;
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9.5px;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: color-mix(in srgb, #182d28 74%, var(--cp-color));
+  }
+</style>

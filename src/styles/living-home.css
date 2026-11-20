@@ -1,0 +1,2571 @@
+/* ICY CLEARER — Living Homepage
+   Preserves the warm lakeside paper & handmade editorial personality at the
+   threshold, then unfolds into individual, unboxed spatial worlds. */
+
+html:has(.living-home) {
+  scroll-behavior: smooth;
+  background: #f2ebde;
+}
+
+body:has(.living-home) {
+  margin: 0;
+  padding: 0;
+  background: #f2ebde;
+  color: #182d28;
+  font-family: 'EB Garamond', Georgia, serif;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: clip;
+}
+
+html:has(.living-home) astro-dev-toolbar {
+  display: none;
+}
+
+.living-home,
+.living-home *,
+.living-nav,
+.living-nav *,
+.clip-theater,
+.clip-theater * {
+  box-sizing: border-box;
+}
+
+.living-home a,
+.living-nav a,
+.clip-theater a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.living-home button,
+.living-nav button,
+.clip-theater button {
+  font: inherit;
+  color: inherit;
+}
+
+.living-home a:focus-visible,
+.living-home button:focus-visible,
+.living-home summary:focus-visible,
+.living-nav a:focus-visible,
+.living-nav summary:focus-visible,
+.clip-theater a:focus-visible,
+.clip-theater button:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 4px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.living-skip {
+  position: fixed;
+  top: -120px;
+  left: 16px;
+  z-index: 200;
+  padding: 12px 18px;
+  background: #182d28;
+  color: #f4ecdd;
+  font: 12px/1 'JetBrains Mono', monospace;
+  letter-spacing: .12em;
+}
+
+.living-skip:focus {
+  top: 14px;
+}
+
+/* Shared micro typography & quiet unboxed navigation links */
+.lh-mono {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: clamp(10px, .82vw, 12px);
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+
+.lh-paths {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px 26px;
+  margin-top: 26px;
+}
+
+.lh-path {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  min-height: 44px;
+  padding: 8px 0;
+  border-bottom: 1px solid color-mix(in srgb, currentColor 28%, transparent);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: clamp(11px, .88vw, 12.5px);
+  letter-spacing: .11em;
+  text-transform: uppercase;
+  transition: border-color .28s ease, transform .28s ease, opacity .28s ease;
+}
+
+.lh-path:hover,
+.lh-path:focus-visible {
+  border-bottom-color: currentColor;
+  transform: translateY(-1px);
+}
+
+.lh-path--primary {
+  border-bottom-width: 1.5px;
+  border-bottom-color: color-mix(in srgb, currentColor 72%, transparent);
+  font-weight: 500;
+}
+
+.lh-path__arrow {
+  font-family: Georgia, serif;
+  font-size: 1.2em;
+  line-height: 1;
+  transition: transform .25s ease;
+}
+
+.lh-path:hover .lh-path__arrow {
+  transform: translateX(3px);
+}
+
+/* ── FLOATING EDITORIAL NAVIGATION ─────────────────────────────────────── */
+.living-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 90;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: max(14px, env(safe-area-inset-top)) clamp(18px, 4.2vw, 56px) 14px;
+  color: #182d28;
+  background: linear-gradient(180deg, rgba(242, 235, 222, .86) 0%, rgba(242, 235, 222, .42) 68%, transparent 100%);
+  transition: color .35s ease, background .35s ease;
+}
+
+.living-nav[data-climate="dark"] {
+  color: #eee6d6;
+  background: linear-gradient(180deg, rgba(11, 16, 16, .84) 0%, rgba(11, 16, 16, .38) 68%, transparent 100%);
+}
+
+.living-nav__handle {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: clamp(11px, .95vw, 13px);
+  letter-spacing: .16em;
+  white-space: nowrap;
+}
+
+.living-nav__worlds {
+  display: flex;
+  align-items: center;
+  gap: clamp(12px, 1.8vw, 26px);
+}
+
+.living-nav__worlds a {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  opacity: .72;
+  transition: opacity .25s ease;
+}
+
+.living-nav__worlds a::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 9px;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform .3s ease;
+}
+
+.living-nav__worlds a:hover,
+.living-nav__worlds a:focus-visible,
+.living-nav__worlds a.is-current {
+  opacity: 1;
+}
+
+.living-nav__worlds a.is-current::after,
+.living-nav__worlds a:hover::after {
+  transform: scaleX(1);
+}
+
+/* Handmade 3-line drawer (preserved from existing Scrapbook) */
+.living-menu {
+  position: relative;
+}
+
+.living-menu summary {
+  list-style: none;
+  cursor: pointer;
+  width: 44px;
+  height: 44px;
+  display: grid;
+  align-content: center;
+  justify-items: end;
+  gap: 6px;
+  padding: 8px 4px;
+}
+
+.living-menu summary::-webkit-details-marker {
+  display: none;
+}
+
+.living-menu summary span {
+  display: block;
+  height: 1.25px;
+  background: currentColor;
+  width: 20px;
+  transition: width .22s ease;
+}
+
+.living-menu summary span:nth-child(2) {
+  width: 28px;
+}
+
+.living-menu summary span:nth-child(3) {
+  width: 15px;
+}
+
+.living-menu[open] summary span {
+  width: 24px;
+}
+
+.living-menu__drawer {
+  position: absolute;
+  right: 0;
+  top: 50px;
+  width: min(84vw, 290px);
+  padding: 20px 22px;
+  background: #f7f0e2;
+  color: #182d28;
+  border: 1px solid rgba(40, 58, 51, .16);
+  box-shadow: 0 22px 54px rgba(10, 18, 16, .28);
+  display: grid;
+  gap: 16px;
+}
+
+.living-menu__group {
+  display: grid;
+  gap: 2px;
+}
+
+.living-menu__group p {
+  margin: 0 0 6px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9.5px;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: #667067;
+}
+
+.living-menu__group a {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-height: 36px;
+  padding: 4px 0;
+  font-family: 'EB Garamond', Georgia, serif;
+  font-size: 19px;
+  border-bottom: 1px solid rgba(24, 45, 40, .08);
+  transition: padding-left .2s ease;
+}
+
+.living-menu__group a:last-child {
+  border-bottom: 0;
+}
+
+.living-menu__group a:hover {
+  padding-left: 6px;
+}
+
+.living-menu__group a span {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  opacity: .55;
+}
+
+/* ── ACT 00 · THE LAKE THRESHOLD ───────────────────────────────────────── */
+.threshold {
+  position: relative;
+  isolation: isolate;
+  min-height: 100svh;
+  padding: clamp(92px, 11vh, 138px) clamp(20px, 5vw, 76px) clamp(40px, 5vh, 62px);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: clip;
+  color: #182d28;
+  background: #f2ebde;
+}
+
+.threshold__backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.threshold__backdrop img,
+.threshold__backdrop video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 78% center;
+  display: block;
+}
+
+.threshold__backdrop video {
+  opacity: 0;
+  transition: opacity 1.4s ease;
+}
+
+.threshold__backdrop video.is-ready {
+  opacity: 1;
+}
+
+/* Signature warm lakeside paper veil & organic grain preserved from home-scrapbook.css */
+.threshold__veil {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at 22% 20%, rgba(255, 250, 240, .82), transparent 52%),
+    linear-gradient(180deg, rgba(242, 235, 222, .76) 0%, rgba(242, 235, 222, .64) 62%, rgba(242, 235, 222, .84) 94%, rgba(14, 19, 18, .22) 100%);
+}
+
+.threshold::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: .32;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 160 160' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Cpath fill='%23918468' opacity='.18' filter='url(%23n)' d='M0 0h160v160H0z'/%3E%3C/svg%3E");
+}
+
+.threshold__stage {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 1340px;
+  margin: auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1.08fr) minmax(300px, .92fr);
+  align-items: center;
+  gap: clamp(28px, 4vw, 56px);
+}
+
+.threshold__editorial {
+  position: relative;
+  z-index: 3;
+}
+
+.threshold__kicker {
+  margin: 0 0 clamp(18px, 2.4vw, 32px);
+  max-width: 28ch;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: clamp(11px, 1vw, 13px);
+  line-height: 1.55;
+  letter-spacing: .07em;
+  color: #4f5953;
+}
+
+.threshold__title {
+  margin: 0;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-weight: 500;
+  line-height: .78;
+  letter-spacing: -.055em;
+  color: #182d28;
+}
+
+.threshold__title span {
+  display: block;
+  font-size: clamp(72px, 12.2vw, 184px);
+}
+
+.threshold__title span + span {
+  font-size: clamp(60px, 10.3vw, 154px);
+  line-height: .96;
+}
+
+.threshold__signoff {
+  position: relative;
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 8px 26px;
+  margin-top: clamp(16px, 2.4vw, 28px);
+}
+
+.threshold__heading {
+  margin: 0;
+  font-family: 'EB Garamond', Georgia, serif;
+  font-weight: 500;
+  font-size: clamp(28px, 3.4vw, 44px);
+  line-height: 1.08;
+  letter-spacing: -.03em;
+}
+
+.threshold__signature {
+  position: relative;
+  display: inline-block;
+  font: italic clamp(34px, 4.4vw, 60px)/1 'Cormorant Garamond', Georgia, serif;
+  transform: rotate(-8deg) translateY(-6px);
+  color: #182d28;
+}
+
+.threshold__signature svg {
+  position: absolute;
+  left: -14%;
+  top: 66%;
+  width: 215%;
+  height: .72em;
+  fill: none;
+  stroke: #34443c;
+  stroke-width: 1.45;
+  pointer-events: none;
+}
+
+.threshold__lead {
+  margin: clamp(18px, 2vw, 24px) 0 0;
+  max-width: 48ch;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: clamp(12px, 1.02vw, 14px);
+  line-height: 1.65;
+  letter-spacing: .035em;
+  color: #46504a;
+}
+
+/* Right-side asymmetric collage: Lens Captured print + Arched Living Mirror */
+.threshold__objects {
+  position: relative;
+  min-height: clamp(460px, 58vh, 620px);
+  width: 100%;
+}
+
+.threshold__sunset {
+  position: absolute;
+  left: 0;
+  top: 2%;
+  width: clamp(210px, 26vw, 360px);
+  aspect-ratio: 1.22 / 1;
+  padding: clamp(9px, 1vw, 14px);
+  background: #f5eddf;
+  box-shadow: 10px 18px 34px rgba(56, 44, 28, .22);
+  transform: rotate(-7.5deg);
+  z-index: 3;
+  transition: transform .5s cubic-bezier(.22, 1, .36, 1), box-shadow .5s ease;
+}
+
+.threshold__sunset::before {
+  content: '';
+  position: absolute;
+  top: -11px;
+  left: 34%;
+  width: 34%;
+  height: 22px;
+  background: rgba(216, 205, 183, .62);
+  box-shadow: 0 1px 2px rgba(90, 82, 56, .12);
+  transform: rotate(-3deg);
+  pointer-events: none;
+}
+
+.threshold__sunset img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 68%;
+}
+
+.threshold__sunset:hover,
+.threshold__sunset:focus-visible {
+  transform: rotate(-4deg) translateY(-6px);
+  box-shadow: 14px 26px 46px rgba(42, 34, 22, .28);
+}
+
+.threshold__sky-note {
+  position: absolute;
+  right: 2%;
+  top: 7%;
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: clamp(10px, .9vw, 12px);
+  letter-spacing: .12em;
+  color: #4b554e;
+  pointer-events: none;
+}
+
+.threshold__sky-note span {
+  font: 28px/1.2 Georgia, serif;
+}
+
+/* Sculpted Arch Living Mirror (preserves home-scrapbook arch + home-mirror.css behavior) */
+.threshold__portal-frame {
+  position: absolute;
+  right: 2%;
+  bottom: 0;
+  width: clamp(205px, 23vw, 310px);
+  aspect-ratio: 34 / 49;
+  padding: clamp(18px, 2.2vw, 28px) clamp(14px, 1.6vw, 20px) 0 clamp(20px, 2.3vw, 30px);
+  border-radius: 49% 49% 0 0;
+  background: linear-gradient(108deg, #e8e1d2 4%, #b2afa4 18%, #f7efe0 30%, #c4baaa 65%, #e9dfcc 84%, #a39c8e 97%);
+  box-shadow:
+    inset 6px 2px 10px rgba(255, 255, 255, .75),
+    14px 16px 24px rgba(68, 60, 46, .22),
+    -14px 12px 16px rgba(72, 66, 50, .14);
+  z-index: 4;
+  transition: transform .45s cubic-bezier(.22, 1, .36, 1);
+}
+
+.threshold__portal-frame:hover {
+  transform: translateY(-4px);
+}
+
+/* Mirror glass compatibility outside .home-scrapbook */
+.threshold__portal-frame .living-mirror {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 48% 48% 0 0;
+  overflow: hidden;
+  isolation: isolate;
+  background: #263b36;
+  color: #e0e5d4;
+  box-shadow: inset 12px 8px 14px rgba(23, 43, 42, .54), inset -1px 0 0 rgba(245, 246, 227, .22);
+  cursor: pointer;
+  touch-action: pan-y;
+}
+
+.threshold__portal-frame .living-mirror__photo {
+  position: absolute;
+  display: block;
+  max-width: none;
+  pointer-events: none;
+  filter: saturate(.54) contrast(.98);
+  transition: opacity 1.1s ease, filter .45s ease;
+}
+
+.threshold__portal-frame .living-mirror__photo--water {
+  inset: -9%;
+  width: 118%;
+  height: 118%;
+  object-fit: cover;
+  transform: scaleX(-1);
+}
+
+.threshold__portal-frame .living-mirror__photo--organic {
+  inset: -3% -18% 0 auto;
+  width: 110%;
+  height: 106%;
+  object-fit: cover;
+  transform: scaleX(-1);
+}
+
+.threshold__portal-frame .living-mirror__photo--gaming {
+  left: -8%;
+  top: 40%;
+  width: 118%;
+  height: 33%;
+  object-fit: cover;
+  opacity: 0;
+}
+
+.threshold__portal-frame .living-mirror__readout {
+  font-size: clamp(9px, .82vw, 11px);
+  bottom: 9%;
+}
+
+.threshold__portal-note {
+  position: absolute;
+  left: 8%;
+  bottom: 8%;
+  z-index: 5;
+  margin: 0;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  line-height: 1.5;
+  letter-spacing: .12em;
+  color: #4f5851;
+}
+
+/* Bottom Shoreline Trail */
+.threshold__trail {
+  position: relative;
+  z-index: 3;
+  width: 100%;
+  max-width: 1340px;
+  margin: clamp(28px, 4vh, 44px) auto 0;
+  padding-top: 18px;
+  border-top: 1px solid rgba(24, 45, 40, .14);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 14px 24px;
+}
+
+.threshold__wander {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+}
+
+.threshold__wander span {
+  font: 20px/1 Georgia, serif;
+}
+
+.threshold__compass {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 20px;
+}
+
+.threshold__compass a {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  min-height: 38px;
+  padding: 6px 0;
+  font-family: 'EB Garamond', Georgia, serif;
+  font-size: clamp(16px, 1.3vw, 19px);
+  color: #253b35;
+  transition: color .2s ease, transform .2s ease;
+}
+
+.threshold__compass a small {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9.5px;
+  letter-spacing: .1em;
+  opacity: .56;
+}
+
+.threshold__compass a:hover {
+  color: #0b1916;
+  transform: translateY(-1px);
+}
+
+/* ── SHARED LIVING FIELD STRUCTURE ─────────────────────────────────────── */
+.world-field {
+  position: relative;
+  isolation: isolate;
+  overflow: clip;
+  padding: clamp(78px, 10vw, 138px) clamp(20px, 5vw, 76px);
+}
+
+.world-field__inner {
+  position: relative;
+  width: 100%;
+  max-width: 1340px;
+  margin: 0 auto;
+}
+
+.world-field__meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 10px 20px;
+  margin-bottom: clamp(18px, 2.5vw, 34px);
+}
+
+.world-field__title {
+  margin: 0;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-weight: 400;
+  font-size: clamp(64px, 11.4vw, 178px);
+  line-height: .83;
+  letter-spacing: -.055em;
+}
+
+.world-field__intro {
+  margin: 18px 0 0;
+  max-width: 44ch;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: clamp(11.5px, .95vw, 13.5px);
+  line-height: 1.72;
+  letter-spacing: .03em;
+}
+
+/* ── ACT 01 · GAMING WORLD ─────────────────────────────────────────────── */
+.world-gaming {
+  background:
+    radial-gradient(ellipse at 78% 26%, rgba(44, 72, 66, .34), transparent 54%),
+    linear-gradient(180deg, #101615 0%, #0b0e11 100%);
+  color: #ebe4d4;
+}
+
+.world-gaming .world-field__meta {
+  color: #9ba59f;
+}
+
+.world-gaming .world-field__intro {
+  color: #adb4ac;
+}
+
+.gaming-composition {
+  position: relative;
+  margin-top: clamp(28px, 4vw, 48px);
+  min-height: clamp(610px, 57vw, 800px);
+}
+
+/* Primary wide Naraka gameplay monitor echoing home-scrapbook's dark bezel */
+.gaming-lead {
+  position: relative;
+  z-index: 4;
+  display: block;
+  width: min(59%, 750px);
+  margin-left: 9%;
+  padding: 20px 14px 12px;
+  background: #1a1c19;
+  border-radius: 7px;
+  box-shadow: 0 32px 72px rgba(0, 0, 0, .58);
+  transform: rotate(-1.5deg);
+  transition: transform .48s cubic-bezier(.22, 1, .36, 1), box-shadow .48s ease;
+}
+
+.gaming-lead::before {
+  content: '• • •';
+  position: absolute;
+  top: 5px;
+  right: 16px;
+  font-size: 10px;
+  letter-spacing: .16em;
+  color: #b7b09d;
+}
+
+.gaming-lead:hover,
+.gaming-lead:focus-visible {
+  transform: rotate(-.5deg) translateY(-5px);
+  box-shadow: 0 40px 88px rgba(0, 0, 0, .68);
+}
+
+.gaming-lead__media {
+  position: relative;
+  display: block;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: #060809;
+}
+
+.gaming-lead__media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform .65s ease;
+}
+
+.gaming-lead:hover .gaming-lead__media img {
+  transform: scale(1.035);
+}
+
+.gaming-play-disc {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, .65);
+  background: rgba(14, 24, 27, .74);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  font-size: 20px;
+  padding-left: 3px;
+  transition: transform .25s ease, background .25s ease;
+}
+
+.gaming-lead:hover .gaming-play-disc,
+.gaming-clip:hover .gaming-play-disc,
+.gaming-archive-clip:hover .gaming-play-disc {
+  transform: translate(-50%, -50%) scale(1.08);
+  background: rgba(24, 46, 52, .9);
+}
+
+.gaming-lead__caption {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  padding: 10px 4px 2px;
+  color: #f0e8d8;
+}
+
+.gaming-lead__caption em {
+  font: italic clamp(17px, 1.5vw, 22px)/1 'Cormorant Garamond', Georgia, serif;
+}
+
+.gaming-lead__caption small {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: .1em;
+  opacity: .72;
+}
+
+/* Staggered floating vertical clips at distinct depths */
+.gaming-clips-mobile-row {
+  display: contents;
+}
+
+.gaming-clip {
+  position: absolute;
+  display: block;
+  background: #141718;
+  box-shadow: 0 22px 52px rgba(0, 0, 0, .55);
+  overflow: hidden;
+  transition: transform .45s cubic-bezier(.22, 1, .36, 1), z-index 0s;
+}
+
+.gaming-clip__frame {
+  position: relative;
+  display: block;
+  aspect-ratio: 9 / 14;
+  overflow: hidden;
+}
+
+.gaming-clip img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  transition: transform .55s ease;
+}
+
+.gaming-clip:hover img {
+  transform: scale(1.06);
+}
+
+.gaming-clip .gaming-play-disc {
+  width: 42px;
+  height: 42px;
+  font-size: 14px;
+}
+
+.gaming-clip__tag {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 22px 10px 9px;
+  background: linear-gradient(transparent, rgba(7, 10, 12, .9));
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9.5px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: #eee6d8;
+}
+
+.gaming-clip--0 {
+  right: 15%;
+  top: -3%;
+  width: clamp(136px, 13.5vw, 184px);
+  transform: rotate(5deg);
+  z-index: 5;
+}
+
+.gaming-clip--1 {
+  right: 1%;
+  top: 21%;
+  width: clamp(134px, 13vw, 178px);
+  transform: rotate(-4deg);
+  z-index: 6;
+}
+
+.gaming-clip--2 {
+  left: 0;
+  bottom: 2%;
+  width: clamp(128px, 12vw, 166px);
+  transform: rotate(-6.5deg);
+  z-index: 5;
+}
+
+.gaming-clip:hover,
+.gaming-clip:focus-visible {
+  transform: rotate(0deg) translateY(-6px);
+  z-index: 9;
+}
+
+/* Playable archive clips (Marvel Rivals & Sparking Zero) */
+.gaming-archive-clip {
+  position: absolute;
+  z-index: 6;
+  width: clamp(190px, 20vw, 264px);
+  padding: 0;
+  border: 0;
+  background: #141718;
+  cursor: pointer;
+  text-align: left;
+  box-shadow: 0 22px 48px rgba(0, 0, 0, .58);
+  transition: transform .42s cubic-bezier(.22, 1, .36, 1), z-index 0s;
+}
+
+.gaming-archive-clip--0 {
+  left: 16%;
+  bottom: 4%;
+  transform: rotate(2.4deg);
+}
+
+.gaming-archive-clip--1 {
+  left: 39%;
+  bottom: 0;
+  transform: rotate(-2.2deg);
+  z-index: 5;
+}
+
+.gaming-archive-clip:hover,
+.gaming-archive-clip:focus-visible {
+  transform: rotate(.3deg) translateY(-5px);
+  z-index: 9;
+}
+
+.gaming-archive-clip__frame {
+  position: relative;
+  display: block;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+}
+
+.gaming-archive-clip img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.gaming-archive-clip .gaming-play-disc {
+  width: 40px;
+  height: 40px;
+  font-size: 13px;
+}
+
+.gaming-archive-clip__meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 11px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9.5px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: #d6d0c2;
+}
+
+/* Floating Real 9-Axis Taste Glyph Seal + Live Game Ratings Switcher */
+.gaming-seal-wrap {
+  position: absolute;
+  right: 2%;
+  bottom: 2%;
+  z-index: 7;
+  max-width: 390px;
+  display: grid;
+  gap: 12px;
+}
+
+.gaming-seal {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 6px 2px;
+  color: #efe9dc;
+  transition: transform .35s ease;
+}
+
+.gaming-seal:hover,
+.gaming-seal:focus-visible {
+  transform: translateY(-3px);
+}
+
+.gaming-taste-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(235, 228, 212, .14);
+}
+
+.gaming-taste-pill {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 5px;
+  min-height: 36px;
+  padding: 4px 0;
+  border: 0;
+  border-bottom: 1.5px solid transparent;
+  background: transparent;
+  color: #9ba59f;
+  font-family: 'EB Garamond', Georgia, serif;
+  font-size: 17px;
+  cursor: pointer;
+  transition: color .2s ease, border-color .2s ease;
+}
+
+.gaming-taste-pill small {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: #7ea8ba;
+}
+
+.gaming-taste-pill:hover,
+.gaming-taste-pill[aria-selected="true"] {
+  color: #f3ede0;
+  border-bottom-color: #9ecce0;
+}
+
+.gaming-seal__glyph {
+  width: 88px;
+  height: 88px;
+  flex: none;
+}
+
+.gaming-seal__copy {
+  display: grid;
+  gap: 4px;
+  max-width: 24ch;
+}
+
+.gaming-seal__score {
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+}
+
+.gaming-seal__score strong {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-weight: 500;
+  font-size: clamp(34px, 3.6vw, 48px);
+  line-height: .9;
+}
+
+.gaming-seal__score span {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: #9ba59f;
+}
+
+.gaming-seal__verdict {
+  margin: 0;
+  font-family: 'EB Garamond', Georgia, serif;
+  font-size: 16px;
+  line-height: 1.32;
+  color: #c5cdc7;
+}
+
+.gaming-seal__cta {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: .12em;
+  color: #9ecce0;
+}
+
+/* ── ACT 02 · BASKETBALL WORLD ─────────────────────────────────────────── */
+.world-basketball {
+  background:
+    radial-gradient(ellipse at 28% 72%, rgba(191, 114, 52, .16), transparent 56%),
+    linear-gradient(180deg, #efe6d5 0%, #e7dac5 100%);
+  color: #1d241f;
+}
+
+.world-basketball .world-field__meta {
+  color: #6b5f4f;
+}
+
+.world-basketball .world-field__intro {
+  color: #534c42;
+}
+
+.basketball-stage {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, .86fr) minmax(0, 1.14fr);
+  align-items: end;
+  gap: clamp(24px, 4vw, 56px);
+  margin-top: clamp(16px, 2.5vw, 30px);
+}
+
+.basketball-visuals {
+  position: relative;
+  min-height: clamp(460px, 46vw, 620px);
+  grid-column: 1 / -1;
+}
+
+.basketball-title {
+  position: absolute;
+  right: 0;
+  top: -12px;
+  z-index: 2;
+  text-align: right;
+  font-size: clamp(72px, 13.5vw, 206px);
+  line-height: .82;
+  color: rgba(29, 36, 31, .9);
+  pointer-events: none;
+}
+
+/* Real indoor court footage — zoomed cleanly into the horizontal hardwood action */
+.basketball-court {
+  position: relative;
+  z-index: 3;
+  display: block;
+  width: min(63%, 750px);
+  margin-left: 20%;
+  margin-top: clamp(78px, 8.5vw, 134px);
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  background: #1d1712;
+  box-shadow: 0 28px 66px rgba(42, 26, 12, .26);
+  transform: rotate(2.1deg);
+  transition: transform .5s cubic-bezier(.22, 1, .36, 1), box-shadow .5s ease;
+}
+
+.basketball-court:hover,
+.basketball-court:focus-visible {
+  transform: rotate(.7deg) translateY(-5px);
+  box-shadow: 0 36px 80px rgba(42, 26, 12, .34);
+}
+
+.basketball-court img,
+.basketball-court video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* Crop past the vertical caption/letterbox bands straight onto the hardwood court */
+  object-position: 50% 51%;
+  transform: scale(1.04);
+  display: block;
+}
+
+.basketball-court video {
+  opacity: 0;
+  transition: opacity .8s ease;
+}
+
+.basketball-court video.is-ready {
+  opacity: 1;
+}
+
+.basketball-court__tag {
+  position: absolute;
+  right: 16px;
+  bottom: 14px;
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 12px;
+  background: rgba(20, 16, 13, .78);
+  color: #f5ecdc;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+/* Foreground Real Personal Portrait overlapping the court */
+.basketball-portrait {
+  position: absolute;
+  left: 3%;
+  bottom: -14px;
+  z-index: 5;
+  display: block;
+  width: clamp(200px, 24vw, 330px);
+  aspect-ratio: 1 / 1;
+  padding: clamp(9px, 1vw, 14px) clamp(9px, 1vw, 14px) clamp(26px, 2.8vw, 38px);
+  background: #f8f2e6;
+  box-shadow: 12px 24px 48px rgba(34, 24, 14, .28);
+  transform: rotate(-4.5deg);
+  transition: transform .5s cubic-bezier(.22, 1, .36, 1), box-shadow .5s ease;
+}
+
+.basketball-portrait::before {
+  content: '';
+  position: absolute;
+  top: -10px;
+  left: 36%;
+  width: 30%;
+  height: 20px;
+  background: rgba(206, 189, 162, .68);
+  transform: rotate(3deg);
+  pointer-events: none;
+}
+
+.basketball-portrait img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 22%;
+}
+
+.basketball-portrait__note {
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  bottom: 7px;
+  display: flex;
+  justify-content: space-between;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-style: italic;
+  font-size: clamp(16px, 1.35vw, 20px);
+  color: #242e29;
+}
+
+.basketball-portrait:hover,
+.basketball-portrait:focus-visible {
+  transform: rotate(-1.8deg) translateY(-6px);
+  box-shadow: 16px 32px 60px rgba(34, 24, 14, .34);
+}
+
+.basketball-copy {
+  position: relative;
+  z-index: 6;
+  margin-top: clamp(32px, 4vw, 48px);
+  margin-left: auto;
+  max-width: 580px;
+  text-align: right;
+}
+
+.basketball-copy .world-field__intro {
+  margin-left: auto;
+}
+
+.basketball-copy .lh-paths {
+  justify-content: flex-end;
+}
+
+/* ── ACT 03 · MOMENTS / PHOTOGRAPHY WORLD ──────────────────────────────── */
+.world-moments {
+  background:
+    radial-gradient(ellipse at 50% 42%, rgba(40, 64, 62, .24), transparent 62%),
+    linear-gradient(180deg, #121a19 0%, #0d1313 100%);
+  color: #eee8da;
+}
+
+.world-moments .world-field__meta {
+  color: #93a39d;
+}
+
+.world-moments .world-field__intro {
+  color: #a9b5b0;
+}
+
+.moments-orbit-trace {
+  position: absolute;
+  left: -8%;
+  top: 24%;
+  width: 116%;
+  height: 46%;
+  border: 1px solid rgba(212, 224, 218, .1);
+  border-radius: 50%;
+  transform: rotate(-9deg);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.moments-cluster {
+  position: relative;
+  z-index: 2;
+  margin-top: clamp(24px, 3vw, 42px);
+  min-height: clamp(600px, 58vw, 790px);
+}
+
+.moment-float {
+  position: absolute;
+  display: block;
+  overflow: hidden;
+  background: #192120;
+  box-shadow: 0 26px 64px rgba(0, 0, 0, .54);
+  transition: transform .55s cubic-bezier(.22, 1, .36, 1), box-shadow .55s ease, z-index 0s;
+}
+
+.moment-float img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform .7s ease;
+}
+
+.moment-float:hover img {
+  transform: scale(1.05);
+}
+
+.moment-float__caption {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 28px 14px 11px;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+  background: linear-gradient(transparent, rgba(7, 12, 12, .84));
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9.5px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: #f0eadc;
+  opacity: .84;
+  transition: opacity .3s ease;
+}
+
+.moment-float:hover,
+.moment-float:focus-visible {
+  transform: rotate(0deg) translateY(-7px) scale(1.015);
+  box-shadow: 0 36px 84px rgba(0, 0, 0, .66);
+  z-index: 10;
+}
+
+.moment-float:hover .moment-float__caption,
+.moment-float:focus-visible .moment-float__caption {
+  opacity: 1;
+}
+
+/* 5 asymmetric spatial placements */
+.moment-float--0 {
+  left: 7%;
+  top: 7%;
+  width: clamp(240px, 31vw, 410px);
+  aspect-ratio: 3 / 4;
+  transform: rotate(-3.2deg);
+  z-index: 4;
+}
+
+.moment-float--1 {
+  right: 4%;
+  top: 15%;
+  width: clamp(205px, 25vw, 330px);
+  aspect-ratio: 3 / 4;
+  transform: rotate(4.4deg);
+  z-index: 4;
+}
+
+.moment-float--2 {
+  left: 2%;
+  bottom: 3%;
+  width: clamp(160px, 18vw, 238px);
+  aspect-ratio: 3 / 4;
+  transform: rotate(-6.4deg);
+  z-index: 6;
+}
+
+.moment-float--3 {
+  left: 42%;
+  top: 2%;
+  width: clamp(210px, 26vw, 350px);
+  aspect-ratio: 4 / 3;
+  transform: rotate(2.1deg);
+  z-index: 3;
+}
+
+.moment-float--4 {
+  left: 45%;
+  bottom: 10%;
+  width: clamp(170px, 19vw, 252px);
+  aspect-ratio: 3 / 4;
+  transform: rotate(6deg);
+  z-index: 5;
+}
+
+.moments-footer-row {
+  position: relative;
+  z-index: 7;
+  margin-top: clamp(24px, 3vw, 40px);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 18px 36px;
+}
+
+.moments-shift-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  padding: 8px 16px;
+  border: 1px solid rgba(226, 232, 222, .26);
+  border-radius: 999px;
+  background: rgba(18, 28, 27, .76);
+  color: #e6e2d6;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10.5px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: border-color .25s ease, transform .25s ease;
+}
+
+.moments-shift-btn span {
+  opacity: .64;
+}
+
+.moments-shift-btn:hover,
+.moments-shift-btn:focus-visible {
+  border-color: #f0eadc;
+  transform: translateY(-1px);
+}
+
+/* ── ACT 04 · MUSIC WORLD ──────────────────────────────────────────────── */
+.world-music {
+  background:
+    radial-gradient(ellipse at 72% 48%, rgba(164, 92, 82, .22), transparent 56%),
+    linear-gradient(180deg, #171215 0%, #1c1518 100%);
+  color: #f2e8dc;
+  padding-block: clamp(92px, 11vw, 152px);
+}
+
+.world-music .world-field__meta {
+  color: #b59a94;
+}
+
+.world-music .world-field__intro {
+  color: #c8b2ab;
+}
+
+.music-stage {
+  position: relative;
+  margin-top: clamp(24px, 3vw, 38px);
+  padding-bottom: clamp(16px, 2vw, 28px);
+}
+
+.music-wave-band {
+  position: relative;
+  margin: clamp(32px, 4.5vw, 56px) calc(clamp(20px, 5vw, 76px) * -1);
+  height: clamp(130px, 17vw, 210px);
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.music-wave-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  overflow: visible;
+}
+
+.music-wave-svg path {
+  fill: none;
+  stroke-linecap: round;
+}
+
+.music-tone-btn {
+  position: absolute;
+  right: clamp(20px, 6vw, 84px);
+  top: 50%;
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  padding: 10px 18px;
+  border: 1px solid rgba(239, 150, 130, .42);
+  border-radius: 999px;
+  background: rgba(25, 18, 21, .84);
+  color: #f3e4da;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10.5px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: border-color .25s ease, background .25s ease, transform .25s ease;
+}
+
+.music-tone-btn:hover,
+.music-tone-btn:focus-visible {
+  border-color: #ef9682;
+  background: rgba(45, 29, 34, .92);
+  transform: translateY(-50%) scale(1.03);
+}
+
+.music-tone-btn__glyph {
+  font-size: 17px;
+  color: #ef9682;
+}
+
+/* Floating unboxed sound stations (NOT cards) */
+.music-stations {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, .9fr) minmax(0, .9fr);
+  gap: clamp(24px, 4vw, 54px);
+  align-items: start;
+  margin-top: clamp(12px, 2vw, 26px);
+}
+
+.music-station {
+  display: block;
+  padding-top: 16px;
+  border-top: 1px solid rgba(239, 150, 130, .24);
+  transition: border-color .28s ease, transform .28s ease;
+}
+
+.music-station:hover,
+.music-station:focus-visible {
+  border-top-color: #ef9682;
+  transform: translateY(-3px);
+}
+
+.music-station__kicker {
+  display: block;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  color: #df9682;
+  margin-bottom: 10px;
+}
+
+.music-station h3 {
+  margin: 0 0 8px;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-weight: 500;
+  font-size: clamp(30px, 3.2vw, 44px);
+  line-height: 1;
+  letter-spacing: -.03em;
+}
+
+.music-station p {
+  margin: 0;
+  font-family: 'EB Garamond', Georgia, serif;
+  font-size: clamp(17px, 1.35vw, 20px);
+  line-height: 1.45;
+  color: #c7b4ad;
+}
+
+/* ── ACT 05 · CREATIONS / INTERACTIVE PIGMENT PALETTE ──────────────────── */
+.world-creations {
+  --active-pigment: #7d56c9;
+  --active-surface: #ede6f8;
+  background:
+    radial-gradient(ellipse at 74% 34%, color-mix(in srgb, var(--active-pigment) 14%, transparent), transparent 56%),
+    linear-gradient(180deg, #f1e9d8 0%, #eae0cd 100%);
+  color: #182d28;
+  transition: background .55s ease;
+}
+
+.world-creations .world-field__meta {
+  color: #5b645c;
+}
+
+.world-creations .world-field__intro {
+  color: #46504a;
+}
+
+.creations-atelier {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, .92fr) minmax(0, 1.08fr);
+  gap: clamp(28px, 5vw, 68px);
+  align-items: start;
+  margin-top: clamp(28px, 4vw, 52px);
+}
+
+/* Organic artist's paint palette (distinct shaped pigment dabs, NOT uniform pills) */
+.palette-board {
+  position: relative;
+}
+
+.palette-board__hint {
+  margin: 0 0 20px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10.5px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: #5e675f;
+}
+
+.palette-swatches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px 16px;
+  align-items: center;
+}
+
+.pigment-well {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 11px;
+  min-height: 48px;
+  padding: 6px 14px 6px 7px;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+  transition: transform .28s cubic-bezier(.22, 1, .36, 1);
+}
+
+.pigment-well:hover {
+  transform: translateY(-2px);
+}
+
+.pigment-well__dab {
+  width: 38px;
+  height: 34px;
+  flex: none;
+  background: var(--swatch-color);
+  border-radius: var(--dab-shape, 54% 46% 42% 58% / 48% 55% 45% 52%);
+  box-shadow:
+    inset -4px -5px 10px rgba(0, 0, 0, .24),
+    inset 4px 4px 8px rgba(255, 255, 255, .28),
+    0 6px 14px rgba(38, 30, 18, .18);
+  transition: transform .3s ease, box-shadow .3s ease;
+}
+
+.pigment-well[aria-selected="true"] .pigment-well__dab {
+  transform: scale(1.16) rotate(-6deg);
+  box-shadow:
+    0 0 0 3px #f1e9d8,
+    0 0 0 4.5px var(--swatch-color),
+    0 10px 22px rgba(24, 20, 14, .24);
+}
+
+.pigment-well__text {
+  display: grid;
+  gap: 1px;
+}
+
+.pigment-well__text strong {
+  font-family: 'EB Garamond', Georgia, serif;
+  font-weight: 500;
+  font-size: 19px;
+  line-height: 1.05;
+}
+
+.pigment-well__text small {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9.5px;
+  letter-spacing: .1em;
+  color: #5b655d;
+}
+
+.pigment-well[aria-selected="true"] .pigment-well__text strong {
+  text-decoration: underline;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 4px;
+  text-decoration-color: var(--swatch-color);
+}
+
+/* Peeking real handmade craft sketches under the palette */
+.atelier-sketches {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  gap: 18px;
+  margin-top: clamp(28px, 4vw, 44px);
+}
+
+.atelier-sketch {
+  position: relative;
+  display: block;
+  background: #f9f3e7;
+  padding: 7px;
+  box-shadow: 6px 14px 28px rgba(48, 38, 22, .16);
+  transition: transform .42s cubic-bezier(.22, 1, .36, 1);
+}
+
+.atelier-sketch--garment {
+  width: clamp(132px, 14vw, 180px);
+  aspect-ratio: 3 / 4;
+  transform: rotate(-4.5deg);
+}
+
+.atelier-sketch--cloth {
+  width: clamp(144px, 15.5vw, 198px);
+  aspect-ratio: 7 / 6;
+  transform: rotate(3.8deg) translateY(-10px);
+}
+
+.atelier-sketch:hover,
+.atelier-sketch:focus-visible {
+  transform: rotate(0deg) translateY(-6px);
+  z-index: 4;
+}
+
+.atelier-sketch img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.atelier-sketch span {
+  display: block;
+  margin-top: 6px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: #5a6258;
+}
+
+/* Right-side Live Creation Preview Workbench (open editorial sheet, not a boxed card) */
+.creation-stage {
+  position: relative;
+  padding-top: 8px;
+}
+
+.creation-canvas {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  width: 100%;
+  overflow: hidden;
+  background: var(--active-surface);
+  box-shadow: 12px 24px 52px rgba(44, 34, 20, .16);
+  transition: background .45s ease;
+}
+
+.creation-visual {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .38s ease;
+}
+
+.creation-visual.is-active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.creation-visual img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.creation-visual--studies img {
+  object-fit: contain;
+  background: #eee8d5;
+  padding: 12px;
+}
+
+/* Authored structural previews for live web instruments (zero fake screenshots) */
+.creation-instrument {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 35% 32%, rgba(255, 255, 255, .62), transparent 58%),
+    var(--inst-surface, #e8ece6);
+  color: #1c2e29;
+}
+
+.creation-instrument__rings {
+  position: relative;
+  width: min(56%, 240px);
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+}
+
+.creation-instrument__rings i {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 1px solid color-mix(in srgb, var(--inst-color) 52%, transparent);
+}
+
+.creation-instrument__rings i:nth-child(2) {
+  inset: 15%;
+  transform: rotate(32deg) scaleY(.58);
+}
+
+.creation-instrument__rings i:nth-child(3) {
+  inset: 15%;
+  transform: rotate(-32deg) scaleY(.58);
+}
+
+.creation-instrument__glyph {
+  position: relative;
+  z-index: 2;
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  background: var(--inst-color);
+  color: #faf6ee;
+  display: grid;
+  place-items: center;
+  font-size: 26px;
+  box-shadow: 0 0 0 10px rgba(255, 255, 255, .52);
+}
+
+.creation-instrument__strata {
+  width: 78%;
+  display: grid;
+  gap: 12px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: clamp(10px, 1vw, 12px);
+  letter-spacing: .1em;
+}
+
+.creation-instrument__strata span {
+  display: flex;
+  justify-content: space-between;
+  padding-bottom: 8px;
+  border-bottom: 1px solid color-mix(in srgb, var(--inst-color) 42%, transparent);
+}
+
+.creation-instrument__caption {
+  position: absolute;
+  left: 18px;
+  right: 18px;
+  bottom: 14px;
+  display: flex;
+  justify-content: space-between;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, #182d28 74%, var(--inst-color));
+}
+
+.creation-details {
+  margin-top: 22px;
+}
+
+.creation-details__meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10.5px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--active-pigment);
+}
+
+.creation-details__title {
+  margin: 8px 0 6px;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-weight: 500;
+  font-size: clamp(34px, 3.8vw, 52px);
+  line-height: 1;
+  letter-spacing: -.03em;
+}
+
+.creation-details__philosophy {
+  margin: 0 0 10px;
+  font: italic clamp(20px, 1.9vw, 25px)/1.25 'Cormorant Garamond', Georgia, serif;
+  color: #364741;
+}
+
+.creation-details__desc {
+  margin: 0;
+  max-width: 54ch;
+  font-family: 'EB Garamond', Georgia, serif;
+  font-size: clamp(17px, 1.35vw, 20px);
+  line-height: 1.5;
+  color: #3c4742;
+}
+
+/* ── ACT 06 · HOW I SEE IT (CLEAR CLIMATE) ─────────────────────────────── */
+.world-perspective {
+  background:
+    radial-gradient(ellipse at 76% 42%, rgba(41, 81, 106, .22), transparent 52%),
+    #090c0d;
+  color: #e4e8df;
+}
+
+.world-perspective .world-field__meta {
+  color: #8ea9b0;
+}
+
+.world-perspective .world-field__intro {
+  color: #9fb0ad;
+}
+
+.perspective-rings {
+  position: absolute;
+  right: -12%;
+  top: 12%;
+  width: min(56vw, 680px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 1px solid rgba(157, 207, 228, .12);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.perspective-rings::after {
+  content: '';
+  position: absolute;
+  inset: 14%;
+  border-radius: 50%;
+  border: 1px dashed rgba(157, 207, 228, .14);
+}
+
+.perspective-grid {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr);
+  gap: clamp(36px, 5vw, 76px);
+  align-items: start;
+  margin-top: clamp(28px, 4vw, 48px);
+}
+
+.perspective-quote {
+  margin: 0 0 clamp(28px, 3.5vw, 42px);
+  padding-left: clamp(16px, 2vw, 28px);
+  border-left: 1.5px solid #9dcfe4;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-style: italic;
+  font-size: clamp(28px, 3.3vw, 46px);
+  line-height: 1.16;
+  letter-spacing: -.02em;
+  color: #f0f3ec;
+}
+
+/* Interactive unboxed perspective terms */
+.perspective-terms {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 22px;
+  border-top: 1px solid rgba(156, 179, 171, .2);
+  padding-top: 18px;
+}
+
+.perspective-term {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+  min-height: 44px;
+  padding: 6px 0;
+  border: 0;
+  border-bottom: 1.5px solid transparent;
+  background: transparent;
+  cursor: pointer;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: clamp(24px, 2.5vw, 34px);
+  color: #a6b7b4;
+  transition: color .25s ease, border-color .25s ease;
+}
+
+.perspective-term small {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: #7ea8ba;
+}
+
+.perspective-term:hover,
+.perspective-term[aria-selected="true"] {
+  color: #eef2ea;
+  border-bottom-color: #9dcfe4;
+}
+
+.perspective-reading {
+  margin-top: 20px;
+  min-height: 82px;
+}
+
+.perspective-reading__sub {
+  margin: 0 0 6px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10.5px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: #9dcfe4;
+}
+
+.perspective-reading__body {
+  margin: 0;
+  max-width: 56ch;
+  font-family: 'EB Garamond', Georgia, serif;
+  font-size: clamp(19px, 1.55vw, 23px);
+  line-height: 1.48;
+  color: #cfd8d4;
+}
+
+.perspective-sequence {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  margin-top: 30px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: .1em;
+  color: #9dcfe4;
+}
+
+.perspective-sequence span:not(:last-child)::after {
+  content: '↝';
+  margin-left: 12px;
+  color: #6b7f80;
+}
+
+/* Right column: real written models (open editorial index) */
+.perspective-models__head {
+  margin: 0 0 14px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10.5px;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  color: #88a4ad;
+}
+
+.perspective-models {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid rgba(156, 179, 171, .2);
+}
+
+.perspective-models li {
+  border-bottom: 1px solid rgba(156, 179, 171, .16);
+}
+
+.perspective-models a {
+  display: grid;
+  gap: 4px;
+  padding: 15px 0;
+  transition: padding-left .25s ease, color .25s ease;
+}
+
+.perspective-models a:hover,
+.perspective-models a:focus-visible {
+  padding-left: 8px;
+  color: #ffffff;
+}
+
+.perspective-models strong {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 10px;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-weight: 500;
+  font-size: clamp(22px, 2vw, 27px);
+}
+
+.perspective-models strong span {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: #9dcfe4;
+}
+
+.perspective-models small {
+  font-family: 'EB Garamond', Georgia, serif;
+  font-size: 16.5px;
+  line-height: 1.38;
+  color: #9cb0ad;
+}
+
+/* ── CLOSING FIELD · STILL BECOMING ────────────────────────────────────── */
+.living-end {
+  position: relative;
+  padding: clamp(78px, 10vw, 132px) clamp(20px, 5vw, 76px) clamp(54px, 7vw, 88px);
+  background: #f0e8d8;
+  color: #182d28;
+}
+
+.living-end__inner {
+  max-width: 1340px;
+  margin: 0 auto;
+}
+
+.living-end__head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 20px 40px;
+  padding-bottom: clamp(32px, 4.5vw, 52px);
+  border-bottom: 1px solid rgba(24, 45, 40, .15);
+}
+
+.living-end__head h2 {
+  margin: 10px 0 0;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-weight: 400;
+  font-size: clamp(54px, 9.5vw, 144px);
+  line-height: .88;
+  letter-spacing: -.055em;
+}
+
+.living-end__sig {
+  font: italic clamp(34px, 4vw, 54px)/1 'Cormorant Garamond', Georgia, serif;
+  transform: rotate(-7deg);
+}
+
+.living-end__columns {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 32px clamp(24px, 4vw, 56px);
+  margin-top: clamp(28px, 4vw, 44px);
+}
+
+.living-end__col h3 {
+  margin: 0 0 12px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10.5px;
+  font-weight: 400;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: #5d665e;
+}
+
+.living-end__col ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 4px;
+}
+
+.living-end__col a,
+.living-end__col span.is-static {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 36px;
+  font-family: 'EB Garamond', Georgia, serif;
+  font-size: 20px;
+  color: #1f332d;
+  transition: transform .2s ease;
+}
+
+.living-end__col a:hover {
+  transform: translateX(4px);
+}
+
+.living-end__col span.is-static {
+  color: #636c64;
+  font-size: 18px;
+}
+
+.living-end__footnote {
+  margin: clamp(36px, 5vw, 56px) 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 12px 24px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10.5px;
+  letter-spacing: .1em;
+  color: #5f6860;
+}
+
+/* ── LIGHTWEIGHT CLIP THEATER DIALOG (for Venom 1v6 inline clip) ───────── */
+.clip-theater {
+  width: min(94vw, 960px);
+  max-width: none;
+  padding: 0;
+  border: 1px solid rgba(235, 228, 212, .2);
+  background: #0b0e11;
+  color: #eee6d6;
+  box-shadow: 0 32px 96px rgba(0, 0, 0, .78);
+}
+
+.clip-theater::backdrop {
+  background: rgba(6, 9, 10, .86);
+}
+
+.clip-theater__bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 18px;
+  border-bottom: 1px solid rgba(235, 228, 212, .12);
+}
+
+.clip-theater__bar h2 {
+  margin: 0;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-weight: 500;
+  font-size: clamp(20px, 2.2vw, 28px);
+}
+
+.clip-theater__close {
+  min-width: 44px;
+  min-height: 44px;
+  border: 1px solid rgba(235, 228, 212, .26);
+  background: transparent;
+  color: inherit;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+.clip-theater__stage {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  width: 100%;
+  background: #040607;
+}
+
+.clip-theater__stage iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: block;
+}
+
+.clip-theater__foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 12px 18px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: .1em;
+}
+
+/* ── RESPONSIVE SPATIAL ADAPTATIONS (preserve personality, no box stack!) */
+@media (max-width: 980px) {
+  .living-nav__worlds {
+    display: none;
+  }
+
+  .threshold__stage {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+
+  .threshold__objects {
+    min-height: clamp(360px, 78vw, 480px);
+  }
+
+  .threshold__sunset {
+    width: clamp(190px, 50vw, 310px);
+    left: 2%;
+    top: 4%;
+  }
+
+  .threshold__sky-note {
+    left: 58%;
+    right: auto;
+    top: 2%;
+  }
+
+  .threshold__portal-frame {
+    width: clamp(178px, 44vw, 250px);
+    right: 2%;
+    bottom: 0;
+  }
+
+  .threshold__portal-note {
+    left: 4%;
+    bottom: 6%;
+  }
+
+  .creations-atelier,
+  .perspective-grid,
+  .music-stations {
+    grid-template-columns: 1fr;
+  }
+
+  .living-end__columns {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 720px) {
+  .threshold {
+    padding-top: 86px;
+  }
+
+  .threshold__objects {
+    min-height: clamp(320px, 86vw, 430px);
+  }
+
+  .threshold__sunset {
+    width: 54%;
+    left: 0;
+    top: 2%;
+  }
+
+  .threshold__sky-note {
+    left: 59%;
+    top: 3%;
+    font-size: 9.5px;
+  }
+
+  .threshold__portal-frame {
+    width: 48%;
+    right: 0;
+    bottom: 0;
+  }
+
+  .threshold__portal-note {
+    left: 2%;
+    bottom: 4%;
+    font-size: 9px;
+  }
+
+  /* Gaming mobile spatial arrangement — staggered, overlapping, NOT identical cards */
+  .gaming-composition {
+    min-height: 0;
+    display: grid;
+    gap: 20px;
+  }
+
+  .gaming-lead {
+    width: 100%;
+    margin-left: 0;
+    padding: 16px 10px 10px;
+    transform: rotate(-.8deg);
+  }
+
+  .gaming-clips-mobile-row {
+    display: grid;
+    grid-template-columns: 1.05fr .95fr 1fr;
+    gap: 10px;
+    align-items: start;
+    margin-top: -10px;
+  }
+
+  .gaming-clip {
+    position: relative;
+    inset: auto;
+    width: 100%;
+  }
+
+  .gaming-clip--0 {
+    transform: rotate(-2.5deg) translateY(8px);
+  }
+
+  .gaming-clip--1 {
+    transform: rotate(2.4deg) translateY(-6px);
+  }
+
+  .gaming-clip--2 {
+    transform: rotate(-1.8deg) translateY(12px);
+  }
+
+  .gaming-archive-clip,
+  .gaming-archive-clip--0,
+  .gaming-archive-clip--1 {
+    position: relative;
+    inset: auto;
+    width: 82%;
+    margin-left: auto;
+    transform: rotate(1.2deg);
+  }
+
+  .gaming-archive-clip--1 {
+    margin-left: 0;
+    transform: rotate(-1.3deg);
+  }
+
+  .gaming-seal-wrap {
+    position: relative;
+    inset: auto;
+    max-width: none;
+    margin-top: 8px;
+  }
+
+  /* Basketball mobile: portrait overlaps the court edge */
+  .basketball-visuals {
+    min-height: 0;
+    padding-top: 66px;
+    padding-bottom: 58px;
+  }
+
+  .basketball-title {
+    font-size: clamp(60px, 18vw, 114px);
+    top: 0;
+  }
+
+  .basketball-court {
+    width: 88%;
+    margin-left: 12%;
+    margin-top: 52px;
+  }
+
+  .basketball-portrait {
+    width: 48%;
+    left: 0;
+    bottom: 0;
+  }
+
+  .basketball-copy {
+    text-align: left;
+    margin-left: 0;
+  }
+
+  .basketball-copy .world-field__intro {
+    margin-left: 0;
+  }
+
+  .basketball-copy .lh-paths {
+    justify-content: flex-start;
+  }
+
+  /* Moments mobile: asymmetric floating cluster, NOT uniform vertical stack */
+  .moments-cluster {
+    min-height: clamp(540px, 146vw, 660px);
+  }
+
+  .moment-float--0 {
+    left: 0;
+    top: 2%;
+    width: 56%;
+    transform: rotate(-3deg);
+  }
+
+  .moment-float--3 {
+    right: 0;
+    left: auto;
+    top: 6%;
+    width: 48%;
+    transform: rotate(3.2deg);
+  }
+
+  .moment-float--1 {
+    right: 0;
+    top: 34%;
+    width: 47%;
+    transform: rotate(4deg);
+  }
+
+  .moment-float--2 {
+    left: 4%;
+    top: 48%;
+    bottom: auto;
+    width: 44%;
+    transform: rotate(-5.5deg);
+  }
+
+  .moment-float--4 {
+    left: 34%;
+    bottom: 0;
+    top: auto;
+    width: 44%;
+    transform: rotate(4.5deg);
+  }
+
+  /* Music mobile */
+  .music-wave-band {
+    flex-direction: column;
+    align-items: flex-start;
+    height: auto;
+    gap: 10px;
+  }
+
+  .music-wave-svg {
+    height: 112px;
+  }
+
+  .music-tone-btn {
+    position: static;
+    transform: none;
+    margin: 4px 0 0 20px;
+  }
+
+  .music-tone-btn:hover,
+  .music-tone-btn:focus-visible {
+    transform: none;
+  }
+
+  /* Creations mobile */
+  .palette-swatches {
+    gap: 10px 12px;
+  }
+
+  .pigment-well {
+    padding: 4px 10px 4px 4px;
+  }
+
+  .atelier-sketches {
+    justify-content: flex-start;
+  }
+
+  .living-end__columns {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 370px) {
+  .threshold__title span {
+    font-size: 62px;
+  }
+
+  .threshold__title span + span {
+    font-size: 52px;
+  }
+
+  .world-field__title {
+    font-size: 56px;
+  }
+
+  .gaming-seal {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+/* Reduced motion respects user preference without hiding any content or controls */
+@media (prefers-reduced-motion: reduce) {
+  html:has(.living-home) {
+    scroll-behavior: auto;
+  }
+
+  .living-home *,
+  .living-home *::before,
+  .living-home *::after {
+    transition: none !important;
+    animation: none !important;
+  }
+
+  .threshold__backdrop video,
+  .basketball-court video {
+    display: none;
+  }
+}

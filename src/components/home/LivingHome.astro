@@ -1,0 +1,730 @@
+---
+import '../../styles/home-mirror.css';
+import '../../styles/living-home.css';
+import GamingGlyph from '../GamingGlyph.astro';
+import CreationPreview from './CreationPreview.astro';
+import { homeMirrorContent } from '../../scripts/home-scene';
+import {
+  thresholdData,
+  worldAnchors,
+  gamingWorld,
+  basketballWorld,
+  momentsWorld,
+  musicWorld,
+  creationsWorld,
+  perspectiveWorld,
+  socialPresence,
+} from '../../data/living-worlds';
+
+const author = import.meta.env.DEV && import.meta.env.MODE === 'author';
+const mirrorMarkup = homeMirrorContent(thresholdData.portal, thresholdData.reflections);
+const dabShapes = [
+  '56% 44% 40% 60% / 50% 56% 44% 50%',
+  '44% 56% 52% 48% / 58% 42% 58% 42%',
+  '62% 38% 46% 54% / 44% 58% 42% 56%',
+  '48% 52% 60% 40% / 54% 46% 54% 46%',
+  '52% 48% 44% 56% / 60% 40% 52% 48%',
+  '42% 58% 55% 45% / 46% 54% 46% 54%',
+  '58% 42% 48% 52% / 52% 48% 60% 40%',
+  '46% 54% 42% 58% / 56% 44% 48% 52%',
+];
+const initialCreation = creationsWorld.works[0];
+const initialPerspective = perspectiveWorld.elements[0];
+---
+
+<a class="living-skip" href="#living-main">Skip to worlds</a>
+
+<header class="living-nav" data-living-nav data-climate="light">
+  <a class="living-nav__handle" href="#top">{thresholdData.handle}</a>
+  <nav class="living-nav__worlds" aria-label="Jump to an interest">
+    {worldAnchors.map((world) => (
+      <a href={world.sectionHref} data-nav-world={world.id}>{world.name}</a>
+    ))}
+  </nav>
+  <details class="living-menu">
+    <summary aria-label="Open full site navigation"><span></span><span></span><span></span></summary>
+    <div class="living-menu__drawer" role="region" aria-label="All rooms and worlds">
+      <div class="living-menu__group">
+        <p>Individual Worlds</p>
+        <a href="/games.html">Gaming <span>↗</span></a>
+        <a href="/basketball.html">Basketball <span>↗</span></a>
+        <a href="/moments.html">Moments <span>↗</span></a>
+        <a href="/music.html">Music <span>↗</span></a>
+        <a href="/creations.html">Creations Palette <span>↗</span></a>
+        <a href="/clear.html">How I See It <span>↗</span></a>
+      </div>
+      <div class="living-menu__group">
+        <p>Connected Environments</p>
+        <a href="/natural.html">Natural Field <span>↗</span></a>
+        <a href="/world.html">App World Atlas <span>↗</span></a>
+        <a href="/gaming/">Gaming OS <span>↗</span></a>
+        <a href="https://music.icyclearer.com" target="_blank" rel="noopener noreferrer">ICY Music Lab <span>↗</span></a>
+        <a href="/worlds.html">Two Worlds <span>↗</span></a>
+        {author && <a href="/?edit=1">Local Studio (Home Canvas) <span>✎</span></a>}
+      </div>
+    </div>
+  </details>
+</header>
+
+<main id="living-main" class="living-home" tabindex="-1">
+  <!-- ── ACT 00 · THE LAKE THRESHOLD ──────────────────────────────────── -->
+  <section class="threshold" id="top" data-world-climate="light" aria-label="Icy Clearer — lakeside threshold">
+    <div class="threshold__backdrop" aria-hidden="true">
+      <img src={thresholdData.lakePoster} alt="" fetchpriority="high" decoding="async" />
+      <video
+        data-ambient-video
+        data-src={thresholdData.lakeVideo}
+        poster={thresholdData.lakePoster}
+        muted
+        loop
+        playsinline
+        preload="none"
+      ></video>
+    </div>
+    <div class="threshold__veil" aria-hidden="true"></div>
+
+    <div class="threshold__stage">
+      <div class="threshold__editorial">
+        <p class="threshold__kicker">{thresholdData.kicker}</p>
+        <h1 class="threshold__title">
+          <span>{thresholdData.titleLines[0]}</span>
+          <span>{thresholdData.titleLines[1]}</span>
+        </h1>
+        <div class="threshold__signoff">
+          <h2 class="threshold__heading">{thresholdData.heading}</h2>
+          <span class="threshold__signature">
+            {thresholdData.signature}
+            <svg viewBox="0 0 240 48" aria-hidden="true">
+              <path d="M3 39 Q100 8 232 5 M57 38 Q91 27 115 26" />
+            </svg>
+          </span>
+        </div>
+        <p class="threshold__lead">{thresholdData.lead}</p>
+      </div>
+
+      <div class="threshold__objects">
+        <a
+          class="threshold__sunset"
+          href={thresholdData.sunsetPhoto.href}
+          aria-label="Lens Captured — enter Moments photographic observatory"
+        >
+          <img
+            src={thresholdData.sunsetPhoto.src}
+            alt={thresholdData.sunsetPhoto.alt}
+            loading="eager"
+            decoding="async"
+          />
+        </a>
+        <span class="threshold__sky-note" aria-hidden="true">
+          {thresholdData.sunsetPhoto.note}
+          <span>⟵</span>
+        </span>
+
+        <div class="threshold__portal-frame" data-role="portal">
+          <Fragment set:html={mirrorMarkup} />
+        </div>
+        <p class="threshold__portal-note" aria-hidden="true">NATURAL<br />ARCHIVE ⟶</p>
+      </div>
+    </div>
+
+    <div class="threshold__trail">
+      <a class="threshold__wander" href="#gaming">
+        Wander inside <span aria-hidden="true">↓</span>
+      </a>
+      <nav class="threshold__compass" aria-label="Direct entrances to individual worlds">
+        {worldAnchors.map((world) => (
+          <a href={world.sectionHref}>
+            <small>{world.number}</small>
+            {world.name}
+          </a>
+        ))}
+      </nav>
+    </div>
+  </section>
+
+  <!-- ── ACT 01 · GAMING ──────────────────────────────────────────────── -->
+  <section class="world-field world-gaming" id="gaming" data-world-climate="dark" aria-labelledby="world-gaming-title">
+    <div class="world-field__inner">
+      <div class="world-field__meta lh-mono">
+        <span>01 / 06 &nbsp;·&nbsp; Gameplay &amp; Taste</span>
+        <span>{gamingWorld.ratingCount} Published Ratings · Gaming OS</span>
+      </div>
+
+      <h2 class="world-field__title" id="world-gaming-title">GAMING</h2>
+      <p class="world-field__intro">
+        Real gameplay, real reads, and the personal evaluation system running underneath them. Touch any clip to jump right into it.
+      </p>
+
+      <div class="gaming-composition">
+        <!-- Dominant Naraka gameplay monitor -->
+        <a
+          class="gaming-lead"
+          href={gamingWorld.leadClip.href}
+          aria-label={`Play ${gamingWorld.leadClip.title} in Gaming highlight viewer`}
+        >
+          <span class="gaming-lead__media">
+            <img
+              src={gamingWorld.leadClip.thumbnail}
+              alt={gamingWorld.leadClip.alt}
+              width="1280"
+              height="723"
+              decoding="async"
+            />
+            <span class="gaming-play-disc" aria-hidden="true">▶</span>
+          </span>
+          <span class="gaming-lead__caption">
+            <em>{gamingWorld.leadClip.game} — {gamingWorld.leadClip.title}</em>
+            <small>WATCH IN GAMING ↗</small>
+          </span>
+        </a>
+
+        <!-- Three staggered vertical gameplay shorts -->
+        <div class="gaming-clips-mobile-row">
+          {gamingWorld.featuredClips.map((clip, index) => (
+            <a
+              class={`gaming-clip gaming-clip--${index}`}
+              href={clip.href}
+              aria-label={`Play ${clip.tag}: ${clip.title}`}
+            >
+              <span class="gaming-clip__frame">
+                <img src={clip.thumbnail} alt="" decoding="async" />
+                <span class="gaming-play-disc" aria-hidden="true">▶</span>
+                <span class="gaming-clip__tag">{clip.tag} ↗</span>
+              </span>
+            </a>
+          ))}
+        </div>
+
+        <!-- Playable archive clips (Marvel Rivals & Sparking Zero — inline theater) -->
+        {gamingWorld.archiveClips.map((clip, idx) => (
+          <button
+            type="button"
+            class={`gaming-archive-clip gaming-archive-clip--${idx}`}
+            data-open-clip={clip.videoId}
+            data-clip-title={`${clip.tag} — ${clip.title}`}
+            data-clip-url={clip.canonicalUrl}
+            aria-label={`Play ${clip.tag}: ${clip.title}`}
+          >
+            <span class="gaming-archive-clip__frame">
+              <img
+                src={clip.thumbnail}
+                alt={`${clip.tag}: ${clip.title}`}
+                decoding="async"
+              />
+              <span class="gaming-play-disc" aria-hidden="true">▶</span>
+            </span>
+            <span class="gaming-archive-clip__meta">
+              <span>{clip.shortLabel}</span>
+              <span>PLAY ▸</span>
+            </span>
+          </button>
+        ))}
+
+        <!-- Interactive Real 9-Axis Taste Glyph + Live Game Ratings Switcher -->
+        <div class="gaming-seal-wrap" data-gaming-ratings-box>
+          <a
+            class="gaming-seal"
+            data-rating-link
+            href={gamingWorld.evaluationUrl}
+            aria-label={`Naraka rated ${gamingWorld.naraka.score.toFixed(1)} out of 10 — view full evaluation in Gaming OS`}
+          >
+            <span class="gaming-seal__glyph" data-rating-glyph-host>
+              <GamingGlyph experience={gamingWorld.naraka} />
+            </span>
+            <span class="gaming-seal__copy">
+              <span class="gaming-seal__score">
+                <strong data-rating-score>{gamingWorld.naraka.score.toFixed(1)}</strong>
+                <span data-rating-name>/ 10 · NARAKA</span>
+              </span>
+              <span class="gaming-seal__verdict" data-rating-verdict>{gamingWorld.naraka.verdict}</span>
+              <span class="gaming-seal__cta" data-rating-cta>OPEN NARAKA IN GAMING OS ↗</span>
+            </span>
+          </a>
+
+          <div class="gaming-taste-strip" role="tablist" aria-label="Switch published game rating">
+            {gamingWorld.featuredRatings.map((entry, idx) => (
+              <button
+                type="button"
+                role="tab"
+                class="gaming-taste-pill"
+                data-rating-pick={entry.id}
+                aria-selected={idx === 0 ? 'true' : 'false'}
+                tabindex={idx === 0 ? 0 : -1}
+              >
+                {entry.gameName} <small>{Number(entry.score).toFixed(1)}</small>
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <nav class="lh-paths" aria-label="Gaming navigation">
+        {gamingWorld.paths.map((item) => (
+          <a class:list={['lh-path', { 'lh-path--primary': item.primary }]} href={item.href}>
+            {item.label} <span class="lh-path__arrow" aria-hidden="true">↗</span>
+          </a>
+        ))}
+      </nav>
+    </div>
+  </section>
+
+  <!-- ── ACT 02 · BASKETBALL ──────────────────────────────────────────── -->
+  <section class="world-field world-basketball" id="basketball" data-world-climate="light" aria-labelledby="world-basketball-title">
+    <div class="world-field__inner">
+      <div class="world-field__meta lh-mono">
+        <span>02 / 06 &nbsp;·&nbsp; Movement &amp; Runs</span>
+        <span>Real Court Archive · {basketballWorld.clips.length} Verified Clip</span>
+      </div>
+
+      <div class="basketball-stage">
+        <div class="basketball-visuals">
+          <h2 class="world-field__title basketball-title" id="world-basketball-title">
+            BASKET<br />BALL
+          </h2>
+
+          <!-- Midground live indoor court footage -->
+          <a
+            class="basketball-court"
+            href="/basketball.html#footage"
+            aria-label={`Watch basketball footage: ${basketballWorld.leadFootage.title}`}
+          >
+            <img
+              src={basketballWorld.leadFootage.poster}
+              alt={`Indoor basketball gameplay: ${basketballWorld.leadFootage.title}`}
+              decoding="async"
+            />
+            <video
+              data-ambient-video
+              data-src={basketballWorld.leadFootage.videoSrc}
+              poster={basketballWorld.leadFootage.poster}
+              muted
+              loop
+              playsinline
+              preload="none"
+            ></video>
+            <span class="basketball-court__tag">▶ {basketballWorld.leadFootage.title} · Enter Film Study ↗</span>
+          </a>
+
+          <!-- Foreground real personal portrait overlapping the court -->
+          <a
+            class="basketball-portrait"
+            href="/basketball.html"
+            aria-label="Enter Basketball — footage, movement, and court notes"
+          >
+            <img
+              src={basketballWorld.portrait.src}
+              alt={basketballWorld.portrait.alt}
+              decoding="async"
+            />
+            <span class="basketball-portrait__note">
+              <span>On the court</span>
+              <span aria-hidden="true">⟶</span>
+            </span>
+          </a>
+        </div>
+      </div>
+
+      <div class="basketball-copy">
+        <p class="world-field__intro">
+          Hesitation, balance, footwork, reading space. No padded stats or placeholder highlights — just real court film and room for more runs as they happen.
+        </p>
+        <nav class="lh-paths" aria-label="Basketball navigation">
+          {basketballWorld.paths.map((item: any) => (
+            <a
+              class:list={['lh-path', { 'lh-path--primary': item.primary }]}
+              href={item.href}
+              target={item.external ? '_blank' : undefined}
+              rel={item.external ? 'noopener noreferrer' : undefined}
+            >
+              {item.label} <span class="lh-path__arrow" aria-hidden="true">↗</span>
+            </a>
+          ))}
+        </nav>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── ACT 03 · MOMENTS / PHOTOGRAPHY ───────────────────────────────── -->
+  <section class="world-field world-moments" id="moments" data-world-climate="dark" aria-labelledby="world-moments-title">
+    <div class="moments-orbit-trace" aria-hidden="true"></div>
+    <div class="world-field__inner">
+      <div class="world-field__meta lh-mono">
+        <span>03 / 06 &nbsp;·&nbsp; Observation &amp; Light</span>
+        <span>{String(momentsWorld.totalCount).padStart(2, '0')} Captures in Circular Observatory</span>
+      </div>
+
+      <h2 class="world-field__title" id="world-moments-title">MOMENTS</h2>
+      <p class="world-field__intro">
+        Water, dusk, stillness, small details noticed before naming them. Touch any photograph to open it directly inside the Circular Observatory.
+      </p>
+
+      <div class="moments-cluster">
+        {momentsWorld.featuredPhotos.map((photo, index) => (
+          <a
+            class={`moment-float moment-float--${index}`}
+            href={photo.href}
+            aria-label={`Enter photograph in Moments Observatory: ${photo.label}`}
+          >
+            <img src={photo.src} alt={photo.alt} decoding="async" />
+            <span class="moment-float__caption">
+              <span>{photo.label}</span>
+              <span aria-hidden="true">↗</span>
+            </span>
+          </a>
+        ))}
+      </div>
+
+      <div class="moments-footer-row">
+        <nav class="lh-paths" aria-label="Moments navigation">
+          {momentsWorld.paths.map((item: any) => (
+            <a
+              class:list={['lh-path', { 'lh-path--primary': item.primary }]}
+              href={item.href}
+              target={item.external ? '_blank' : undefined}
+              rel={item.external ? 'noopener noreferrer' : undefined}
+            >
+              {item.label} <span class="lh-path__arrow" aria-hidden="true">↗</span>
+            </a>
+          ))}
+        </nav>
+
+        {momentsWorld.allPhotos.length > 5 && (
+          <button type="button" class="moments-shift-btn" data-moments-shift>
+            Shift the field ↻ <span data-moments-window>5 of {momentsWorld.totalCount}</span>
+          </button>
+        )}
+      </div>
+    </div>
+  </section>
+
+  <!-- ── ACT 04 · MUSIC ───────────────────────────────────────────────── -->
+  <section class="world-field world-music" id="music" data-world-climate="dark" aria-labelledby="world-music-title">
+    <div class="world-field__inner">
+      <div class="world-field__meta lh-mono">
+        <span>04 / 06 &nbsp;·&nbsp; Voice, Rhythm &amp; Sound</span>
+        <span>∿ Wave Signal · ICY Music Lab</span>
+      </div>
+
+      <h2 class="world-field__title" id="world-music-title">MUSIC</h2>
+      <p class="world-field__intro">
+        Listening, rhythm, musical lineage, and live sound experimentation. Touch the wave for a quiet tone, or step directly into ICY Music Lab.
+      </p>
+
+      <div class="music-stage">
+        <div class="music-wave-band" data-music-wave title="Move or touch to disturb the wave">
+          <svg class="music-wave-svg" viewBox="0 0 1200 180" preserveAspectRatio="none" aria-hidden="true">
+            <path data-wave-ghost stroke="rgba(239, 150, 130, 0.28)" stroke-width="1.25" d="M0,90 L1200,90" />
+            <path data-wave-primary stroke="#ef9682" stroke-width="2" d="M0,90 L1200,90" />
+          </svg>
+          <button type="button" class="music-tone-btn" data-music-tone>
+            <span class="music-tone-btn__glyph" aria-hidden="true">∿</span>
+            <span data-tone-label>Hear a tone</span>
+          </button>
+        </div>
+
+        <div class="music-stations">
+          <a class="music-station" href={musicWorld.musicLabUrl} target="_blank" rel="noopener noreferrer">
+            <span class="music-station__kicker">Primary Lab · Live ↗</span>
+            <h3>ICY Music Lab</h3>
+            <p>My active music environment — sound experiments, listening, rhythm studies, and work in progress.</p>
+          </a>
+          {musicWorld.studies.map((study) => (
+            <a class="music-station" href={study.href} target="_blank" rel="noopener noreferrer">
+              <span class="music-station__kicker">{study.glyph} {study.lens} ↗</span>
+              <h3>{study.title}</h3>
+              <p>{study.philosophy} {study.field}</p>
+            </a>
+          ))}
+        </div>
+
+        <nav class="lh-paths" aria-label="Music navigation">
+          {musicWorld.paths.map((item: any) => (
+            <a
+              class:list={['lh-path', { 'lh-path--primary': item.primary }]}
+              href={item.href}
+              target={item.external ? '_blank' : undefined}
+              rel={item.external ? 'noopener noreferrer' : undefined}
+            >
+              {item.label} <span class="lh-path__arrow" aria-hidden="true">↗</span>
+            </a>
+          ))}
+        </nav>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── ACT 05 · CREATIONS / INTERACTIVE PIGMENT PALETTE ─────────────── -->
+  <section
+    class="world-field world-creations"
+    id="creations"
+    data-world-climate="light"
+    data-creations-section
+    aria-labelledby="world-creations-title"
+  >
+    <div class="world-field__inner">
+      <div class="world-field__meta lh-mono">
+        <span>05 / 06 &nbsp;·&nbsp; Software, Websites &amp; Physical Craft</span>
+        <span>{creationsWorld.works.length} Active Works · Interactive Pigment Palette</span>
+      </div>
+
+      <h2 class="world-field__title" id="world-creations-title">CREATIONS</h2>
+      <p class="world-field__intro">
+        Each pigment holds something I've actually built or sketched. Touch a color to inspect the work, then open its real interface.
+      </p>
+
+      <div class="creations-atelier">
+        <div class="palette-board">
+          <p class="palette-board__hint">Select a pigment · arrow keys or tap</p>
+          <div class="palette-swatches" role="tablist" aria-label="Creation pigment palette">
+            {creationsWorld.works.map((work, index) => (
+              <button
+                type="button"
+                role="tab"
+                class="pigment-well"
+                data-pigment-id={work.id}
+                aria-selected={index === 0 ? 'true' : 'false'}
+                tabindex={index === 0 ? 0 : -1}
+                style={`--swatch-color:${work.pigmentHex};--dab-shape:${dabShapes[index % dabShapes.length]}`}
+              >
+                <span class="pigment-well__dab" aria-hidden="true"></span>
+                <span class="pigment-well__text">
+                  <strong>{work.title}</strong>
+                  <small>{work.pigmentName}</small>
+                </span>
+              </button>
+            ))}
+          </div>
+
+          <!-- Real handmade studies from public/media/natural/ -->
+          <div class="atelier-sketches">
+            <a
+              class="atelier-sketch atelier-sketch--garment"
+              href="/creations.html?work=material-studies"
+              aria-label="Inspect Garment Study in Creations Studio"
+            >
+              <img src="/media/natural/garment-study.svg" alt="Garment silhouette study sketch" decoding="async" />
+              <span>Garment study ↗</span>
+            </a>
+            <a
+              class="atelier-sketch atelier-sketch--cloth"
+              href="/creations.html?work=material-studies"
+              aria-label="Inspect Cloth Material Study in Creations Studio"
+            >
+              <img src="/media/natural/cloth-study.svg" alt="Woven cloth material study" decoding="async" />
+              <span>Cloth 001 ↗</span>
+            </a>
+          </div>
+        </div>
+
+        <div class="creation-stage" aria-live="polite">
+          <div class="creation-canvas">
+            {creationsWorld.works.map((work, index) => (
+              <div
+                class:list={['creation-visual', { 'is-active': index === 0 }]}
+                data-work-visual={work.id}
+              >
+                <CreationPreview work={work} />
+              </div>
+            ))}
+          </div>
+
+          <div class="creation-details">
+            <p class="creation-details__meta" data-creation-meta>
+              {initialCreation.pigmentName} · {initialCreation.kind} · {initialCreation.status}
+            </p>
+            <h3 class="creation-details__title" data-creation-title>{initialCreation.title}</h3>
+            <p class="creation-details__philosophy" data-creation-philosophy>“{initialCreation.philosophy}”</p>
+            <p class="creation-details__desc" data-creation-desc>{initialCreation.description}</p>
+
+            <div class="lh-paths">
+              <a
+                class="lh-path lh-path--primary"
+                data-creation-launch
+                href={initialCreation.href}
+                target={initialCreation.external ? '_blank' : undefined}
+                rel={initialCreation.external ? 'noopener noreferrer' : undefined}
+              >
+                <span data-launch-label>Open {initialCreation.title}</span>
+                <span class="lh-path__arrow" aria-hidden="true">↗</span>
+              </a>
+              <a class="lh-path" data-creation-studio href={`/creations.html?work=${encodeURIComponent(initialCreation.id)}`}>
+                Inspect in Palette Studio <span class="lh-path__arrow" aria-hidden="true">→</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <nav class="lh-paths" aria-label="Creations navigation" style="margin-top:40px">
+        {creationsWorld.paths.map((item: any) => (
+          <a
+            class:list={['lh-path', { 'lh-path--primary': item.primary }]}
+            href={item.href}
+            target={item.external ? '_blank' : undefined}
+            rel={item.external ? 'noopener noreferrer' : undefined}
+          >
+            {item.label} <span class="lh-path__arrow" aria-hidden="true">↗</span>
+          </a>
+        ))}
+      </nav>
+    </div>
+  </section>
+
+  <!-- ── ACT 06 · HOW I SEE IT (CLEAR) ────────────────────────────────── -->
+  <section
+    class="world-field world-perspective"
+    id="perspective"
+    data-world-climate="dark"
+    data-perspective-section
+    aria-labelledby="world-perspective-title"
+  >
+    <div class="perspective-rings" aria-hidden="true"></div>
+    <div class="world-field__inner">
+      <div class="world-field__meta lh-mono">
+        <span>06 / 06 &nbsp;·&nbsp; ICY CLEAR · Personal Perspective</span>
+        <span>Still Developing · Not a Doctrine</span>
+      </div>
+
+      <h2 class="world-field__title" id="world-perspective-title">HOW I SEE IT</h2>
+      <p class="world-field__intro">{perspectiveWorld.note}</p>
+
+      <div class="perspective-grid">
+        <div>
+          <blockquote class="perspective-quote">“{perspectiveWorld.quote}”</blockquote>
+
+          <div class="perspective-terms" role="tablist" aria-label="Life as continuous development elements">
+            {perspectiveWorld.elements.map((el, index) => (
+              <button
+                type="button"
+                role="tab"
+                class="perspective-term"
+                data-term-number={el.number}
+                aria-selected={index === 0 ? 'true' : 'false'}
+                tabindex={index === 0 ? 0 : -1}
+              >
+                <small>{el.number}</small>
+                {el.title}
+              </button>
+            ))}
+          </div>
+
+          <div class="perspective-reading" aria-live="polite">
+            <p class="perspective-reading__sub" data-term-subtitle>
+              {initialPerspective.number} / {initialPerspective.subtitle}
+            </p>
+            <p class="perspective-reading__body" data-term-summary>
+              {initialPerspective.summary}
+            </p>
+          </div>
+
+          <div class="perspective-sequence" aria-label="Non-linear ongoing process">
+            {perspectiveWorld.sequence.map((step) => <span>{step}</span>)}
+          </div>
+
+          <nav class="lh-paths" aria-label="How I See It navigation">
+            {perspectiveWorld.paths.map((item) => (
+              <a class:list={['lh-path', { 'lh-path--primary': item.primary }]} href={item.href}>
+                {item.label} <span class="lh-path__arrow" aria-hidden="true">↗</span>
+              </a>
+            ))}
+          </nav>
+        </div>
+
+        <div>
+          <p class="perspective-models__head">Written Models &amp; Lenses</p>
+          <ul class="perspective-models">
+            {perspectiveWorld.models.map((model) => (
+              <li>
+                <a href={model.href}>
+                  <strong>
+                    {model.title}
+                    <span>{model.idx} ↗</span>
+                  </strong>
+                  <small>{model.line}</small>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── CLOSING FIELD ────────────────────────────────────────────────── -->
+  <footer class="living-end" id="archive-footer" data-world-climate="light">
+    <div class="living-end__inner">
+      <div class="living-end__head">
+        <div>
+          <p class="lh-mono" style="margin:0;color:#5c655d">ICY CLEARER · LIVING ARCHIVE</p>
+          <h2>Still becoming.</h2>
+        </div>
+        <span class="living-end__sig">Chad</span>
+      </div>
+
+      <div class="living-end__columns">
+        <div class="living-end__col">
+          <h3>Individual Worlds</h3>
+          <ul>
+            <li><a href="/games.html">Gaming ↗</a></li>
+            <li><a href="/basketball.html">Basketball ↗</a></li>
+            <li><a href="/moments.html">Moments Observatory ↗</a></li>
+            <li><a href="/music.html">Music ↗</a></li>
+            <li><a href="/creations.html">Creations Palette ↗</a></li>
+            <li><a href="/clear.html">How I See It ↗</a></li>
+          </ul>
+        </div>
+
+        <div class="living-end__col">
+          <h3>Larger Environments</h3>
+          <ul>
+            <li><a href="/natural.html">Natural Living Field ↗</a></li>
+            <li><a href="/world.html">App World Spatial Atlas ↗</a></li>
+            <li><a href="/gaming/">Gaming OS ↗</a></li>
+            <li><a href="https://music.icyclearer.com" target="_blank" rel="noopener noreferrer">ICY Music Lab ↗</a></li>
+            <li><a href="/worlds.html">Two Worlds (Clear &amp; Natural) ↗</a></li>
+          </ul>
+        </div>
+
+        <div class="living-end__col">
+          <h3>Elsewhere</h3>
+          <ul>
+            {socialPresence.map((social) => (
+              <li>
+                {social.href ? (
+                  <a href={social.href} target="_blank" rel="noopener noreferrer">{social.label} ↗</a>
+                ) : (
+                  <span class="is-static">{social.label}</span>
+                )}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+
+      <div class="living-end__footnote">
+        <span>All photographs, clips, models, and tools are real pieces of this archive.</span>
+        <a href="#top">Return to the lake ↑</a>
+      </div>
+    </div>
+  </footer>
+</main>
+
+<!-- Lightweight dialog for the inline Marvel Rivals archive clip -->
+<dialog class="clip-theater" data-clip-theater aria-labelledby="clip-theater-title">
+  <header class="clip-theater__bar">
+    <h2 id="clip-theater-title" data-theater-title>Gameplay Clip</h2>
+    <button type="button" class="clip-theater__close" data-theater-close aria-label="Close video player">×</button>
+  </header>
+  <div class="clip-theater__stage" data-theater-stage></div>
+  <footer class="clip-theater__foot">
+    <span>Cee Ham · Archive Highlight</span>
+    <a data-theater-link href="https://www.youtube.com/@icyclear" target="_blank" rel="noopener noreferrer">Watch on YouTube ↗</a>
+  </footer>
+</dialog>
+
+<script is:inline type="application/json" data-gaming-ratings set:html={JSON.stringify(gamingWorld.featuredRatings).replace(/</g, '\\u003c')} />
+<script is:inline type="application/json" data-moments-pool set:html={JSON.stringify(momentsWorld.allPhotos).replace(/</g, '\\u003c')} />
+<script is:inline type="application/json" data-creations-manifest set:html={JSON.stringify(creationsWorld.works).replace(/</g, '\\u003c')} />
+<script is:inline type="application/json" data-perspective-manifest set:html={JSON.stringify(perspectiveWorld.elements).replace(/</g, '\\u003c')} />
+<script src="../../scripts/home-mirror.ts"></script>
+<script src="../../scripts/living-home.ts"></script>

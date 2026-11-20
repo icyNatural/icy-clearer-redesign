@@ -1,0 +1,494 @@
+---
+import { musicWorld } from '../data/living-worlds';
+---
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Music — Icy Clearer</title>
+  <meta name="description" content="Sound experiments, rhythm, musical lineage, and doorway into ICY Music Lab." />
+  <meta name="theme-color" content="#161114" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to music</a>
+
+  <header class="music-nav">
+    <a href="/#music">← HOME</a>
+    <nav aria-label="Music navigation">
+      <a href={musicWorld.musicLabUrl} target="_blank" rel="noopener noreferrer">ICY Music Lab ↗</a>
+      <a href="#studies">Beat &amp; Sample</a>
+      <a href="#sketch">Rhythm Sketch</a>
+      <a href="#recordings">Voice Archive</a>
+    </nav>
+  </header>
+
+  <main id="main" class="music-shell" tabindex="-1">
+    <section class="music-hero" aria-labelledby="music-title">
+      <p class="mono kicker">ICY CLEARER / MUSIC · ∿ VOICE SIGNAL</p>
+      <h1 id="music-title">Music<span>.</span></h1>
+      <p class="hero-lead">
+        Rhythm, listening, sampling lineage, and experimenting with sound. My active music workspace lives at ICY Music Lab; this room connects it with Beat, Sample, and future recordings.
+      </p>
+
+      <div class="lab-doorway">
+        <div>
+          <p class="mono kicker">LIVE SOUND WORKSPACE</p>
+          <h2>ICY Music Lab</h2>
+          <p>The dedicated home for sound experiments, listening tools, and musical exploration.</p>
+        </div>
+        <a class="lab-cta" href={musicWorld.musicLabUrl} target="_blank" rel="noopener noreferrer">
+          ENTER MUSIC LAB ↗
+        </a>
+      </div>
+    </section>
+
+    <section class="studies-section" id="studies" aria-labelledby="studies-title">
+      <p class="mono kicker">01 / SOUND &amp; LINEAGE OBSERVATORIES</p>
+      <h2 id="studies-title">How I listen and trace sound.</h2>
+
+      <div class="studies-list">
+        {musicWorld.studies.map((study) => (
+          <a class="study-row" href={study.href} target="_blank" rel="noopener noreferrer" style={`--study-accent:${study.accent}`}>
+            <span class="study-row__glyph" aria-hidden="true">{study.glyph}</span>
+            <div class="study-row__body">
+              <span class="mono study-row__lens">{study.lens} · {study.philosophy}</span>
+              <h3>{study.title}</h3>
+              <p>{study.field}</p>
+            </div>
+            <span class="mono study-row__go">OPEN ↗</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <section class="sketch-section" id="sketch" aria-labelledby="sketch-title">
+      <header class="sketch-head">
+        <div>
+          <p class="mono kicker">02 / INTERACTIVE SOUND SKETCH</p>
+          <h2 id="sketch-title">A quiet pocket for rhythm.</h2>
+          <p class="sketch-sub">
+            Silent until you touch it. Toggle steps or tap a tempo to sketch a pulse directly in the browser — an honest acoustic study, not a fake album preview.
+          </p>
+        </div>
+        <div class="sketch-controls">
+          <button type="button" class="sketch-btn sketch-btn--primary" data-pulse-toggle aria-pressed="false">▶ Start Pulse</button>
+          <button type="button" class="sketch-btn" data-tap-tempo>Tap Tempo</button>
+          <span class="mono bpm-readout" data-bpm-readout aria-live="polite">92 BPM</span>
+        </div>
+      </header>
+
+      <div class="step-grid" role="group" aria-label="8-step rhythm sketch">
+        {['01 · Root', '02', '03 · Lift', '04', '05 · Fifth', '06', '07 · Air', '08'].map((label, idx) => (
+          <button
+            type="button"
+            class="step-pad"
+            data-step-index={idx}
+            aria-pressed={[0, 3, 4, 6].includes(idx) ? 'true' : 'false'}
+          >
+            <span class="mono">{String(idx + 1).padStart(2, '0')}</span>
+            <small>{label.includes('·') ? label.split('·')[1].trim() : 'Pulse'}</small>
+          </button>
+        ))}
+      </div>
+    </section>
+
+    <section class="recordings-section" id="recordings" aria-labelledby="recordings-title">
+      <p class="mono kicker">03 / LOCAL VOICE &amp; RECORDINGS</p>
+      <h2 id="recordings-title">From the Natural archive.</h2>
+
+      {musicWorld.voiceArtifacts.length > 0 ? (
+        <div class="voice-list">
+          {musicWorld.voiceArtifacts.map((item: any) => (
+            <article class="voice-item">
+              <h3>{item.overrides?.title || item.metadata?.title || 'Voice artifact'}</h3>
+              {item.kind === 'video' && <video src={item.src} controls playsinline preload="metadata" />}
+              {item.kind === 'link' && item.source && <a href={item.source} target="_blank" rel="noopener noreferrer">Open source ↗</a>}
+            </article>
+          ))}
+        </div>
+      ) : (
+        <div class="voice-honest">
+          <p>
+            No local recordings are stored in this repository yet — and nothing has been invented to fill this space. Any recording or audio/video clip added under Natural's <strong>VOICE (∿)</strong> signal surfaces here automatically.
+          </p>
+          <div class="voice-links">
+            <a href={musicWorld.musicLabUrl} target="_blank" rel="noopener noreferrer">Go to ICY Music Lab ↗</a>
+            <a href="/natural.html">View Natural Field ↗</a>
+          </div>
+        </div>
+      )}
+    </section>
+  </main>
+
+  <footer class="music-footer mono">
+    <a href="/#music">← RETURN TO LIVING HOME</a>
+    <div>
+      <a href="/games.html">GAMING ↗</a>
+      <a href="/basketball.html">BASKETBALL ↗</a>
+      <a href="/creations.html">CREATIONS ↗</a>
+    </div>
+  </footer>
+
+  <script>
+    const pads = [...document.querySelectorAll<HTMLButtonElement>('[data-step-index]')];
+    const toggleBtn = document.querySelector<HTMLButtonElement>('[data-pulse-toggle]');
+    const tapBtn = document.querySelector<HTMLButtonElement>('[data-tap-tempo]');
+    const bpmEl = document.querySelector<HTMLElement>('[data-bpm-readout]');
+
+    const scale = [146.83, 174.61, 220.0, 261.63, 293.66, 329.63, 392.0, 440.0];
+    let bpm = 92;
+    let step = 0;
+    let running = false;
+    let timer: number | undefined;
+    let ctx: AudioContext | null = null;
+    const taps: number[] = [];
+
+    const ensureAudio = () => {
+      const Ctor = window.AudioContext || (window as any).webkitAudioContext;
+      if (!Ctor) return null;
+      ctx ||= new Ctor();
+      if (ctx.state === 'suspended') void ctx.resume();
+      return ctx;
+    };
+
+    const playTone = (freq: number, accent: boolean) => {
+      const audio = ensureAudio();
+      if (!audio) return;
+      const now = audio.currentTime;
+      const osc = audio.createOscillator();
+      const gain = audio.createGain();
+      osc.type = accent ? 'triangle' : 'sine';
+      osc.frequency.setValueAtTime(freq, now);
+      gain.gain.setValueAtTime(0.0001, now);
+      gain.gain.exponentialRampToValueAtTime(accent ? 0.085 : 0.055, now + 0.015);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.34);
+      osc.connect(gain);
+      gain.connect(audio.destination);
+      osc.start(now);
+      osc.stop(now + 0.36);
+    };
+
+    const stopPulse = () => {
+      running = false;
+      if (timer) window.clearInterval(timer);
+      timer = undefined;
+      pads.forEach((pad) => pad.classList.remove('is-playing'));
+      if (toggleBtn) {
+        toggleBtn.setAttribute('aria-pressed', 'false');
+        toggleBtn.textContent = '▶ Start Pulse';
+      }
+    };
+
+    const startPulse = () => {
+      ensureAudio();
+      if (timer) window.clearInterval(timer);
+      running = true;
+      if (toggleBtn) {
+        toggleBtn.setAttribute('aria-pressed', 'true');
+        toggleBtn.textContent = '■ Stop Pulse';
+      }
+      const tick = () => {
+        pads.forEach((pad, i) => pad.classList.toggle('is-playing', i === step));
+        const active = pads[step]?.getAttribute('aria-pressed') === 'true';
+        if (active) playTone(scale[step % scale.length], step === 0 || step === 4);
+        step = (step + 1) % pads.length;
+      };
+      tick();
+      timer = window.setInterval(tick, Math.round((60 / bpm / 2) * 1000));
+    };
+
+    pads.forEach((pad, idx) => {
+      pad.addEventListener('click', () => {
+        const next = pad.getAttribute('aria-pressed') !== 'true';
+        pad.setAttribute('aria-pressed', String(next));
+        if (next) playTone(scale[idx % scale.length], idx === 0 || idx === 4);
+      });
+    });
+
+    toggleBtn?.addEventListener('click', () => {
+      if (running) stopPulse();
+      else startPulse();
+    });
+
+    tapBtn?.addEventListener('click', () => {
+      const now = performance.now();
+      if (taps.length && now - taps[taps.length - 1] > 2000) taps.length = 0;
+      taps.push(now);
+      if (taps.length > 5) taps.shift();
+      if (taps.length >= 2) {
+        const avg = (taps[taps.length - 1] - taps[0]) / (taps.length - 1);
+        bpm = Math.max(56, Math.min(160, Math.round(60000 / avg)));
+        if (bpmEl) bpmEl.textContent = `${bpm} BPM`;
+        if (running) startPulse();
+      }
+      playTone(220, true);
+    });
+
+    document.addEventListener('visibilitychange', () => { if (document.hidden) stopPulse(); });
+    window.addEventListener('pagehide', stopPulse);
+  </script>
+
+  <style is:global>
+    :root {
+      --bg: #161114;
+      --ink: #f3e8db;
+      --muted: #beaba6;
+      --coral: #e88c77;
+      --line: rgba(232, 140, 119, .2);
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    html { scroll-behavior: smooth; background: var(--bg); }
+    body {
+      margin: 0;
+      background:
+        radial-gradient(ellipse at 72% 18%, rgba(168, 86, 78, .22), transparent 56%),
+        var(--bg);
+      color: var(--ink);
+      font-family: 'EB Garamond', Georgia, serif;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: clip;
+    }
+    astro-dev-toolbar { display: none; }
+    a { color: inherit; text-decoration: none; }
+    a:focus-visible, button:focus-visible { outline: 2px solid var(--coral); outline-offset: 4px; }
+    .skip-link { position: fixed; top: -120px; left: 16px; z-index: 100; padding: 12px 16px; background: var(--ink); color: var(--bg); font: 12px 'JetBrains Mono', monospace; }
+    .skip-link:focus { top: 14px; }
+    .mono { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; }
+    .kicker { color: var(--coral); margin: 0 0 10px; }
+
+    .music-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 14px 24px;
+      padding: 18px clamp(20px, 5vw, 72px);
+      border-bottom: 1px solid var(--line);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      letter-spacing: .13em;
+      text-transform: uppercase;
+    }
+    .music-nav nav { display: flex; flex-wrap: wrap; gap: 14px 26px; color: var(--muted); }
+    .music-nav a { display: inline-flex; align-items: center; min-height: 44px; transition: color .2s ease; }
+    .music-nav a:hover { color: var(--coral); }
+
+    .music-shell {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: clamp(46px, 6vw, 88px) clamp(20px, 5vw, 72px) clamp(64px, 8vw, 110px);
+    }
+
+    .music-hero {
+      padding-bottom: clamp(48px, 6vw, 76px);
+      border-bottom: 1px solid var(--line);
+    }
+    .music-hero h1 {
+      margin: 0;
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-weight: 400;
+      font-size: clamp(66px, 11vw, 152px);
+      line-height: .86;
+      letter-spacing: -.055em;
+    }
+    .music-hero h1 span { color: var(--coral); }
+    .hero-lead {
+      margin: 22px 0 0;
+      max-width: 54ch;
+      font-size: clamp(20px, 1.9vw, 25px);
+      line-height: 1.48;
+      color: var(--muted);
+    }
+
+    .lab-doorway {
+      margin-top: clamp(32px, 4.5vw, 52px);
+      padding: clamp(24px, 3.5vw, 40px);
+      border-top: 1px solid rgba(232, 140, 119, .42);
+      border-bottom: 1px solid rgba(232, 140, 119, .24);
+      background: linear-gradient(120deg, rgba(232, 140, 119, .1), transparent 65%);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 20px 36px;
+    }
+    .lab-doorway h2 {
+      margin: 0 0 8px;
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-weight: 400;
+      font-size: clamp(36px, 4.5vw, 58px);
+      line-height: .96;
+    }
+    .lab-doorway p { margin: 0; max-width: 48ch; font-size: 20px; color: var(--muted); }
+    .lab-cta {
+      display: inline-flex;
+      align-items: center;
+      min-height: 50px;
+      padding: 14px 26px;
+      border: 1px solid var(--coral);
+      color: #fff6f0;
+      background: rgba(232, 140, 119, .14);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11.5px;
+      letter-spacing: .14em;
+      transition: background .22s ease, transform .22s ease;
+    }
+    .lab-cta:hover { background: rgba(232, 140, 119, .28); transform: translateY(-2px); }
+
+    .studies-section, .sketch-section, .recordings-section {
+      padding-block: clamp(50px, 6vw, 82px);
+      border-bottom: 1px solid var(--line);
+    }
+    .recordings-section { border-bottom: 0; }
+    .studies-section h2, .sketch-section h2, .recordings-section h2 {
+      margin: 0;
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-weight: 400;
+      font-size: clamp(36px, 5vw, 64px);
+      line-height: .98;
+      letter-spacing: -.035em;
+    }
+
+    .studies-list { margin-top: 32px; border-top: 1px solid var(--line); }
+    .study-row {
+      display: grid;
+      grid-template-columns: 56px minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 16px 26px;
+      padding: 26px 0;
+      border-bottom: 1px solid var(--line);
+      transition: padding-left .25s ease;
+    }
+    .study-row:hover { padding-left: 8px; }
+    .study-row__glyph {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      border: 1px solid color-mix(in srgb, var(--study-accent) 55%, transparent);
+      color: var(--study-accent);
+      display: grid;
+      place-items: center;
+      font-size: 24px;
+    }
+    .study-row__lens { display: block; color: var(--study-accent); font-size: 10px; margin-bottom: 6px; }
+    .study-row h3 {
+      margin: 0 0 6px;
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-weight: 500;
+      font-size: clamp(30px, 3.2vw, 42px);
+      line-height: 1;
+    }
+    .study-row p { margin: 0; max-width: 60ch; font-size: 19px; line-height: 1.48; color: var(--muted); }
+    .study-row__go { color: var(--coral); white-space: nowrap; }
+
+    .sketch-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      flex-wrap: wrap;
+      gap: 20px 36px;
+    }
+    .sketch-sub { margin: 12px 0 0; max-width: 56ch; font-size: 19px; line-height: 1.48; color: var(--muted); }
+    .sketch-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+    .sketch-btn {
+      min-height: 44px;
+      padding: 10px 18px;
+      border: 1px solid rgba(232, 140, 119, .36);
+      background: transparent;
+      color: var(--ink);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background .2s ease, border-color .2s ease;
+    }
+    .sketch-btn--primary[aria-pressed="true"], .sketch-btn:hover {
+      background: rgba(232, 140, 119, .2);
+      border-color: var(--coral);
+    }
+    .bpm-readout { color: var(--coral); min-width: 72px; }
+
+    .step-grid {
+      display: grid;
+      grid-template-columns: repeat(8, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 28px;
+    }
+    .step-pad {
+      min-height: 82px;
+      padding: 12px 8px;
+      border: 1px solid var(--line);
+      background: rgba(255, 240, 232, .02);
+      color: var(--muted);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: flex-start;
+      cursor: pointer;
+      transition: background .18s ease, border-color .18s ease, transform .15s ease;
+    }
+    .step-pad small { font-family: 'EB Garamond', Georgia, serif; font-size: 16px; }
+    .step-pad[aria-pressed="true"] {
+      background: rgba(232, 140, 119, .2);
+      border-color: rgba(232, 140, 119, .75);
+      color: var(--ink);
+    }
+    .step-pad.is-playing {
+      transform: translateY(-4px);
+      box-shadow: 0 10px 24px rgba(232, 140, 119, .24);
+      border-color: #fff2eb;
+    }
+
+    .voice-honest {
+      margin-top: 22px;
+      max-width: 62ch;
+    }
+    .voice-honest p { margin: 0 0 22px; font-size: 20px; line-height: 1.55; color: var(--muted); }
+    .voice-honest strong { color: var(--ink); font-weight: 500; }
+    .voice-links { display: flex; flex-wrap: wrap; gap: 14px 28px; }
+    .voice-links a {
+      display: inline-flex;
+      align-items: center;
+      min-height: 44px;
+      border-bottom: 1px solid rgba(232, 140, 119, .5);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+    .voice-links a:hover { color: var(--coral); }
+
+    .music-footer {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 28px clamp(20px, 5vw, 72px) 48px;
+      border-top: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 14px 24px;
+      color: var(--muted);
+    }
+    .music-footer div { display: flex; flex-wrap: wrap; gap: 14px 24px; }
+    .music-footer a { display: inline-flex; align-items: center; min-height: 44px; }
+    .music-footer a:hover { color: var(--coral); }
+
+    @media (max-width: 720px) {
+      .study-row { grid-template-columns: 44px minmax(0, 1fr); }
+      .study-row__go { grid-column: 2; }
+      .step-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      * { transition: none !important; animation: none !important; }
+    }
+  </style>
+</body>
+</html>
