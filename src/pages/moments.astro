@@ -11,7 +11,6 @@ const raw = author ? readFileSync(resolve(process.cwd(), 'src/data/media/moments
 const items = JSON.parse(raw).filter((item: any) => !item.deleted);
 const featured = items.find((item: any) => item.kind === 'image' && item.featured) || items.find((item: any) => item.kind === 'image');
 const galleryItems = featured ? [featured, ...items.filter((item: any) => item !== featured)] : items;
-const previewCount = 7; // One large lead moment, then six collection previews.
 const value = (item: any, field: string) => item.overrides?.[field] ?? item[field] ?? item.metadata?.[field] ?? '';
 const placement = (p: any, prefix: string) => `--${prefix}x:${p?.x ?? 4}%;--${prefix}y:${p?.y ?? 4}%;--${prefix}w:${p?.width ?? 92}%;--${prefix}h:${p?.height ?? 92}%;`;
 ---
@@ -22,29 +21,36 @@ const placement = (p: any, prefix: string) => `--${prefix}x:${p?.x ?? 4}%;--${pr
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="theme-color" content="#111414" />
     <meta name="description" content="Moments everywhere. Photographic observations by Icy Clearer." />
-    <title>Moments — Icy Clearer</title>
+    <title>Moments &mdash; Icy Clearer</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   </head>
   <body class="moments-page">
-    <header class="moments-header"><a href="/" aria-label="Icy Clearer home">ICY CLEARER ↗</a><h1>MOMENTS</h1><p>Captured through <a class="photogression-link" href="https://photogression.icynatural.now">Photogression ↗</a></p></header>
-    <main id="gallery" aria-label="Photo gallery">
+    <header class="moments-header"><nav aria-label="Site"><a href="/" aria-label="Icy Clearer home">ICY CLEARER &#8599;</a><a href="/natural.html">NATURAL &#8599;</a></nav><div class="moments-heading"><h1>MOMENTS</h1><p>Captured through <a class="photogression-link" href="https://photogression.icynatural.now">Photogression &#8599;</a></p></div></header>
+    <main id="gallery" aria-label="Moments observatory">
+      <section class="observatory-shell" aria-label="Circular photographic observatory" hidden>
+        <div class="observatory-heading"><span>FIELD OF OBSERVATIONS</span><span data-orbit-total></span></div>
+        <div class="observatory" role="region" aria-roledescription="photographic orbit" aria-label="Rotate moments using Left and Right arrows" tabindex="0"><div class="observatory-trace" aria-hidden="true"></div><div class="observatory-photos"></div></div>
+        <div class="observatory-caption"><span data-orbit-count aria-live="polite" aria-atomic="true"></span><span data-orbit-title></span></div>
+        <div class="observatory-controls"><button type="button" data-orbit="previous" aria-label="Previous moment">&#8592;</button><button type="button" data-orbit="enter">ENTER MOMENT <span aria-hidden="true">&#8599;</span></button><button type="button" data-orbit="next" aria-label="Next moment">&#8594;</button></div>
+        <p class="observatory-hint">Drag to rotate <span aria-hidden="true">&middot;</span> select a photograph to enter</p>
+      </section>
       <div id="moments-collection" class:list={['media-room', 'moments-stream', { 'moments-empty': !items.length }]} data-media-room="moments" data-revision={author ? createHash('sha256').update(raw).digest('hex') : undefined}>
-        {galleryItems.map((item: any, index: number) => <div class:list={['moment-slot', { 'moment-slot--featured': item === featured, 'moment-slot--archive': index >= previewCount }]} style={`--moment-aspect:${item.metadata?.aspect > 0 ? item.metadata.aspect : 1.5}`}>
+        {galleryItems.map((item: any) => <div class:list={['moment-slot', { 'moment-slot--featured': item === featured }]} style={`--moment-aspect:${item.metadata?.aspect > 0 ? item.metadata.aspect : 1.5}`}>
           <figure class={`room-piece room-shape-${item.shape || 'rectangle'}`} data-author-id={item.id} style={`${placement(item.desktop, 'd')}${placement(item.mobile || item.desktop, 'm')}--rotation:${item.rotation || 0}deg;--layer:${item.z ?? 1};--crop:${item.objectPosition || '50% 50%'};--media-fit:${item.fit || 'contain'};`}>
             {item.kind === 'text' ? <div class={`source-text text-font-${item.font || 'sans'} text-color-${item.color || 'light'}`} style={`font-size:${item.textSize || 32}px;text-align:${item.align || 'left'}`}>{item.text}</div> : item.kind === 'image' ? <>
-              <img src={index < previewCount ? item.displaySrc || item.src : undefined} data-gallery-src={index >= previewCount ? item.displaySrc || item.src : undefined} width={item.pixelWidth || 1500} height={item.pixelHeight || Math.round(1500 / (item.metadata?.aspect || 1.5))} alt={value(item, 'alt') || value(item, 'title')} loading="lazy" decoding="async" draggable="false" />
+              <img data-gallery-src={item.displaySrc || item.src} width={item.pixelWidth || 1500} height={item.pixelHeight || Math.round(1500 / (item.metadata?.aspect || 1.5))} alt={value(item, 'alt') || value(item, 'title')} loading="lazy" decoding="async" draggable="false" />
               {value(item, 'label') && <figcaption>{value(item, 'label')}</figcaption>}
               <button class="moment-open" type="button" data-moment-open={item.id} aria-label={`View ${value(item, 'title') || value(item, 'label') || 'photo'}`}></button>
             </> : <p>Attach a photo in Local Studio.</p>}
           </figure>
         </div>)}
       </div>
-      {items.length > previewCount && <div class="moments-continuation"><button type="button" class="moments-view-all" aria-expanded="false" aria-controls="moments-collection">VIEW ALL MOMENTS →</button></div>}
       <p class="moments-empty-message">More moments soon.</p>
+      <noscript><p>Enable JavaScript to rotate and enter Moments.</p>{galleryItems.filter((item: any) => item.kind === 'image').map((item: any) => <a href={item.src}><img src={item.displaySrc || item.src} alt={value(item, 'alt') || value(item, 'title')} loading="lazy" style="max-width:100%;height:auto" /></a>)}</noscript>
     </main>
     <dialog class="moment-detail" aria-label="Photo detail">
-      <div class="moment-detail__bar"><button type="button" data-detail="close" aria-label="Close photo">Close ×</button><span data-detail-count></span><div><button type="button" data-detail="previous" aria-label="Previous photo">←</button><button type="button" data-detail="next" aria-label="Next photo">→</button></div></div>
-      <img class="moment-detail__image" alt="" decoding="async" />
+      <div class="moment-detail__bar"><button type="button" data-detail="close" aria-label="Close photo and return to observatory">&#8601; OBSERVATORY</button><span data-detail-count aria-live="polite"></span><div><button type="button" data-detail="previous" aria-label="Previous photo">&#8592;</button><button type="button" data-detail="next" aria-label="Next photo">&#8594;</button></div></div>
+      <img class="moment-detail__image" alt="" decoding="async" draggable="false" />
       <div class="moment-detail__metadata"></div>
     </dialog>
     <script is:inline type="application/json" data-moments-content set:html={JSON.stringify(items).replace(/</g, '\\u003c')}></script>

@@ -15,7 +15,7 @@ try {
   await page.goto(`${origin}/moments.html`, { waitUntil: 'networkidle' });
   const ids = await page.locator('[data-moments-content]').evaluate(el => JSON.parse(el.textContent).filter(item => item.kind === 'image').map(item => item.id));
   assert.ok(ids.length > 1, 'requires at least two existing Moments photos (no fixtures written)');
-  await page.locator('[data-moment-open]').first().click();
+  await page.locator('.observatory [data-moment-open][aria-current=true]').click();
   const dialog = page.locator('.moment-detail');
   await dialog.waitFor({ state: 'visible' });
   const current = () => page.evaluate(() => new URLSearchParams(location.hash.slice(1)).get('moment'));
@@ -66,7 +66,7 @@ try {
   assert.equal(await current(), start, 'right touch swipe uses Previous order');
   for (const options of [
     { dx: -49 }, { dx: -80, dy: 70 }, { dx: 0, dy: 100 },
-    { pointerType: 'mouse' }, { pointerType: 'pen' }, { cancel: true },
+    { cancel: true },
     { primary: false }, { verticalFirst: true },
     { selector: '.moment-detail__metadata' }, { selector: '.moment-detail__bar' },
   ]) {
@@ -121,7 +121,7 @@ try {
   await dialog.waitFor({ state: 'hidden' });
   // A fresh route avoids the intentional hash entry added by the wrap test.
   await page.goto(`${origin}/moments.html`, { waitUntil: 'networkidle' });
-  const opener = page.locator('[data-moment-open]').first();
+  const opener = page.locator('.observatory [data-moment-open][aria-current=true]');
   for (const action of ['escape', 'back']) {
     await opener.click();
     await dialog.waitFor({ state: 'visible' });
@@ -129,7 +129,7 @@ try {
     if (action === 'escape') await page.keyboard.press('Escape');
     else await page.goBack();
     await dialog.waitFor({ state: 'hidden' });
-    assert.equal(await opener.evaluate(el => document.activeElement === el), true, `${action} restores opener focus`);
+    assert.equal(await opener.evaluate(el => document.activeElement === el), true, `${action} restores current photo focus`);
     assert.equal(await page.evaluate(() => location.hash), '', `${action} restores collection URL`);
     assert.equal(await page.evaluate(() => document.body.style.overflow), '', `${action} restores body scrolling`);
   }
@@ -149,7 +149,7 @@ try {
   await direct.close();
   await page.goto(`${origin}/moments.html?edit=1`, { waitUntil: 'networkidle' });
   await page.waitForSelector('body.is-authoring');
-  await page.locator('[data-moment-open]').first().dispatchEvent('click');
+  await page.locator('#moments-collection [data-moment-open]').first().dispatchEvent('click');
   assert.equal(await dialog.evaluate(el => el.open), false, 'author mode never opens public lightbox');
   assert.deepEqual(errors, [], 'no browser errors');
   console.log(`PASS Moments ${width}: repeated native swipes, counter/image/metadata, pan, guards, wrap, history/focus/direct open, no overflow`);
@@ -159,7 +159,7 @@ try {
   const page = await desktop.newPage();
   await page.goto(`${origin}/moments.html`, { waitUntil: 'networkidle' });
   const ids = await page.locator('[data-moments-content]').evaluate(el => JSON.parse(el.textContent).filter(item => item.kind === 'image').map(item => item.id));
-  const opener = page.locator('[data-moment-open]').first();
+  const opener = page.locator('.observatory [data-moment-open][aria-current=true]');
   await opener.click();
   const current = () => page.evaluate(() => new URLSearchParams(location.hash.slice(1)).get('moment'));
   const start = await current();
@@ -177,13 +177,13 @@ try {
   await page.mouse.down();
   await page.mouse.move(box.x + box.width * .25, box.y + 100, { steps: 8 });
   await page.mouse.up();
-  assert.equal(await current(), start, 'real desktop mouse drag does not navigate');
+  assert.equal(await current(), next, 'real desktop mouse drag navigates');
   assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1 && document.querySelector('.moment-detail').scrollWidth <= document.querySelector('.moment-detail').clientWidth + 1), true, 'desktop has no horizontal overflow');
   await page.keyboard.press('Escape');
   await page.locator('.moment-detail').waitFor({ state: 'hidden' });
   assert.equal(await opener.evaluate(el => document.activeElement === el), true, 'desktop Escape restores focus');
   await desktop.close();
-  console.log('PASS Moments desktop: buttons, arrow keys, mouse drag ignored, Escape/focus, no overflow');
+  console.log('PASS Moments desktop: buttons, arrow keys, mouse drag navigation, Escape/focus, no overflow');
 } finally {
   await browser.close();
 }

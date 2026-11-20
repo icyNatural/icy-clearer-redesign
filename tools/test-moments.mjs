@@ -110,33 +110,12 @@ try {
   for (const width of [360, 390, 430, 1440]) {
     await page.setViewportSize({ width, height: 900 });
     await page.goto(route, { waitUntil: 'networkidle' });
-    await room.waitFor(); await clean();
-    assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), `no overflow at ${width}`);
-    const slots = room.locator('.moment-slot:visible');
-    const originalItems = JSON.parse(originalManifest);
-    assert.equal(await slots.count(), Math.min(7, originalItems.length), 'lead plus six preview moments');
-    const columns = await room.evaluate(el => getComputedStyle(el).gridTemplateColumns.split(' ').length);
-    assert.equal(columns, width <= 700 ? 2 : 3, 'compact public column count');
-    const hero = room.locator('.moment-slot--featured');
-    if (originalItems.length) {
-      assert.equal(await hero.count(), 1, 'exactly one large featured moment');
-      const box = await hero.boundingBox();
-      const next = await room.locator('.moment-slot:not(.moment-slot--featured)').first().boundingBox();
-      if (next) assert.ok(box.width > next.width * 1.8, 'lead is larger than preview tiles');
-    }
-    if (originalItems.length > 7) {
-      assert.equal(await room.locator('.moment-slot--archive img[src]').count(), 0, 'archive image sources deferred');
-      await page.getByRole('button', { name: 'VIEW ALL MOMENTS' }).click();
-      assert.equal(await slots.count(), originalItems.length, 'full collection revealed');
-      assert.ok(page.url().includes('gallery=all'));
-      await page.reload({ waitUntil: 'networkidle' });
-      assert.equal(await slots.count(), originalItems.length, 'expanded collection survives refresh');
-      await page.getByRole('button', { name: 'SHOW PREVIEW' }).click();
-      assert.equal(await slots.count(), 7);
-      await page.goBack();
-      assert.equal(await slots.count(), originalItems.length, 'Back restores expanded collection');
-    }
+    await page.locator('.observatory').waitFor(); await clean();
+    assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), 'no public overflow');
+    assert.ok(await page.locator('.orbit-photo').count() <= 9, 'bounded public photo window');
+    assert.equal(await page.locator('.orbit-photo[aria-current=true]').count(), 1, 'one current observation');
   }
+
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto(`${route}?edit=1`, { waitUntil: 'networkidle' });
   await page.locator('.author-panel').waitFor();
@@ -240,14 +219,17 @@ try {
   for (const width of [360, 390, 430, 1440]) {
     await page.setViewportSize({ width, height: 1000 });
     await page.goto(route, { waitUntil: 'networkidle' }); await clean(); await countIs(total);
-    const continuation = page.getByRole('button', { name: 'VIEW ALL MOMENTS' });
-    if (await continuation.count()) await continuation.click();
-    assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), `populated stream has no overflow at ${width}`);
-    const flow = await items.evaluateAll(els => els.map(el => ({ position: getComputedStyle(el).position, width: el.getBoundingClientRect().width, height: el.getBoundingClientRect().height })));
-    assert.ok(await items.first().evaluate(el => el.parentElement.classList.contains('moment-slot') && getComputedStyle(el.parentElement).position === 'relative'), 'auto CSS stream retains flow slots around editable frames');
-    assert.ok(flow.every(el => el.width > 0 && el.height > 0), 'all gallery frames have area');
-    assert.equal(await target.locator('img').evaluate(el => getComputedStyle(el).objectFit), 'contain');
-    await target.scrollIntoViewIfNeeded(); await target.click();
+    assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), 'populated orbit has no overflow');
+    const ordered = persisted.filter(item => item.kind === 'image' && !item.deleted);
+    const index = ordered.findIndex(item => item.id === targetId);
+    const selectedId = await page.locator('.orbit-photo[aria-current=true]').getAttribute('data-moment-open');
+    const from = ordered.findIndex(item => item.id === selectedId);
+    const distance = (index - from + ordered.length) % ordered.length;
+    for (let n = 0; n < distance; n++) await page.locator('[data-orbit=next]').click();
+    await page.waitForTimeout(800);
+    const publicTarget = page.locator('.orbit-photo[aria-current=true]');
+    assert.equal(await publicTarget.getAttribute('data-moment-open'), targetId, 'uploaded content joins public orbit order');
+    await publicTarget.click();
     const dialog = page.getByRole('dialog'); await dialog.waitFor({ state: 'visible' });
     assert.equal(await dialog.getByRole('heading').textContent(), 'A quiet observation');
     const currentSource = () => dialog.locator('img,video').first().getAttribute('src');
@@ -258,11 +240,11 @@ try {
     assert.equal(await currentSource(), source, 'Previous returns to selected media');
     await dialog.getByRole('button', { name: /close/i }).click();
     await dialog.waitFor({ state: 'hidden' });
-    await target.click(); await dialog.waitFor({ state: 'visible' });
+    await publicTarget.click(); await dialog.waitFor({ state: 'visible' });
     await page.keyboard.press('Escape'); await dialog.waitFor({ state: 'hidden' });
-    await target.click(); await dialog.waitFor({state:'visible'});
+    await publicTarget.click(); await dialog.waitFor({state:'visible'});
     await page.goBack(); await dialog.waitFor({state:'hidden'});
-    console.log(`PASS ${width}px: clean normal mode, CSS stream, lightbox next/previous/close/Escape`);
+    console.log(`PASS ${width}px: clean normal mode, bounded orbit, lightbox next/previous/close/Escape`);
   }
   const back = page.getByRole('link', { name: /home/i }).first();
   assert.ok(await back.isVisible(), 'visible Back navigation');

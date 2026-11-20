@@ -1,0 +1,52 @@
+{
+  "origin": "http://127.0.0.1:4347",
+  "playwright": "E:\\Projects\\chad-hamilton-portfolio\\node_modules\\playwright\\index.js",
+  "generatedAt": "2026-11-20T01:35:46.589Z",
+  "results": [
+    {
+      "label": "360",
+      "status": "passed",
+      "photos": 8
+    },
+    {
+      "label": "390",
+      "status": "passed",
+      "photos": 8
+    },
+    {
+      "label": "430",
+      "status": "passed",
+      "photos": 8
+    },
+    {
+      "label": "1280",
+      "status": "passed",
+      "photos": 8
+    },
+    {
+      "label": "1440",
+      "status": "passed",
+      "photos": 8
+    },
+    {
+      "label": "390-5-photos",
+      "status": "passed",
+      "photos": 5
+    },
+    {
+      "label": "390-20-photos",
+      "status": "passed",
+      "photos": 20
+    },
+    {
+      "label": "390-105-photos",
+      "status": "passed",
+      "photos": 105
+    },
+    {
+      "label": "390-reduced-motion",
+      "status": "passed",
+      "photos": 8
+    }
+  ]
+}
