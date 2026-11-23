@@ -578,6 +578,7 @@ export const perspectiveWorld = {
   paths: [
     { label: 'Enter ICY CLEAR', href: '/clear.html', primary: true },
     { label: 'The Framework (01–06)', href: '/clear.html#framework' },
+    { label: 'Generative Reality · How I See More', href: '/generative-reality.html' },
     { label: 'What is Enough?', href: '/clear.html#enough' },
     { label: 'Two Worlds', href: '/worlds.html' },
   ],
