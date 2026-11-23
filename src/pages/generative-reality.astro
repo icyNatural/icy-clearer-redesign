@@ -95,6 +95,7 @@ const chapters = [
       </div>
       <blockquote class="turning-point">“You might not be expanding reality every time you discover something. You may be expanding your <em>resolution of possibility</em>—your ability to recognize what was already there.”</blockquote>
       <p class="after-turn">But once I act on those discoveries, I can begin changing what actually becomes possible.</p>
+      <p class="affordance-definition">An <strong>actual affordance</strong> is an action available through the relationship between a person and an environment, whether or not it is noticed. A <strong>perceived affordance</strong> is one I recognize. Learning may reveal an existing possibility; acting may change which possibilities are actually available.</p>
     </div>
   </section>
 
@@ -186,7 +187,7 @@ const chapters = [
   .narrative{position:relative;isolation:isolate}
   .stage{position:sticky;top:0;height:100svh;overflow:hidden;background:radial-gradient(ellipse at 55% 51%,#142c32,#071014 58%,#04090d);z-index:-1}
   .ambient{position:absolute;inset:0;pointer-events:none}.ambient-a{background:radial-gradient(circle at 65% 39%,rgba(153,197,183,.15),transparent 45%)}.ambient-b{background:linear-gradient(180deg,transparent 60%,rgba(3,9,12,.8))}
-  .world{position:absolute;width:700px;height:660px;left:56%;top:49%;transform:translate(-50%,-50%) perspective(980px) rotateX(15deg) rotateY(-16deg) scale(1);transform-style:preserve-3d;transition:transform 1.3s cubic-bezier(.2,.65,.17,1)}
+  .world{position:absolute;width:700px;height:660px;left:56%;top:49%;transform:translate(-50%,-50%) perspective(980px) rotateX(15deg) rotateY(-16deg) scale(var(--visual-scale,1));transform-style:preserve-3d;transition:transform 1.3s cubic-bezier(.2,.65,.17,1)}
   .world-plate{position:absolute;width:670px;height:460px;left:15px;top:100px;transform:perspective(900px) rotateX(68deg);background:linear-gradient(110deg,rgba(24,54,62,.3),rgba(59,87,81,.17)),repeating-linear-gradient(0deg,transparent 0 38px,#6a9983 39px,transparent 40px),repeating-linear-gradient(90deg,transparent 0 38px,#6a9983 39px,transparent 40px);opacity:.32;border:1px solid #698277;box-shadow:0 0 100px #2b4d4a33}
   .back-horizon{position:absolute;width:650px;height:250px;left:25px;top:80px;border:1px solid #486c70;opacity:.17;transform:translateZ(-115px) rotateY(-7deg)}
   .chasm{position:absolute;left:292px;top:100px;width:115px;height:470px;transform:perspective(900px) rotateX(68deg) translateZ(3px);background:linear-gradient(90deg,#040c12,#01070a,#061116);border-left:1px solid #7da5a0;border-right:1px solid #7da5a0;box-shadow:0 20px 55px #000}
@@ -223,17 +224,17 @@ const chapters = [
   html[data-scene="generativity"] .branch-path{opacity:1}.stage .branch-path{will-change:opacity}
   html[data-scene="generativity"] .branch-a{transform:rotate(-37deg) scaleX(1)}html[data-scene="generativity"] .branch-b{transform:rotate(11deg) scaleX(1)}html[data-scene="generativity"] .branch-c{transform:rotate(49deg) scaleX(1)}
   html[data-scene="generativity"] .far-gate{opacity:.65;transform:translateY(0) scale(1)}
-  html[data-scene="simulation"] .world{transform:translate(-50%,-50%) perspective(980px) rotateX(17deg) rotateY(-5deg) scale(1.04)}
-  html[data-scene="orchestration"] .world{transform:translate(-50%,-50%) perspective(980px) rotateX(17deg) rotateY(-11deg) scale(1.13)}
-  html[data-scene="transformation"] .world{transform:translate(-61%,-50%) perspective(980px) rotateX(18deg) rotateY(-21deg) scale(1.28)}
-  html[data-scene="generativity"] .world{transform:translate(-62%,-50%) perspective(980px) rotateX(24deg) rotateY(-35deg) scale(.95)}
+  html[data-scene="simulation"] .world{transform:translate(-50%,-50%) perspective(980px) rotateX(17deg) rotateY(-5deg) scale(calc(var(--visual-scale,1) * 1.04))}
+  html[data-scene="orchestration"] .world{transform:translate(-50%,-50%) perspective(980px) rotateX(17deg) rotateY(-11deg) scale(calc(var(--visual-scale,1) * 1.13))}
+  html[data-scene="transformation"] .world{transform:translate(-61%,-50%) perspective(980px) rotateX(18deg) rotateY(-21deg) scale(calc(var(--visual-scale,1) * 1.28))}
+  html[data-scene="generativity"] .world{transform:translate(-62%,-50%) perspective(980px) rotateX(24deg) rotateY(-35deg) scale(calc(var(--visual-scale,1) * .95))}
   .affordances{padding-block:clamp(125px,17vw,245px);display:grid;grid-template-columns:1fr 2fr;gap:45px}
   .affordance-copy{max-width:900px}.affordances h2{margin-bottom:75px}
   .contrast{display:grid;grid-template-columns:1fr 1fr;gap:26px}.contrast article{padding-top:24px;border-top:1px solid #728a81}
   .contrast article>span{color:var(--gold)}.contrast h3{font-family:BodoniClear,Georgia,serif;font-size:clamp(30px,3vw,43px);letter-spacing:-.025em;margin:14px 0 8px}
   .contrast p{color:#b6c6c0;line-height:1.55}
   .turning-point{font-size:clamp(32px,4vw,62px);line-height:1.15;margin:100px 0 35px;max-width:870px}.turning-point em{color:var(--mint)}
-  .after-turn{font-size:clamp(23px,2.5vw,34px);color:var(--gold);max-width:750px}
+  .after-turn{font-size:clamp(23px,2.5vw,34px);color:var(--gold);max-width:750px}.affordance-definition{margin-top:55px;padding-left:24px;border-left:1px solid #78978e;color:#b6c6c0;font-size:17px;max-width:730px;line-height:1.7}
   .questions{padding-block:clamp(110px,14vw,190px);background:#e7e4d8;color:#15242a}
   .questions .side-index{color:#496c64}.questions h2{max-width:1000px}.questions ol{list-style:none;padding:0;margin:70px 0 0;border-top:1px solid #90aaa3}
   .questions li{display:grid;grid-template-columns:70px 1fr 130px;align-items:start;gap:35px;border-bottom:1px solid #90aaa3;padding:38px 0}
@@ -244,8 +245,8 @@ const chapters = [
   .closing>p:not(.side-index){color:#b5c9c0;font-size:22px}
   .related{display:flex;gap:30px;flex-wrap:wrap;margin-top:70px;border-top:1px solid #465a5a;padding-top:27px}.related a{font-size:14px;border-bottom:1px solid #8baa9c;padding-bottom:7px}
   footer{display:flex;justify-content:space-between;flex-wrap:wrap;gap:20px;padding:27px clamp(24px,5vw,90px);border-top:1px solid #365057;color:#a6b4b1}
-  @media (max-width:850px){.site-head nav{display:none}.opening,.affordances{grid-template-columns:1fr}.world{left:62%;top:45%;transform:translate(-50%,-50%) perspective(980px) rotateX(15deg) rotateY(-16deg) scale(.65)!important}.stage-caption{bottom:13px}.stage-chrome span:last-child{display:none}.chapter{align-items:flex-end;padding:10vh 17px 9vh;min-height:104svh}.chapter-inner{width:100%;max-width:570px;padding:22px 24px;backdrop-filter:blur(14px)}.chapter h2{font-size:clamp(48px,10vw,65px)}.chapter blockquote{font-size:27px}.chapter-inner>p:not(.chapter-kicker){font-size:16px}.stage-caption{display:none}.contrast{grid-template-columns:1fr}.questions li{grid-template-columns:36px 1fr;gap:15px}.questions small{grid-column:2;text-align:left}.hero-tail>span{display:none}}
-  @media (max-width:520px){.hero h1{font-size:clamp(64px,18vw,95px)}.hero{padding-inline:24px}.hero-lead{font-size:22px}.opening h2,.affordances h2,.questions h2{font-size:clamp(44px,11vw,65px)}.world{left:56%;top:40%;transform:translate(-50%,-50%) perspective(980px) rotateX(15deg) rotateY(-16deg) scale(.48)!important}.chapter{padding-bottom:7vh}.chapter-inner{padding:22px 20px}.chapter blockquote{font-size:26px}.chapter-inner>p:not(.chapter-kicker){font-size:15px}.chapter-bridge{font-size:8px}}
+  @media (max-width:850px){.site-head nav{display:none}.opening,.affordances{grid-template-columns:1fr}.world{left:62%;top:45%;--visual-scale:.65}.stage-caption{bottom:13px}.stage-chrome span:last-child{display:none}.chapter{align-items:flex-end;padding:10vh 17px 9vh;min-height:104svh}.chapter-inner{width:100%;max-width:570px;padding:22px 24px;backdrop-filter:blur(14px)}.chapter h2{font-size:clamp(48px,10vw,65px)}.chapter blockquote{font-size:27px}.chapter-inner>p:not(.chapter-kicker){font-size:16px}.stage-caption{display:none}.contrast{grid-template-columns:1fr}.questions li{grid-template-columns:36px 1fr;gap:15px}.questions small{grid-column:2;text-align:left}.hero-tail>span{display:none}}
+  @media (max-width:520px){.hero h1{font-size:clamp(64px,18vw,95px)}.hero{padding-inline:24px}.hero-lead{font-size:22px}.opening h2,.affordances h2,.questions h2{font-size:clamp(44px,11vw,65px)}.world{left:56%;top:40%;--visual-scale:.48}.chapter{padding-bottom:7vh}.chapter-inner{padding:22px 20px}.chapter blockquote{font-size:26px}.chapter-inner>p:not(.chapter-kicker){font-size:15px}.chapter-bridge{font-size:8px}}
   @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{transition:none!important;animation:none!important}.world{will-change:auto}}
 </style>
 </body>
