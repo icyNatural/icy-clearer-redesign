@@ -62,6 +62,7 @@ const elements = [
         <a href="#framework">Framework</a>
         <a href="#enough">Enough</a>
         <a href="#perspective">Perspective</a>
+        <a href="/generative-reality.html">Generative Reality ↗</a>
       </nav>
     </header>
 
@@ -133,6 +134,15 @@ const elements = [
         <div>
           <p>I'm not here to wake anyone up, tell people what to believe, or hand out a formula for life. I want a place to express what I notice, what I question, what I make, and how my understanding changes.</p>
           <p>I don't need a final version of myself. I want to remain able to become.</p>
+        </div>
+      </section>
+
+      <section class="related-framework shell" aria-labelledby="related-framework-title">
+        <p class="section-index">A COMPANION FRAMEWORK / HOW I SEE MORE</p>
+        <div>
+          <h2 id="related-framework-title">Generative<br /><em>Reality.</em></h2>
+          <p>Sometimes I discover an opening that was already there. Sometimes I act and make a new crossing possible. I'm exploring how perception, recognition, simulation, orchestration, transformation, and generativity relate.</p>
+          <a href="/generative-reality.html">Experience the six transitions <span aria-hidden="true">↗</span></a>
         </div>
       </section>
     </main>
@@ -238,4 +248,11 @@ const elements = [
     .perspective > div { margin-top:28px; }
   }
   @media (prefers-reduced-motion:reduce) { html {scroll-behavior:auto;} }
+
+  .related-framework { padding-block: 115px 150px; border-top: 1px solid var(--line); display: grid; grid-template-columns: minmax(140px,.65fr) minmax(0,2fr); gap: 30px; }
+  .related-framework h2 { font-size: clamp(59px, 7vw, 108px); line-height: .96; letter-spacing: -.045em; margin: 0 0 35px; }
+  .related-framework p:not(.section-index) { max-width: 750px; font-size: clamp(19px,2vw,26px); line-height: 1.45; }
+  .related-framework a { margin-top: 25px; display: inline-block; border-bottom: 1px solid currentColor; padding-bottom: 9px; font-size: 16px; }
+  .related-framework a:hover { color: var(--accent); }
+  @media (max-width: 800px) { .related-framework { display: block; padding-block: 75px 100px; } .related-framework h2 { margin-top: 27px; } }
 </style>
