@@ -952,3 +952,23 @@
     font-size: clamp(40px, 12vw, 60px);
   }
 }
+
+/* ══ LIVING LAYER (src/scripts/clear-living.ts) ════════════════════════════ */
+.cl-eco-flow circle {
+  pointer-events: none;
+}
+
+.cl-ecology__rel {
+  /* the relation note changes as the ecology is walked through */
+  min-height: 3.2em;
+}
+
+.cl-cadence__step {
+  transition: color 0.35s ease, border-color 0.35s ease, background 0.35s ease;
+}
+
+.cl-cadence__step.is-passing {
+  color: var(--ph-ink);
+  border-color: var(--ph-gold);
+  background: rgba(228, 186, 117, 0.12);
+}

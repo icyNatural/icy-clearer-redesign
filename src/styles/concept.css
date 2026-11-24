@@ -767,3 +767,180 @@
     font-size: clamp(38px, 11vw, 56px);
   }
 }
+
+/* ══ LIVING STUDIES ════════════════════════════════════════════════════════
+   The five model studies are continuous canvas scenes (src/scripts/studies).
+   The original SVG stays in the markup as the fallback and is hidden once a
+   scene is mounted. */
+.mv-plate.mv-live .mv-svg[hidden] {
+  display: none;
+}
+
+.mv-canvas {
+  display: block;
+  margin-inline: auto;
+  max-width: 100%;
+  touch-action: pan-y;
+}
+
+.mv-transport {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+  max-width: 720px;
+  margin: 16px auto 0;
+}
+
+.mv-transport__play,
+.mv-transport__replay {
+  min-height: 40px;
+  min-width: 68px;
+  padding: 6px 12px;
+  border: 1px solid var(--ph-line-strong);
+  background: transparent;
+  color: var(--ph-muted);
+  font-family: var(--ph-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.mv-transport__play:hover,
+.mv-transport__replay:hover {
+  color: var(--ph-ink);
+  border-color: var(--ph-ice);
+}
+
+.mv-plate.is-playing .mv-transport__play {
+  color: var(--ph-ink);
+  border-color: var(--ph-gold);
+}
+
+.mv-transport__track {
+  --mv-progress: 0%;
+  position: relative;
+  height: 40px;
+  display: flex;
+  align-items: center;
+}
+
+.mv-transport__track::before,
+.mv-transport__track::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  height: 1px;
+  pointer-events: none;
+}
+
+.mv-transport__track::before {
+  right: 0;
+  background: var(--ph-line-strong);
+}
+
+.mv-transport__track::after {
+  width: var(--mv-progress);
+  background: var(--ph-gold);
+}
+
+.mv-transport__ticks i {
+  position: absolute;
+  top: 50%;
+  width: 1px;
+  height: 11px;
+  margin-top: -5px;
+  background: var(--ph-muted);
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.mv-transport__scrub {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 40px;
+  margin: 0;
+  background: transparent;
+  cursor: ew-resize;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.mv-transport__scrub::-webkit-slider-runnable-track {
+  height: 40px;
+  background: transparent;
+}
+
+.mv-transport__scrub::-moz-range-track {
+  height: 40px;
+  background: transparent;
+}
+
+.mv-transport__scrub::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 13px;
+  height: 13px;
+  margin-top: 13.5px;
+  border: 1px solid var(--ph-gold);
+  border-radius: 50%;
+  background: #0a1218;
+}
+
+.mv-transport__scrub::-moz-range-thumb {
+  width: 11px;
+  height: 11px;
+  border: 1px solid var(--ph-gold);
+  border-radius: 50%;
+  background: #0a1218;
+}
+
+.mv-transport__scrub:focus-visible {
+  outline: 1px solid var(--ph-ice);
+  outline-offset: 2px;
+}
+
+.mv-plate.mv-live .mv-caption {
+  /* captions change with the scene: reserve their height so nothing below jumps */
+  min-height: 4.7em;
+}
+
+@media (max-width: 780px) {
+  .mv-plate.mv-live .mv-stage {
+    padding-inline: 10px;
+  }
+
+  .mv-plate.mv-live .mv-controls {
+    width: 100%;
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(0, 1fr);
+    gap: 6px;
+  }
+
+  .mv-plate.mv-live .mv-controls .mv-btn {
+    padding-inline: 4px;
+    font-size: 9px;
+    letter-spacing: 0.06em;
+    line-height: 1.3;
+  }
+
+  .mv-transport {
+    gap: 8px;
+  }
+
+  .mv-transport__play,
+  .mv-transport__replay {
+    min-width: 58px;
+    padding-inline: 8px;
+    font-size: 9px;
+  }
+
+  .mv-plate.mv-live .mv-caption {
+    min-height: 7.8em;
+    font-size: 14.5px;
+  }
+}

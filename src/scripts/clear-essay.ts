@@ -157,3 +157,6 @@ function initClearEssay() {
 }
 
 initClearEssay();
+
+// Motion layer: loaded after the controls above exist, because it drives them.
+import('./clear-living');
