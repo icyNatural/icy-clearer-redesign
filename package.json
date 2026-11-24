@@ -13,9 +13,11 @@
     "deploy": "npm run build && gh-pages -d dist"
   },
   "dependencies": {
-    "astro": "^7.0.2"
+    "astro": "^7.0.2",
+    "three": "^0.187.0"
   },
   "devDependencies": {
+    "@types/three": "^0.187.0",
     "gh-pages": "^6.3.0"
   }
 }

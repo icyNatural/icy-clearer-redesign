@@ -1,0 +1,954 @@
+/* ==========================================================================
+   ICY CLEAR — LIFE AS CONTINUOUS DEVELOPMENT
+   Personal spatial/editorial essay. Six interacting parts with distinct
+   visual identities inside one coherent observatory design language.
+   ========================================================================== */
+
+/* ── HERO ────────────────────────────────────────────────────────────────── */
+.cl-hero {
+  position: relative;
+  min-height: min(88svh, 820px);
+  padding: clamp(68px, 10vh, 128px) 0 clamp(56px, 8vh, 88px);
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  border-bottom: 1px solid var(--ph-line);
+  background:
+    radial-gradient(ellipse at 78% 42%, rgba(44, 88, 110, 0.28), transparent 52%),
+    radial-gradient(ellipse at 18% 12%, rgba(168, 213, 194, 0.08), transparent 46%),
+    var(--ph-bg);
+}
+
+.cl-hero__orbit {
+  position: absolute;
+  right: -12%;
+  top: 50%;
+  transform: translateY(-50%);
+  width: min(62vw, 760px);
+  aspect-ratio: 1;
+  pointer-events: none;
+  opacity: 0.62;
+}
+
+.cl-hero__inner {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(200px, 0.5fr);
+  gap: 28px 48px;
+  align-items: end;
+}
+
+.cl-hero__kicker {
+  margin: 0 0 24px;
+  color: var(--ph-ice);
+}
+
+.cl-hero__kicker span {
+  margin-inline: 10px;
+  color: var(--ph-faint);
+}
+
+.cl-hero__title {
+  margin: 0;
+  font-family: var(--ph-display);
+  font-weight: 400;
+  font-size: clamp(58px, 9.4vw, 146px);
+  line-height: 0.94;
+  letter-spacing: -0.052em;
+  color: var(--ph-ink);
+}
+
+.cl-hero__title em {
+  font-style: italic;
+  color: var(--ph-mint);
+}
+
+.cl-hero__lede {
+  margin: clamp(24px, 3vw, 38px) 0 0;
+  max-width: 44ch;
+  font-family: var(--ph-condensed);
+  font-size: clamp(21px, 2.3vw, 29px);
+  line-height: 1.4;
+  color: var(--ph-muted);
+}
+
+.cl-hero__lede strong {
+  color: var(--ph-ink);
+  font-weight: 400;
+}
+
+.cl-hero__actions {
+  margin-top: 34px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px 28px;
+}
+
+.cl-link-line {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 44px;
+  border-bottom: 1px solid var(--ph-line-strong);
+  font-family: var(--ph-mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ph-ink);
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.cl-link-line:hover {
+  color: var(--ph-gold);
+  border-color: var(--ph-gold);
+}
+
+.cl-link-line--quiet {
+  color: var(--ph-muted);
+}
+
+.cl-hero__marginalia {
+  margin: 0;
+  justify-self: end;
+  text-align: right;
+  font-family: var(--ph-mono);
+  font-size: 10px;
+  line-height: 1.9;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ph-faint);
+}
+
+/* ── THE CENTER (00) ─────────────────────────────────────────────────────── */
+.cl-center {
+  padding-block: clamp(72px, 11vw, 144px);
+  border-bottom: 1px solid var(--ph-line);
+}
+
+.cl-split {
+  display: grid;
+  grid-template-columns: minmax(150px, 0.62fr) minmax(0, 2fr);
+  gap: 24px clamp(28px, 5vw, 72px);
+  align-items: start;
+}
+
+.cl-index {
+  margin: 8px 0 0;
+  color: var(--ph-ice);
+}
+
+.cl-h2 {
+  margin: 0;
+  font-family: var(--ph-display);
+  font-weight: 400;
+  font-size: clamp(42px, 5.8vw, 90px);
+  line-height: 1.01;
+  letter-spacing: -0.044em;
+  color: var(--ph-ink);
+}
+
+.cl-h2 em {
+  font-style: italic;
+  color: var(--ph-mint);
+}
+
+.cl-center__body {
+  margin: 28px 0 0;
+  max-width: 56ch;
+  font-family: var(--ph-condensed);
+  font-size: clamp(21px, 2.3vw, 28px);
+  line-height: 1.42;
+  color: var(--ph-ink-soft);
+}
+
+.cl-center__quote {
+  margin: clamp(38px, 5vw, 64px) 0 0;
+  padding-left: clamp(18px, 2.5vw, 30px);
+  border-left: 2px solid var(--ph-gold);
+  font-family: var(--ph-display);
+  font-style: italic;
+  font-size: clamp(26px, 3.3vw, 48px);
+  line-height: 1.18;
+  letter-spacing: -0.025em;
+  color: var(--ph-ink);
+  max-width: 26ch;
+}
+
+/* Contrast strip: Deferred Ladder vs Continuous Ecology */
+.cl-contrast-bar {
+  margin-top: clamp(40px, 5.5vw, 68px);
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  border-top: 1px solid var(--ph-line);
+  border-bottom: 1px solid var(--ph-line);
+}
+
+.cl-contrast-cell {
+  padding: 22px 24px 22px 0;
+}
+
+.cl-contrast-cell + .cl-contrast-cell {
+  padding: 22px 0 22px 24px;
+  border-left: 1px solid var(--ph-line);
+}
+
+.cl-contrast-cell span {
+  display: block;
+  margin-bottom: 8px;
+  font-family: var(--ph-mono);
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--ph-faint);
+}
+
+.cl-contrast-cell--living span {
+  color: var(--ph-mint);
+}
+
+.cl-contrast-cell p {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--ph-muted);
+}
+
+.cl-contrast-cell--living p {
+  color: var(--ph-ink-soft);
+}
+
+/* ── LIVING ECOLOGY OVERVIEW (NON-HIERARCHICAL MAP) ─────────────────────── */
+.cl-framework {
+  padding-top: clamp(78px, 11vw, 148px);
+}
+
+.cl-ecology {
+  margin-top: clamp(38px, 5vw, 64px);
+  padding: clamp(22px, 3.5vw, 42px);
+  border: 1px solid var(--ph-line-strong);
+  background:
+    radial-gradient(ellipse at 32% 50%, rgba(157, 207, 228, 0.08), transparent 58%),
+    #0a1218;
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(260px, 0.9fr);
+  gap: clamp(24px, 4vw, 52px);
+  align-items: center;
+}
+
+.cl-ecology__svg {
+  display: block;
+  width: 100%;
+  max-width: 460px;
+  margin-inline: auto;
+  height: auto;
+  overflow: visible;
+}
+
+.cl-eco-chord {
+  stroke: rgba(168, 198, 204, 0.14);
+  stroke-width: 1;
+  transition: stroke 0.25s ease, stroke-width 0.25s ease, opacity 0.25s ease;
+}
+
+.cl-eco-chord.is-lit {
+  stroke: var(--ph-gold);
+  stroke-width: 1.65;
+  opacity: 0.95;
+}
+
+.cl-eco-node {
+  cursor: pointer;
+}
+
+.cl-eco-node circle.node-ring {
+  fill: #091218;
+  stroke: rgba(168, 198, 204, 0.34);
+  stroke-width: 1.2;
+  transition: stroke 0.25s ease, fill 0.25s ease, r 0.25s ease;
+}
+
+.cl-eco-node.is-active circle.node-ring {
+  fill: rgba(228, 186, 117, 0.16);
+  stroke: var(--ph-gold);
+  stroke-width: 1.8;
+}
+
+.cl-eco-node.is-linked circle.node-ring {
+  stroke: var(--ph-ice);
+}
+
+.cl-eco-node text {
+  font-family: var(--ph-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  fill: var(--ph-muted);
+  transition: fill 0.2s ease;
+}
+
+.cl-eco-node.is-active text,
+.cl-eco-node.is-linked text {
+  fill: var(--ph-ink);
+}
+
+.cl-ecology__readout {
+  display: grid;
+  gap: 14px;
+}
+
+.cl-ecology__pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--ph-line);
+}
+
+.cl-ecology__pill {
+  min-height: 40px;
+  padding: 4px 2px;
+  border: 0;
+  border-bottom: 1.5px solid transparent;
+  background: transparent;
+  font-family: var(--ph-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--ph-muted);
+  cursor: pointer;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.cl-ecology__pill:hover,
+.cl-ecology__pill.is-active {
+  color: var(--ph-ink);
+  border-bottom-color: var(--ph-gold);
+}
+
+.cl-ecology__title {
+  margin: 0;
+  font-family: var(--ph-display);
+  font-weight: 400;
+  font-size: clamp(32px, 3.6vw, 48px);
+  line-height: 1.05;
+  color: var(--ph-ink);
+}
+
+.cl-ecology__sub {
+  margin: 0;
+  font-family: var(--ph-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--ph-gold);
+}
+
+.cl-ecology__rel {
+  margin: 0;
+  font-size: 15.5px;
+  line-height: 1.6;
+  color: var(--ph-ink-soft);
+}
+
+.cl-ecology__jump {
+  justify-self: start;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  font-family: var(--ph-mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ph-ice);
+  border-bottom: 1px solid rgba(157, 207, 228, 0.45);
+}
+
+.cl-ecology__jump:hover {
+  color: var(--ph-gold);
+  border-color: var(--ph-gold);
+}
+
+/* ── SIX DISTINCT CONCEPT COMPOSITIONS (NO IDENTICAL CARD GRID) ──────────── */
+.cl-plates {
+  margin-top: clamp(48px, 6vw, 84px);
+  border-top: 1px solid var(--ph-line);
+}
+
+.cl-plate {
+  border-bottom: 1px solid var(--ph-line);
+  padding-block: clamp(54px, 8vw, 108px);
+}
+
+.cl-plate__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+  gap: clamp(28px, 5vw, 72px);
+  align-items: center;
+}
+
+.cl-plate--flip .cl-plate__copy {
+  order: 2;
+}
+
+.cl-plate--flip .cl-plate__study {
+  order: 1;
+}
+
+.cl-plate__kicker {
+  margin: 0 0 12px;
+  font-family: var(--ph-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--plate-accent, var(--ph-ice));
+}
+
+.cl-plate__title {
+  margin: 0 0 18px;
+  font-family: var(--ph-display);
+  font-weight: 400;
+  font-size: clamp(46px, 5.4vw, 84px);
+  line-height: 0.96;
+  letter-spacing: -0.04em;
+  color: var(--ph-ink);
+}
+
+.cl-plate__desc {
+  margin: 0;
+  max-width: 48ch;
+  font-size: clamp(17px, 1.55vw, 20px);
+  line-height: 1.62;
+  color: var(--ph-ink-soft);
+}
+
+.cl-plate__note {
+  margin: 20px 0 0;
+  padding-left: 16px;
+  border-left: 1.5px solid var(--plate-accent, var(--ph-ice));
+  font-family: var(--ph-display);
+  font-style: italic;
+  font-size: clamp(19px, 1.8vw, 24px);
+  line-height: 1.32;
+  color: var(--ph-muted);
+  max-width: 38ch;
+}
+
+.cl-plate__links {
+  margin-top: 22px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+  font-family: var(--ph-mono);
+  font-size: 10px;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--ph-faint);
+}
+
+.cl-plate__links a {
+  color: var(--ph-muted);
+  border-bottom: 1px solid rgba(168, 198, 204, 0.2);
+  padding-bottom: 2px;
+}
+
+.cl-plate__links a:hover {
+  color: var(--plate-accent, var(--ph-gold));
+  border-color: var(--plate-accent, var(--ph-gold));
+}
+
+/* Bespoke Visual Study Frames */
+.cl-study {
+  position: relative;
+  padding: clamp(20px, 3vw, 32px);
+  border: 1px solid var(--ph-line);
+  background: linear-gradient(155deg, rgba(16, 28, 36, 0.72), rgba(7, 13, 18, 0.92));
+}
+
+.cl-study__bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+  font-family: var(--ph-mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ph-muted);
+}
+
+.cl-study__toggle {
+  min-height: 36px;
+  padding: 4px 12px;
+  border: 1px solid var(--ph-line-strong);
+  background: rgba(157, 207, 228, 0.06);
+  color: var(--ph-ink);
+  font-family: var(--ph-mono);
+  font-size: 10px;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.cl-study__toggle:hover {
+  border-color: var(--ph-gold);
+  background: rgba(228, 186, 117, 0.12);
+}
+
+.cl-study svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* 01 Resources: Accumulated vs Directed state transition */
+.cl-study--resources .res-flow {
+  transition: opacity 0.45s ease, transform 0.45s ease;
+}
+
+.cl-study--resources[data-mode='accumulated'] .res-directed {
+  opacity: 0.16;
+}
+
+.cl-study--resources[data-mode='directed'] .res-pile {
+  opacity: 0.25;
+}
+
+/* 02 Security: Shock absorption animation */
+.cl-study--security .sec-wave {
+  transition: transform 0.5s ease, opacity 0.45s ease;
+}
+
+.cl-study--security[data-shock='true'] .sec-wave-top {
+  transform: translateY(-6px);
+}
+
+/* 03 Freedom: Sightline doors */
+.cl-study--freedom .free-ray {
+  opacity: 0.22;
+  transition: opacity 0.35s ease;
+}
+
+.cl-study--freedom[data-door='0'] .free-ray--0,
+.cl-study--freedom[data-door='1'] .free-ray--1,
+.cl-study--freedom[data-door='2'] .free-ray--2 {
+  opacity: 0.95;
+}
+
+/* 05 Living: Real Lakeside Atmospheric Photograph Band (inhabited, alive!) */
+.cl-plate--living {
+  position: relative;
+  overflow: hidden;
+  background: #0d1619;
+}
+
+.cl-living-photo {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(168, 213, 194, 0.28);
+  aspect-ratio: 16 / 10;
+  background: #0b1417;
+}
+
+.cl-living-photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: saturate(0.88) contrast(1.04);
+}
+
+.cl-living-photo__caption {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 26px 18px 14px;
+  background: linear-gradient(transparent, rgba(7, 12, 16, 0.88));
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  font-family: var(--ph-mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ph-mint);
+}
+
+/* 06 Renewal: Expansive stillness */
+.cl-plate--renewal {
+  background: radial-gradient(ellipse at 50% 80%, rgba(152, 199, 184, 0.08), transparent 62%);
+}
+
+/* ── WHAT IS ENOUGH? (WARM MINERAL PAPER CONTRAST + EQUILIBRIUM FULCRUM) ── */
+.cl-enough {
+  padding-block: clamp(82px, 12vw, 156px);
+  background: var(--ph-paper);
+  color: var(--ph-paper-ink);
+  border-bottom: 1px solid rgba(18, 32, 38, 0.16);
+}
+
+.cl-enough .cl-index {
+  color: #3a6158;
+}
+
+.cl-enough .cl-h2 {
+  color: var(--ph-paper-ink);
+}
+
+.cl-enough .cl-h2 em {
+  color: #1f5569;
+}
+
+.cl-enough__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+  gap: clamp(32px, 5vw, 72px);
+  align-items: start;
+}
+
+.cl-enough__copy {
+  display: grid;
+  gap: 20px;
+}
+
+.cl-enough__copy p {
+  margin: 0;
+  font-family: var(--ph-condensed);
+  font-size: clamp(21px, 2.2vw, 27px);
+  line-height: 1.42;
+  color: var(--ph-paper-ink);
+}
+
+.cl-enough__copy strong {
+  color: #1b5368;
+  font-weight: 400;
+  border-bottom: 1.5px solid rgba(27, 83, 104, 0.35);
+}
+
+.cl-enough__copy .cl-enough__subtle {
+  font-family: var(--ph-body);
+  font-size: 16px;
+  line-height: 1.65;
+  color: var(--ph-paper-muted);
+}
+
+/* Tactile editorial balance fulcrum */
+.cl-fulcrum {
+  margin-top: clamp(36px, 4.5vw, 56px);
+  padding: clamp(20px, 3vw, 32px);
+  border: 1px solid rgba(18, 32, 38, 0.2);
+  background: rgba(255, 255, 255, 0.42);
+}
+
+.cl-fulcrum__tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.cl-fulcrum__btn {
+  min-height: 44px;
+  padding: 6px 14px;
+  border: 1px solid rgba(18, 32, 38, 0.24);
+  background: transparent;
+  color: var(--ph-paper-muted);
+  font-family: var(--ph-mono);
+  font-size: 10px;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.cl-fulcrum__btn.is-active {
+  background: var(--ph-paper-ink);
+  color: var(--ph-paper);
+  border-color: var(--ph-paper-ink);
+}
+
+.cl-fulcrum__beam {
+  transform-origin: 240px 88px;
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.cl-fulcrum[data-balance='fragile'] .cl-fulcrum__beam {
+  transform: rotate(-10deg);
+}
+
+.cl-fulcrum[data-balance='living'] .cl-fulcrum__beam {
+  transform: rotate(0deg);
+}
+
+.cl-fulcrum[data-balance='hoarding'] .cl-fulcrum__beam {
+  transform: rotate(10deg);
+}
+
+.cl-fulcrum__note {
+  margin: 14px 0 0;
+  font-size: 14.5px;
+  line-height: 1.55;
+  color: var(--ph-paper-ink);
+}
+
+/* ── NON-LINEAR RETURNING PROCESS ────────────────────────────────────────── */
+.cl-process {
+  padding-block: clamp(78px, 11vw, 144px);
+  border-bottom: 1px solid var(--ph-line);
+}
+
+.cl-cadence {
+  margin: clamp(36px, 5vw, 56px) 0 32px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 6px;
+}
+
+.cl-cadence__step {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 18px;
+  border: 1px solid var(--ph-line-strong);
+  border-radius: 999px;
+  font-family: var(--ph-display);
+  font-size: clamp(22px, 2.4vw, 30px);
+  color: var(--ph-ink);
+  background: rgba(157, 207, 228, 0.04);
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.cl-cadence__step:hover {
+  border-color: var(--ph-gold);
+  background: rgba(228, 186, 117, 0.09);
+}
+
+.cl-cadence__step small {
+  font-family: var(--ph-mono);
+  font-size: 9.5px;
+  color: var(--ph-ice);
+}
+
+.cl-cadence__arrow {
+  padding: 0 4px;
+  font-family: var(--ph-mono);
+  color: var(--ph-faint);
+}
+
+.cl-process__copy {
+  margin: 0;
+  max-width: 58ch;
+  font-family: var(--ph-condensed);
+  font-size: clamp(21px, 2.2vw, 27px);
+  line-height: 1.44;
+  color: var(--ph-muted);
+}
+
+/* ── THIS IS HOW I SEE + MODELS + GENERATIVE REALITY BRIDGE ──────────────── */
+.cl-perspective {
+  padding-block: clamp(78px, 11vw, 144px);
+  border-bottom: 1px solid var(--ph-line);
+}
+
+.cl-perspective__copy {
+  display: grid;
+  gap: 22px;
+  margin-top: 26px;
+  max-width: 58ch;
+}
+
+.cl-perspective__copy p {
+  margin: 0;
+  font-family: var(--ph-condensed);
+  font-size: clamp(22px, 2.3vw, 29px);
+  line-height: 1.42;
+  color: var(--ph-ink-soft);
+}
+
+.cl-perspective__copy p:last-child {
+  color: var(--ph-ice);
+}
+
+/* Connected Five Models Band inside ICY CLEAR */
+.cl-models-band {
+  padding-block: clamp(68px, 9vw, 120px);
+  border-bottom: 1px solid var(--ph-line);
+  background: #0a1116;
+}
+
+.cl-models-grid {
+  margin-top: 32px;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  border-top: 1px solid var(--ph-line);
+  border-left: 1px solid var(--ph-line);
+}
+
+.cl-model-tile {
+  display: grid;
+  align-content: start;
+  gap: 12px;
+  padding: 22px 18px 24px;
+  border-right: 1px solid var(--ph-line);
+  border-bottom: 1px solid var(--ph-line);
+  transition: background 0.22s ease;
+}
+
+.cl-model-tile:hover {
+  background: rgba(157, 207, 228, 0.06);
+}
+
+.cl-model-tile__top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--ph-mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  color: var(--ph-ice);
+}
+
+.cl-model-tile__glyph {
+  width: 82px;
+  height: 48px;
+}
+
+.cl-model-tile h3 {
+  margin: 0;
+  font-family: var(--ph-display);
+  font-weight: 400;
+  font-size: 23px;
+  line-height: 1.12;
+  color: var(--ph-ink);
+}
+
+.cl-model-tile p {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.48;
+  color: var(--ph-muted);
+}
+
+/* Companion Portal to Generative Reality */
+.cl-companion {
+  padding-block: clamp(82px, 11vw, 148px);
+  background:
+    radial-gradient(ellipse at 76% 48%, rgba(228, 186, 117, 0.12), transparent 52%),
+    radial-gradient(ellipse at 26% 72%, rgba(168, 213, 194, 0.08), transparent 48%),
+    var(--ph-bg);
+}
+
+.cl-companion__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+  gap: clamp(28px, 5vw, 68px);
+  align-items: center;
+}
+
+.cl-companion__copy {
+  margin: 22px 0 0;
+  max-width: 50ch;
+  font-family: var(--ph-condensed);
+  font-size: clamp(21px, 2.2vw, 27px);
+  line-height: 1.42;
+  color: var(--ph-ink-soft);
+}
+
+.cl-companion__stages {
+  margin: 26px 0 32px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+  font-family: var(--ph-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--ph-gold);
+}
+
+.cl-companion__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 48px;
+  padding: 0 22px;
+  border: 1px solid var(--ph-gold);
+  background: rgba(228, 186, 117, 0.1);
+  font-family: var(--ph-mono);
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--ph-ink);
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.cl-companion__cta:hover {
+  background: var(--ph-gold);
+  color: #081014;
+}
+
+.cl-companion__plate {
+  display: block;
+  padding: 20px;
+  border: 1px solid var(--ph-line-strong);
+  background: #081016;
+  transition: border-color 0.25s ease, transform 0.3s ease;
+}
+
+.cl-companion__plate:hover {
+  border-color: var(--ph-gold);
+  transform: translateY(-3px);
+}
+
+/* ── RESPONSIVE ──────────────────────────────────────────────────────────── */
+@media (max-width: 1080px) {
+  .cl-models-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 860px) {
+  .cl-hero__inner,
+  .cl-split,
+  .cl-ecology,
+  .cl-plate__grid,
+  .cl-enough__grid,
+  .cl-companion__grid,
+  .cl-contrast-bar {
+    grid-template-columns: 1fr;
+  }
+
+  .cl-plate--flip .cl-plate__copy,
+  .cl-plate--flip .cl-plate__study {
+    order: initial;
+  }
+
+  .cl-hero__marginalia {
+    justify-self: start;
+    text-align: left;
+  }
+
+  .cl-contrast-cell + .cl-contrast-cell {
+    padding: 20px 0 0;
+    border-left: 0;
+    border-top: 1px solid var(--ph-line);
+  }
+}
+
+@media (max-width: 560px) {
+  .cl-models-grid {
+    grid-template-columns: 1fr;
+  }
+  .cl-hero__title {
+    font-size: clamp(48px, 14vw, 76px);
+  }
+  .cl-plate__title {
+    font-size: clamp(40px, 12vw, 60px);
+  }
+}

@@ -10,6 +10,12 @@ import { artifacts, lenses } from './projects';
 import { homeContent } from './home';
 import { naraka, gameplay, clips, evaluationUrl, channel } from './gaming';
 import { homeReflectionSources } from '../scripts/home-scene';
+import {
+  clearElements,
+  clearCadence,
+  generativeStages,
+  writtenModels as philosophyModels,
+} from './philosophy-family';
 
 const byId = (list: any[], id: string) => list.find((item) => item.id === id && !item.deleted);
 
@@ -484,102 +490,34 @@ export const creationsWorld = {
   ],
 };
 
-// ── 06 · HOW I SEE IT (honest first-person perspective from clear.astro & written models) ──
-export const perspectiveElements = [
-  {
-    number: '01',
-    title: 'Resources',
-    subtitle: 'The means',
-    summary: 'Money, time, energy, health, knowledge, tools, and relationships give me possibilities — to use, not confuse with living itself.',
-    href: '/clear.html#framework',
-  },
-  {
-    number: '02',
-    title: 'Security',
-    subtitle: 'The continuity',
-    summary: 'Enough stability to meet responsibilities, absorb setbacks, and keep exploring without making security the whole purpose of life.',
-    href: '/clear.html#framework',
-  },
-  {
-    number: '03',
-    title: 'Freedom',
-    subtitle: 'The choice',
-    summary: 'Meaningful room to choose where time and attention go. The doors matter more than the number.',
-    href: '/clear.html#framework',
-  },
-  {
-    number: '04',
-    title: 'Creation',
-    subtitle: 'The expression',
-    summary: 'Turning curiosity into experiments, software, art, ideas, and new abilities — not everything needs a market or finish line.',
-    href: '/clear.html#framework',
-  },
-  {
-    number: '05',
-    title: 'Living',
-    subtitle: 'The participation',
-    summary: 'Studying, building, playing, moving, traveling, noticing the world, being with people: these are not delays before life begins.',
-    href: '/clear.html#framework',
-  },
-  {
-    number: '06',
-    title: 'Renewal',
-    subtitle: 'The return',
-    summary: 'Rest, reflection, and changing direction belong to development. Enjoyment without an output is still meaningful.',
-    href: '/clear.html#framework',
-  },
-];
+// ── 06 · HOW I SEE IT (sourced from shared philosophy-family manifest) ──
+export const perspectiveElements = clearElements.map((el) => ({
+  id: el.id,
+  number: el.number,
+  title: el.title,
+  subtitle: el.subtitle,
+  summary: el.shortLine,
+  relationNote: el.relationNote,
+  accent: el.accent,
+  supports: el.supports,
+  x: el.x,
+  y: el.y,
+  href: `/clear.html#element-${el.id}`,
+}));
 
-// Only verified, fully written models (excluding placeholder doctrine stubs).
-export const writtenModels = [
-  {
-    idx: 'M-01',
-    title: 'Seeing Before Naming',
-    line: 'Your first interpretation is not the event itself.',
-    chain: 'event → sensation → perception → interpretation → label',
-    href: '/models/seeing-before-naming.html',
-  },
-  {
-    idx: 'M-02',
-    title: 'Replace Stories with Systems',
-    line: 'A story explains. A mechanism predicts. Only one of them can be tested.',
-    chain: 'actors ⇄ incentives ⇄ constraints ⇄ feedback',
-    href: '/models/replace-stories-with-systems.html',
-  },
-  {
-    idx: 'M-03',
-    title: 'From Reaction to Pattern',
-    line: 'A single frame is noise. Direction is the signal.',
-    chain: 'frame · frame · frame · frame → trajectory',
-    href: '/models/from-reaction-to-pattern.html',
-  },
-  {
-    idx: 'M-04',
-    title: 'Coherence vs. Entropy',
-    line: 'Is the system holding its shape, or spending itself?',
-    chain: 'organization ⇄ drift',
-    href: '/models/coherence-vs-entropy.html',
-  },
-  {
-    idx: 'M-05',
-    title: 'Clear Again',
-    line: 'You do not stay clear. You get clear again, on a shorter interval.',
-    chain: 'drift → notice → adjust → return',
-    href: '/models/clear-again.html',
-  },
-];
+export const writtenModels = philosophyModels;
 
 export const perspectiveWorld = {
   quote: 'Development is not preparation for my life. Development is part of my life.',
-  note: 'Not a doctrine or a set of instructions — just how I currently see.',
-  sequence: ['Notice', 'Explore', 'Learn', 'Create', 'Experience', 'Reflect', 'Renew'],
+  note: 'Two ways of looking and five lenses I return to — not a doctrine, just how I currently see.',
+  sequence: [...clearCadence],
   elements: perspectiveElements,
+  generativeStages,
   models: writtenModels,
   paths: [
     { label: 'Enter ICY CLEAR', href: '/clear.html', primary: true },
-    { label: 'The Framework (01–06)', href: '/clear.html#framework' },
     { label: 'Generative Reality · How I See More', href: '/generative-reality.html' },
-    { label: 'What is Enough?', href: '/clear.html#enough' },
+    { label: 'What Is Enough?', href: '/clear.html#enough' },
     { label: 'Two Worlds', href: '/worlds.html' },
   ],
 };

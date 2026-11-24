@@ -1,0 +1,73 @@
+---
+import { writtenModels } from '../../data/philosophy-family';
+
+interface Props {
+  active: 'clear' | 'generative' | 'model';
+  currentModelSlug?: string;
+}
+
+const { active, currentModelSlug = '' } = Astro.props;
+---
+
+<footer class="ph-footer" aria-label="Connected philosophy family">
+  <div class="ph-shell">
+    <div class="ph-footer__grid">
+      <div>
+        <p class="ph-footer__kicker">One Connected Inquiry</p>
+        <p class="ph-footer__lead">How I currently see — and how I try to see more.</p>
+        <p class="ph-footer__note">
+          These pages are working lenses, not finished doctrine. Move freely between the living philosophy, the six transitions of Generative Reality, and the written models underneath them.
+        </p>
+      </div>
+
+      <div>
+        <p class="ph-footer__kicker">Frameworks &amp; Environments</p>
+        <ul class="ph-footer__list">
+          <li>
+            <a class:list={[{ 'is-current': active === 'clear' }]} href="/clear.html">
+              <strong>ICY CLEAR · Life as Continuous Development</strong>
+              <span>{active === 'clear' ? 'HERE' : '01–06 ↗'}</span>
+            </a>
+          </li>
+          <li>
+            <a class:list={[{ 'is-current': active === 'generative' }]} href="/generative-reality.html">
+              <strong>Generative Reality · How I See More</strong>
+              <span>{active === 'generative' ? 'HERE' : '6 STAGES ↗'}</span>
+            </a>
+          </li>
+          <li>
+            <a href="/clear.html#enough">
+              <strong>What Is Enough?</strong>
+              <span>BALANCE ↗</span>
+            </a>
+          </li>
+          <li>
+            <a href="/worlds.html">
+              <strong>Two Worlds · Clear &amp; Natural</strong>
+              <span>CLIMATES ↗</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <div>
+        <p class="ph-footer__kicker">Five Written Models &amp; Lenses</p>
+        <ul class="ph-footer__list">
+          {writtenModels.map((model) => (
+            <li>
+              <a class:list={[{ 'is-current': currentModelSlug === model.slug }]} href={model.href}>
+                <strong>{model.title}</strong>
+                <span>{currentModelSlug === model.slug ? 'HERE' : `${model.idx} ↗`}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+
+    <div class="ph-footer__bar">
+      <span>ICY CLEARER / PERSONAL PERSPECTIVE · STILL DEVELOPING</span>
+      <a href="/#perspective">Return to Homepage · How I See It ↑</a>
+    </div>
+  </div>
+</footer>

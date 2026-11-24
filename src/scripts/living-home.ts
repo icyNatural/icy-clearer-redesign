@@ -412,16 +412,19 @@ if (root) {
     });
   }
 
-  // ── 6. HOW I SEE IT INTERACTIVE PERSPECTIVE TERMS ──────────────────────
+  // ── 6. HOW I SEE IT: ECOLOGY CONSTELLATION + GENERATIVE PREVIEW ────────
   const perspectivePayload = document.querySelector('[data-perspective-manifest]');
   const perspectiveSection = root.querySelector<HTMLElement>('[data-perspective-section]');
   if (perspectiveSection && perspectivePayload) {
     const elements: any[] = JSON.parse(perspectivePayload.textContent || '[]');
-    const termButtons = [...perspectiveSection.querySelectorAll<HTMLButtonElement>('[data-term-number]')];
-    const subEl = perspectiveSection.querySelector<HTMLElement>('[data-term-subtitle]')!;
-    const bodyEl = perspectiveSection.querySelector<HTMLElement>('[data-term-summary]')!;
+    const termButtons = [...perspectiveSection.querySelectorAll<HTMLButtonElement>('.pf-term-btn[data-term-number]')];
+    const svgNodes = [...perspectiveSection.querySelectorAll<SVGGElement>('[data-pf-node]')];
+    const svgChords = [...perspectiveSection.querySelectorAll<SVGLineElement>('[data-pf-chord]')];
+    const subEl = perspectiveSection.querySelector<HTMLElement>('[data-term-subtitle]');
+    const bodyEl = perspectiveSection.querySelector<HTMLElement>('[data-term-summary]');
+    const linkEl = perspectiveSection.querySelector<HTMLAnchorElement>('[data-term-link]');
 
-    const selectTerm = (num: string) => {
+    const selectTerm = (num: string, persist = true) => {
       const entry = elements.find((item) => item.number === num) || elements[0];
       if (!entry) return;
       termButtons.forEach((btn) => {
@@ -429,12 +432,26 @@ if (root) {
         btn.setAttribute('aria-selected', String(active));
         btn.tabIndex = active ? 0 : -1;
       });
-      subEl.textContent = `${entry.number} / ${entry.subtitle}`;
-      bodyEl.textContent = entry.summary;
-      writeState({ termNumber: entry.number });
+      svgNodes.forEach((node) => {
+        const nid = node.dataset.pfNode || '';
+        const isActive = nid === entry.id;
+        const isLinked = Array.isArray(entry.supports) && entry.supports.includes(nid);
+        node.classList.toggle('is-active', isActive);
+        node.classList.toggle('is-linked', isLinked);
+        node.setAttribute('aria-pressed', String(isActive));
+      });
+      svgChords.forEach((chord) => {
+        const pair = (chord.dataset.pfChord || '').split(':');
+        const touches = pair.includes(entry.id) && pair.some((p) => p !== entry.id && entry.supports?.includes(p));
+        chord.classList.toggle('is-lit', touches);
+      });
+      if (subEl) subEl.textContent = `${entry.number} / ${entry.subtitle}`;
+      if (bodyEl) bodyEl.textContent = entry.summary;
+      if (linkEl && entry.href) linkEl.href = entry.href;
+      if (persist) writeState({ termNumber: entry.number });
     };
 
-    if (savedState.termNumber) selectTerm(savedState.termNumber);
+    selectTerm(savedState.termNumber || elements[0]?.number || '01', false);
 
     termButtons.forEach((btn, idx) => {
       btn.addEventListener('click', () => selectTerm(btn.dataset.termNumber!));
@@ -446,5 +463,50 @@ if (root) {
         selectTerm(next.dataset.termNumber!);
       });
     });
+
+    svgNodes.forEach((node) => {
+      const num = node.dataset.termNumber || '01';
+      node.addEventListener('click', () => selectTerm(num));
+      node.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          selectTerm(num);
+        }
+      });
+    });
+
+    // Interactive 6-Stage Generative Reality Mini Preview on Homepage
+    const genPayload = document.querySelector('[data-generative-manifest]');
+    const genCard = perspectiveSection.querySelector<HTMLElement>('[data-gen-preview]');
+    if (genPayload && genCard) {
+      const stages: any[] = JSON.parse(genPayload.textContent || '[]');
+      const genBtns = [...genCard.querySelectorAll<HTMLButtonElement>('[data-gen-pick]')];
+      const genBadge = genCard.querySelector<HTMLElement>('[data-gen-badge]');
+      const genNote = genCard.querySelector<HTMLElement>('[data-gen-note]');
+
+      const selectGen = (id: string) => {
+        const st = stages.find((s) => s.id === id) || stages[1] || stages[0];
+        if (!st) return;
+        genCard.dataset.genStage = st.id;
+        genBtns.forEach((btn) => {
+          const active = btn.dataset.genPick === st.id;
+          btn.setAttribute('aria-selected', String(active));
+          btn.tabIndex = active ? 0 : -1;
+        });
+        if (genBadge) genBadge.textContent = st.affordanceBadge;
+        if (genNote) genNote.textContent = st.stageNote;
+      };
+
+      genBtns.forEach((btn, idx) => {
+        btn.addEventListener('click', () => selectGen(btn.dataset.genPick!));
+        btn.addEventListener('keydown', (event) => {
+          if (!['ArrowRight', 'ArrowLeft'].includes(event.key)) return;
+          event.preventDefault();
+          const next = genBtns[(idx + (event.key === 'ArrowRight' ? 1 : -1) + genBtns.length) % genBtns.length];
+          next.focus();
+          selectGen(next.dataset.genPick!);
+        });
+      });
+    }
   }
 }

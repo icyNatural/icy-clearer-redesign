@@ -1,258 +1,610 @@
 ---
-// ICY CLEAR / personal philosophy. A first-person perspective, not a doctrine.
-const elements = [
-  {
-    number: '01',
-    title: 'Resources',
-    subtitle: 'The means',
-    description: 'Money, time, energy, health, knowledge, tools, and relationships all give me possibilities. I want to use them, not confuse the act of accumulating them with the act of living.'
-  },
-  {
-    number: '02',
-    title: 'Security',
-    subtitle: 'The continuity',
-    description: 'I want enough stability to meet my responsibilities, absorb setbacks, and keep exploring. Security protects the life I want to participate in; it is not the whole purpose of that life.'
-  },
-  {
-    number: '03',
-    title: 'Freedom',
-    subtitle: 'The choice',
-    description: 'I want meaningful room to choose where my time and attention go. More resources can open doors, but the doors matter more than the number.'
-  },
-  {
-    number: '04',
-    title: 'Creation',
-    subtitle: 'The expression',
-    description: 'I like turning curiosity into experiments, software, art, ideas, and new abilities. Not everything I make needs a market, a finish line, or a reason beyond wanting to try.'
-  },
-  {
-    number: '05',
-    title: 'Living',
-    subtitle: 'The participation',
-    description: 'Studying something new, taking a course, building, playing, moving, traveling, noticing the world, being with people: these are not delays before life begins. They are life.'
-  },
-  {
-    number: '06',
-    title: 'Renewal',
-    subtitle: 'The return',
-    description: 'Rest, reflection, and changing direction belong to development. I do not need to be improving or producing every moment. Enjoyment without an output is still meaningful.'
-  },
-];
+import '../styles/philosophy-family.css';
+import '../styles/clear-essay.css';
+import PhilosophyHeader from '../components/philosophy/PhilosophyHeader.astro';
+import PhilosophyFooter from '../components/philosophy/PhilosophyFooter.astro';
+import ModelGlyph from '../components/philosophy/ModelGlyph.astro';
+import {
+  clearElements,
+  clearCadence,
+  generativeStages,
+  writtenModels,
+} from '../data/philosophy-family';
+
+// Build unique undirected relational chord pairs for the non-hierarchical ecology diagram
+const chordPairs: { key: string; a: (typeof clearElements)[0]; b: (typeof clearElements)[0] }[] = [];
+const seen = new Set<string>();
+for (const el of clearElements) {
+  for (const targetId of el.supports) {
+    const target = clearElements.find((c) => c.id === targetId);
+    if (!target) continue;
+    const key = [el.id, target.id].sort().join(':');
+    if (seen.has(key)) continue;
+    seen.add(key);
+    chordPairs.push({ key, a: el, b: target });
+  }
+}
 ---
+
 <!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>ICY CLEAR — Life as Continuous Development</title>
-    <meta name="description" content="A personal philosophy of resources, security, freedom, creation, renewal and living. Development is part of my life, not preparation for it." />
-    <meta name="theme-color" content="#090c0d" />
+    <meta
+      name="description"
+      content="A personal philosophy of resources, security, freedom, creation, living, and renewal. Development is part of my life, not preparation for it."
+    />
+    <meta name="theme-color" content="#070c10" />
     <meta property="og:title" content="ICY CLEAR — Life as Continuous Development" />
-    <meta property="og:description" content="My perspective, still developing. Learning, making, experiencing, and being alive are the process." />
+    <meta
+      property="og:description"
+      content="My perspective, still developing. Learning, making, experiencing, and being alive are the process."
+    />
     <meta property="og:type" content="website" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="preload" href="/clear/fonts/bodoni.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/clear/fonts/bodoni-italic.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="preload" href="/clear/fonts/barlow.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/clear/fonts/plex-mono.woff2" as="font" type="font/woff2" crossorigin />
   </head>
-  <body>
-    <a class="skip" href="#main">Skip to philosophy</a>
-    <header class="topbar">
-      <a class="brand" href="/" aria-label="Return to ICY CLEARER home">ICY <strong>CLEAR</strong><span> / A PERSONAL LENS</span></a>
-      <nav aria-label="Page navigation">
-        <a href="#framework">Framework</a>
-        <a href="#enough">Enough</a>
-        <a href="#perspective">Perspective</a>
-        <a href="/generative-reality.html">Generative Reality ↗</a>
-      </nav>
-    </header>
+
+  <body class="ph-doc">
+    <a class="ph-skip" href="#main">Skip to philosophy</a>
+
+    <PhilosophyHeader active="clear" />
 
     <main id="main">
-      <section class="hero" aria-labelledby="hero-title">
-        <div class="orbital orbital-one" aria-hidden="true"></div>
-        <div class="orbital orbital-two" aria-hidden="true"></div>
-        <div class="hero-copy">
-          <p class="kicker">PERSONAL FRAMEWORK <span class="dot">·</span> AN OPEN PROCESS</p>
-          <h1 id="hero-title">Life as<br /><em>continuous</em><br />development.</h1>
-          <p class="hero-lede">I don't see development as a phase I must complete before I can start living. Learning, experimenting, creating, exploring, and enjoying the process <strong>are already ways of living.</strong></p>
-          <a class="quiet-link" href="#framework">Explore the framework <span aria-hidden="true">↓</span></a>
-        </div>
-        <p class="hero-side">NOT A FINISH LINE<br />NOT A SET OF INSTRUCTIONS<br />A WAY I CURRENTLY SEE</p>
-      </section>
+      <!-- ── HERO ────────────────────────────────────────────────────────── -->
+      <section class="cl-hero" aria-labelledby="hero-title">
+        <svg class="cl-hero__orbit" viewBox="0 0 600 600" fill="none" aria-hidden="true">
+          <circle cx="300" cy="300" r="268" stroke="rgba(157,207,228,0.14)" />
+          <circle cx="300" cy="300" r="196" stroke="rgba(228,186,117,0.13)" stroke-dasharray="4 6" />
+          <circle cx="300" cy="300" r="118" stroke="rgba(168,213,194,0.16)" />
+          <line x1="300" y1="20" x2="300" y2="580" stroke="rgba(168,198,204,0.06)" />
+          <line x1="20" y1="300" x2="580" y2="300" stroke="rgba(168,198,204,0.06)" />
+        </svg>
 
-      <section class="thesis shell" aria-labelledby="thesis-title">
-        <p class="section-index">THE CENTER / 00</p>
-        <div>
-          <h2 id="thesis-title">The means are not<br /><em>the destination.</em></h2>
-          <p>I want money to take courses, develop abilities, build things, explore places, and do what I enjoy. I value resources for the possibilities they protect and open—not simply for the size of what I possess.</p>
-          <blockquote>“Development is not preparation for my life. Development is part of my life.”</blockquote>
-        </div>
-      </section>
-
-      <section class="framework shell" id="framework" aria-labelledby="framework-title">
-        <div class="section-heading">
-          <p class="section-index">A WORKING FRAMEWORK / 01–06</p>
-          <h2 id="framework-title">What makes<br /><em>life possible.</em></h2>
-          <p>These ideas support one another. I don't see them as a ladder everyone must climb—or as stages I finish once and leave behind.</p>
-        </div>
-        <div class="concepts">
-          {elements.map((element) => (
-            <article class="concept">
-              <div class="concept-top"><span>{element.number} / {element.subtitle}</span><span aria-hidden="true">↗</span></div>
-              <h3>{element.title}</h3>
-              <p>{element.description}</p>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <section class="enough" id="enough" aria-labelledby="enough-title">
-        <div class="shell enough-grid">
+        <div class="ph-shell cl-hero__inner">
           <div>
-            <p class="section-index">THE BALANCE / 07</p>
-            <h2 id="enough-title">What is<br /><em>enough?</em></h2>
+            <p class="ph-mono cl-hero__kicker">
+              HOW I SEE IT <span>·</span> AN OPEN PERSONAL FRAMEWORK
+            </p>
+            <h1 class="cl-hero__title" id="hero-title">
+              Life as<br /><em>continuous</em><br />development.
+            </h1>
+            <p class="cl-hero__lede">
+              I don't see development as a phase I must complete before I can start living.
+              Learning, experimenting, creating, exploring, and enjoying the process{' '}
+              <strong>are already ways of living.</strong>
+            </p>
+            <div class="cl-hero__actions">
+              <a class="cl-link-line" href="#framework">
+                Explore the six interacting parts <span aria-hidden="true">↓</span>
+              </a>
+              <a class="cl-link-line cl-link-line--quiet" href="/generative-reality.html">
+                Companion: Generative Reality <span aria-hidden="true">↗</span>
+              </a>
+            </div>
           </div>
-          <div class="enough-copy">
-            <p>I don't want an arbitrary number to become my only destination. I want to know what the resources are actually for.</p>
-            <p><strong>Enough isn't a universal amount.</strong> It's a changing balance: when accumulating more may contribute less to genuine security and possibility than the time, attention, freedom, or experiences it costs.</p>
-            <p class="subtle">That doesn't make security optional. My responsibilities, real expenses, and future needs remain part of the answer. I can protect tomorrow without permanently postponing today.</p>
+
+          <p class="cl-hero__marginalia">
+            NOT A FINISH LINE<br />
+            NOT A LADDER OF LEVELS<br />
+            NOT A SET OF INSTRUCTIONS<br />
+            A WAY I CURRENTLY SEE
+          </p>
+        </div>
+      </section>
+
+      <!-- ── THE CENTER (00) ─────────────────────────────────────────────── -->
+      <section class="cl-center" aria-labelledby="thesis-title">
+        <div class="ph-shell cl-split">
+          <p class="ph-mono cl-index">THE CENTER / 00</p>
+          <div>
+            <h2 class="cl-h2" id="thesis-title">
+              The means are not<br /><em>the destination.</em>
+            </h2>
+            <p class="cl-center__body">
+              I want money to take courses, develop abilities, build things, explore places, and do what I enjoy.
+              I value resources for the possibilities they protect and open — not simply for the size of what I possess.
+            </p>
+            <blockquote class="cl-center__quote">
+              “Development is not preparation for my life. Development is part of my life.”
+            </blockquote>
+
+            <div class="cl-contrast-bar">
+              <div class="cl-contrast-cell">
+                <span>Deferred Model · Not How I See It</span>
+                <p>Accumulate first → reach an arbitrary finish line → postpone curiosity → someday begin living.</p>
+              </div>
+              <div class="cl-contrast-cell cl-contrast-cell--living">
+                <span>Continuous Development · Interacting Now</span>
+                <p>Resources, security, freedom, creation, living, and renewal continually feed and rebalance one another in the present.</p>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
-      <section class="process shell" aria-labelledby="process-title">
-        <p class="section-index">NO FINAL FORM / ONGOING</p>
-        <h2 id="process-title">A process I can<br /><em>keep returning to.</em></h2>
-        <div class="sequence" aria-label="An ongoing, non-linear process">
-          <span>Notice</span><span>Explore</span><span>Learn</span><span>Create</span><span>Experience</span><span>Reflect</span><span>Renew</span>
+      <!-- ── SIX INTERACTING PARTS (#framework) ──────────────────────────── -->
+      <section class="cl-framework" id="framework" aria-labelledby="framework-title">
+        <div class="ph-shell">
+          <div class="cl-split">
+            <p class="ph-mono cl-index">A LIVING ECOLOGY / 01–06</p>
+            <div>
+              <h2 class="cl-h2" id="framework-title">
+                What makes<br /><em>life possible.</em>
+              </h2>
+              <p class="cl-center__body">
+                These six ideas support and balance one another. I don't treat them as mandatory levels people must finish in order — or as stages I leave behind once completed.
+              </p>
+            </div>
+          </div>
+
+          <!-- Non-hierarchical Relational Constellation -->
+          <div class="cl-ecology" data-cl-ecology>
+            <svg
+              class="cl-ecology__svg"
+              viewBox="0 0 420 356"
+              fill="none"
+              role="img"
+              aria-label="Non-hierarchical diagram showing how Resources, Security, Freedom, Creation, Living, and Renewal interact"
+            >
+              <circle cx="210" cy="170" r="118" stroke="rgba(168,198,204,0.12)" stroke-dasharray="3 5" />
+              <text x="210" y="167" text-anchor="middle" fill="#677a7d" font-family="ClearMono, monospace" font-size="8.5" letter-spacing="1.6">INTERACTING</text>
+              <text x="210" y="181" text-anchor="middle" fill="#677a7d" font-family="ClearMono, monospace" font-size="8.5" letter-spacing="1.6">NOT A LADDER</text>
+
+              {chordPairs.map((pair) => (
+                <line
+                  class="cl-eco-chord"
+                  data-eco-chord={pair.key}
+                  x1={pair.a.x}
+                  y1={pair.a.y}
+                  x2={pair.b.x}
+                  y2={pair.b.y}
+                />
+              ))}
+
+              {clearElements.map((el, idx) => (
+                <g
+                  class:list={['cl-eco-node', { 'is-active': idx === 0 }]}
+                  data-eco-node={el.id}
+                  tabindex="0"
+                  role="button"
+                  aria-pressed={idx === 0 ? 'true' : 'false'}
+                  aria-label={`${el.number} ${el.title} — ${el.subtitle}`}
+                >
+                  <circle class="node-ring" cx={el.x} cy={el.y} r="28" />
+                  <circle cx={el.x} cy={el.y} r="3.2" fill={el.accent} />
+                  <text x={el.x} y={el.y > 180 ? el.y + 44 : el.y - 36} text-anchor="middle">{el.number} · {el.title}</text>
+                </g>
+              ))}
+            </svg>
+
+            <div class="cl-ecology__readout" aria-live="polite">
+              <div class="cl-ecology__pills" role="group" aria-label="Inspect element interactions">
+                {clearElements.map((el, idx) => (
+                  <button
+                    type="button"
+                    class:list={['cl-ecology__pill', { 'is-active': idx === 0 }]}
+                    data-eco-pill={el.id}
+                    aria-pressed={idx === 0 ? 'true' : 'false'}
+                  >
+                    {el.number} {el.title}
+                  </button>
+                ))}
+              </div>
+              <p class="cl-ecology__sub" data-eco-sub>01 / The means</p>
+              <h3 class="cl-ecology__title" data-eco-title>Resources</h3>
+              <p class="cl-ecology__rel" data-eco-rel>{clearElements[0].relationNote}</p>
+              <a class="cl-ecology__jump" data-eco-jump href="#element-resources">Read Resources ↓</a>
+            </div>
+          </div>
         </div>
-        <p>Sometimes I follow curiosity into a new skill. Sometimes I build something from it. Sometimes I rest, play, or simply appreciate what is already here. None of that needs to be preparation for a future version of living.</p>
+
+        <!-- Six Distinct Editorial Plates -->
+        <div class="cl-plates">
+          <!-- 01 · RESOURCES -->
+          <article class="cl-plate" id="element-resources" style={`--plate-accent:${clearElements[0].accent}`}>
+            <div class="ph-shell cl-plate__grid">
+              <div class="cl-plate__copy">
+                <p class="cl-plate__kicker">01 / {clearElements[0].subtitle}</p>
+                <h3 class="cl-plate__title">Resources</h3>
+                <p class="cl-plate__desc">{clearElements[0].description}</p>
+                <p class="cl-plate__note">{clearElements[0].note}</p>
+                <div class="cl-plate__links">
+                  <span>Interacts with:</span>
+                  <a href="#element-security">Security</a>
+                  <a href="#element-freedom">Freedom</a>
+                  <a href="#element-creation">Creation</a>
+                </div>
+              </div>
+
+              <div class="cl-plate__study">
+                <div class="cl-study cl-study--resources" data-study-resources data-mode="directed">
+                  <div class="cl-study__bar">
+                    <span data-res-state>Capacity flowing into possibilities</span>
+                    <button type="button" class="cl-study__toggle" data-res-toggle>Compare: accumulated</button>
+                  </div>
+                  <svg viewBox="0 0 420 210" fill="none" role="img" aria-label="Diagram comparing closed resource accumulation against capacity directed outward into possibilities">
+                    <!-- Closed vault pile (subtle when directed) -->
+                    <g class="res-flow res-pile">
+                      <rect x="30" y="54" width="96" height="106" stroke="#e2b872" stroke-opacity="0.7" fill="rgba(226,184,114,0.08)" />
+                      <line x1="42" y1="84" x2="114" y2="84" stroke="#e2b872" stroke-opacity="0.45" />
+                      <line x1="42" y1="106" x2="114" y2="106" stroke="#e2b872" stroke-opacity="0.45" />
+                      <line x1="42" y1="128" x2="114" y2="128" stroke="#e2b872" stroke-opacity="0.45" />
+                      <text x="78" y="180" text-anchor="middle" fill="#98a9aa" font-family="ClearMono, monospace" font-size="9">STORE</text>
+                    </g>
+                    <!-- Outward directed channels -->
+                    <g class="res-flow res-directed">
+                      <path d="M126 78 C200 78, 232 42, 378 36" stroke="#e2b872" stroke-width="1.6" />
+                      <path d="M126 96 C210 96, 248 80, 382 80" stroke="#9dcfe4" stroke-width="1.5" />
+                      <path d="M126 114 C210 114, 248 128, 382 128" stroke="#a8d5c2" stroke-width="1.5" />
+                      <path d="M126 132 C200 132, 238 168, 378 172" stroke="#e0a96d" stroke-width="1.5" />
+                      <text x="386" y="40" text-anchor="end" fill="#e2b872" font-family="ClearMono, monospace" font-size="8.5">COURSES</text>
+                      <text x="386" y="84" text-anchor="end" fill="#9dcfe4" font-family="ClearMono, monospace" font-size="8.5">TOOLS</text>
+                      <text x="386" y="132" text-anchor="end" fill="#a8d5c2" font-family="ClearMono, monospace" font-size="8.5">TIME &amp; HEALTH</text>
+                      <text x="386" y="176" text-anchor="end" fill="#e0a96d" font-family="ClearMono, monospace" font-size="8.5">EXPERIMENTS</text>
+                    </g>
+                  </svg>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- 02 · SECURITY -->
+          <article class="cl-plate cl-plate--flip" id="element-security" style={`--plate-accent:${clearElements[1].accent}`}>
+            <div class="ph-shell cl-plate__grid">
+              <div class="cl-plate__copy">
+                <p class="cl-plate__kicker">02 / {clearElements[1].subtitle}</p>
+                <h3 class="cl-plate__title">Security</h3>
+                <p class="cl-plate__desc">{clearElements[1].description}</p>
+                <p class="cl-plate__note">{clearElements[1].note}</p>
+                <div class="cl-plate__links">
+                  <span>Interacts with:</span>
+                  <a href="#element-resources">Resources</a>
+                  <a href="#element-freedom">Freedom</a>
+                  <a href="#element-renewal">Renewal</a>
+                </div>
+              </div>
+
+              <div class="cl-plate__study">
+                <div class="cl-study cl-study--security" data-study-security data-shock="false">
+                  <div class="cl-study__bar">
+                    <span data-sec-state>Continuity beneath open sky</span>
+                    <button type="button" class="cl-study__toggle" data-sec-pulse>Test setback</button>
+                  </div>
+                  <svg viewBox="0 0 420 210" fill="none" role="img" aria-label="Diagram of a steady keel absorbing waves while keeping the open sky accessible above">
+                    <text x="20" y="34" fill="#677a7d" font-family="ClearMono, monospace" font-size="8.5" letter-spacing="1.2">OPEN FIELD ABOVE · UNBLOCKED</text>
+                    <!-- Disturbance waves on surface -->
+                    <path class="sec-wave sec-wave-top" d="M20 102 Q70 84, 120 102 T220 102 T320 102 T400 102" stroke="#9dcfe4" stroke-width="1.5" />
+                    <path class="sec-wave" d="M20 116 Q80 104, 140 116 T260 116 T400 116" stroke="rgba(157,207,228,0.35)" stroke-dasharray="4 4" />
+                    <!-- Steady keel foundation -->
+                    <path d="M90 132 L330 132 L286 172 L134 172 Z" fill="rgba(157,207,228,0.09)" stroke="#9dcfe4" stroke-width="1.4" />
+                    <line x1="210" y1="68" x2="210" y2="172" stroke="rgba(228,186,117,0.5)" stroke-dasharray="3 3" />
+                    <text x="210" y="156" text-anchor="middle" fill="#9dcfe4" font-family="ClearMono, monospace" font-size="9">STABILITY KEEL</text>
+                  </svg>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- 03 · FREEDOM -->
+          <article class="cl-plate" id="element-freedom" style={`--plate-accent:${clearElements[2].accent}`}>
+            <div class="ph-shell cl-plate__grid">
+              <div class="cl-plate__copy">
+                <p class="cl-plate__kicker">03 / {clearElements[2].subtitle}</p>
+                <h3 class="cl-plate__title">Freedom</h3>
+                <p class="cl-plate__desc">{clearElements[2].description}</p>
+                <p class="cl-plate__note">{clearElements[2].note}</p>
+                <div class="cl-plate__links">
+                  <span>Interacts with:</span>
+                  <a href="#element-creation">Creation</a>
+                  <a href="#element-living">Living</a>
+                  <a href="#element-renewal">Renewal</a>
+                </div>
+              </div>
+
+              <div class="cl-plate__study">
+                <div class="cl-study cl-study--freedom" data-study-freedom data-door="1">
+                  <div class="cl-study__bar">
+                    <span data-free-state>Door 02 · Unhurried creation</span>
+                    <button type="button" class="cl-study__toggle" data-free-shift>Shift attention</button>
+                  </div>
+                  <svg viewBox="0 0 420 210" fill="none" role="img" aria-label="Three architectural doorways showing meaningful choice as directed attention">
+                    <!-- Three architectural portals -->
+                    <rect x="44" y="34" width="76" height="142" stroke="rgba(200,223,236,0.45)" />
+                    <rect x="172" y="34" width="76" height="142" stroke="rgba(200,223,236,0.65)" />
+                    <rect x="300" y="34" width="76" height="142" stroke="rgba(200,223,236,0.45)" />
+                    <!-- Illuminated active doorway rays -->
+                    <polygon class="free-ray free-ray--0" points="44,176 120,176 146,204 18,204" fill="rgba(157,207,228,0.28)" />
+                    <rect class="free-ray free-ray--0" x="48" y="38" width="68" height="134" fill="rgba(157,207,228,0.12)" stroke="#9dcfe4" />
+                    <polygon class="free-ray free-ray--1" points="172,176 248,176 274,204 146,204" fill="rgba(228,186,117,0.28)" />
+                    <rect class="free-ray free-ray--1" x="176" y="38" width="68" height="134" fill="rgba(228,186,117,0.12)" stroke="#e4ba75" />
+                    <polygon class="free-ray free-ray--2" points="300,176 376,176 402,204 274,204" fill="rgba(168,213,194,0.28)" />
+                    <rect class="free-ray free-ray--2" x="304" y="38" width="68" height="134" fill="rgba(168,213,194,0.12)" stroke="#a8d5c2" />
+                    <text x="82" y="112" text-anchor="middle" fill="#cfd8d4" font-family="ClearMono, monospace" font-size="9">01 STUDY</text>
+                    <text x="210" y="112" text-anchor="middle" fill="#cfd8d4" font-family="ClearMono, monospace" font-size="9">02 MAKE</text>
+                    <text x="338" y="112" text-anchor="middle" fill="#cfd8d4" font-family="ClearMono, monospace" font-size="9">03 LIVE</text>
+                  </svg>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- 04 · CREATION -->
+          <article class="cl-plate cl-plate--flip" id="element-creation" style={`--plate-accent:${clearElements[3].accent}`}>
+            <div class="ph-shell cl-plate__grid">
+              <div class="cl-plate__copy">
+                <p class="cl-plate__kicker">04 / {clearElements[3].subtitle}</p>
+                <h3 class="cl-plate__title">Creation</h3>
+                <p class="cl-plate__desc">{clearElements[3].description}</p>
+                <p class="cl-plate__note">{clearElements[3].note}</p>
+                <div class="cl-plate__links">
+                  <span>In practice:</span>
+                  <a href="/creations.html">Creations Palette ↗</a>
+                  <a href="/music.html">Music ↗</a>
+                  <a href="/generative-reality.html#orchestration">Orchestration ↗</a>
+                </div>
+              </div>
+
+              <div class="cl-plate__study">
+                <div class="cl-study">
+                  <div class="cl-study__bar">
+                    <span>Open drafting field · no required finish line</span>
+                    <span>CURIOSITY → FORM</span>
+                  </div>
+                  <svg viewBox="0 0 420 210" fill="none" role="img" aria-label="Asymmetric experimental drafting geometry representing open creative prototypes">
+                    <circle cx="132" cy="108" r="64" stroke="rgba(224,169,109,0.55)" />
+                    <circle cx="132" cy="108" r="36" stroke="rgba(224,169,109,0.28)" stroke-dasharray="3 4" />
+                    <path d="M40 162 Q132 22, 260 110 T390 48" stroke="#e4ba75" stroke-width="1.6" />
+                    <rect x="234" y="66" width="126" height="82" stroke="rgba(157,207,228,0.45)" />
+                    <line x1="234" y1="66" x2="360" y2="148" stroke="rgba(157,207,228,0.25)" />
+                    <circle cx="260" cy="110" r="4.5" fill="#e4ba75" />
+                    <circle cx="352" cy="64" r="3.5" fill="#a8d5c2" />
+                    <text x="242" y="166" fill="#98a9aa" font-family="ClearMono, monospace" font-size="8.5">PROTOTYPE · ART · SOFTWARE · SKILL</text>
+                  </svg>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- 05 · LIVING (Inhabited with Chad's real lakeside photograph!) -->
+          <article class="cl-plate cl-plate--living" id="element-living" style={`--plate-accent:${clearElements[4].accent}`}>
+            <div class="ph-shell cl-plate__grid">
+              <div class="cl-plate__copy">
+                <p class="cl-plate__kicker">05 / {clearElements[4].subtitle}</p>
+                <h3 class="cl-plate__title">Living</h3>
+                <p class="cl-plate__desc">{clearElements[4].description}</p>
+                <p class="cl-plate__note">{clearElements[4].note}</p>
+                <div class="cl-plate__links">
+                  <span>Inside the archive:</span>
+                  <a href="/moments.html">Moments Observatory ↗</a>
+                  <a href="/basketball.html">Basketball ↗</a>
+                  <a href="/games.html">Gaming ↗</a>
+                </div>
+              </div>
+
+              <div class="cl-plate__study">
+                <figure class="cl-living-photo" style="margin:0">
+                  <img
+                    src="/media/home/life/19781-lake-poster.jpg"
+                    alt="Real lake shoreline photographed by Chad — already inside life now"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                  <figcaption class="cl-living-photo__caption">
+                    <span>Not preparation — already here</span>
+                    <span>LAKE ARCHIVE</span>
+                  </figcaption>
+                </figure>
+              </div>
+            </div>
+          </article>
+
+          <!-- 06 · RENEWAL -->
+          <article class="cl-plate cl-plate--flip cl-plate--renewal" id="element-renewal" style={`--plate-accent:${clearElements[5].accent}`}>
+            <div class="ph-shell cl-plate__grid">
+              <div class="cl-plate__copy">
+                <p class="cl-plate__kicker">06 / {clearElements[5].subtitle}</p>
+                <h3 class="cl-plate__title">Renewal</h3>
+                <p class="cl-plate__desc">{clearElements[5].description}</p>
+                <p class="cl-plate__note">{clearElements[5].note}</p>
+                <div class="cl-plate__links">
+                  <span>Related lens:</span>
+                  <a href="/models/clear-again.html">M-05 Clear Again ↗</a>
+                  <a href="/modes/parasympathetic-lead-mode.html">Parasympathetic Lead Mode ↗</a>
+                </div>
+              </div>
+
+              <div class="cl-plate__study">
+                <div class="cl-study">
+                  <div class="cl-study__bar">
+                    <span>Rest &amp; return · no output required</span>
+                    <span>DAMPING TO BASELINE</span>
+                  </div>
+                  <svg viewBox="0 0 420 210" fill="none" role="img" aria-label="Damped curve gradually settling back to a calm centerline">
+                    <line x1="24" y1="106" x2="396" y2="106" stroke="rgba(168,198,204,0.22)" stroke-dasharray="3 4" />
+                    <path
+                      d="M24 106 C50 32, 74 178, 108 106 C134 56, 158 154, 192 106 C216 74, 240 136, 272 106 C296 89, 318 122, 344 106 C362 98, 378 112, 396 106"
+                      stroke="#98c7b8"
+                      stroke-width="1.8"
+                      stroke-linecap="round"
+                    />
+                    <circle cx="396" cy="106" r="4" fill="#e4ba75" />
+                    <text x="24" y="186" fill="#677a7d" font-family="ClearMono, monospace" font-size="8.5">PRESSURE</text>
+                    <text x="396" y="186" text-anchor="end" fill="#98c7b8" font-family="ClearMono, monospace" font-size="8.5">QUIET RETURN</text>
+                  </svg>
+                </div>
+              </div>
+            </div>
+          </article>
+        </div>
       </section>
 
-      <section class="perspective shell" id="perspective" aria-labelledby="perspective-title">
-        <p class="section-index">THE PERSPECTIVE / STILL EVOLVING</p>
-        <h2 id="perspective-title">This is how<br /><em>I see.</em></h2>
-        <div>
-          <p>I'm not here to wake anyone up, tell people what to believe, or hand out a formula for life. I want a place to express what I notice, what I question, what I make, and how my understanding changes.</p>
-          <p>I don't need a final version of myself. I want to remain able to become.</p>
+      <!-- ── WHAT IS ENOUGH? (MINERAL PAPER CONTRAST) ────────────────────── -->
+      <section class="cl-enough" id="enough" aria-labelledby="enough-title">
+        <div class="ph-shell">
+          <div class="cl-enough__grid">
+            <div>
+              <p class="ph-mono cl-index">THE BALANCE / 07</p>
+              <h2 class="cl-h2" id="enough-title">
+                What is<br /><em>enough?</em>
+              </h2>
+
+              <div class="cl-fulcrum" data-cl-fulcrum data-balance="living">
+                <div class="cl-fulcrum__tabs" role="group" aria-label="Inspect states of enough">
+                  <button type="button" class="cl-fulcrum__btn" data-balance-pick="fragile" aria-pressed="false">Under-resourced</button>
+                  <button type="button" class="cl-fulcrum__btn is-active" data-balance-pick="living" aria-pressed="true">Living equilibrium</button>
+                  <button type="button" class="cl-fulcrum__btn" data-balance-pick="hoarding" aria-pressed="false">Over-accumulation</button>
+                </div>
+                <svg viewBox="0 0 480 124" fill="none" role="img" aria-label="Balance beam showing equilibrium between security and living">
+                  <polygon points="240,88 224,116 256,116" fill="#122026" />
+                  <g class="cl-fulcrum__beam">
+                    <line x1="60" y1="88" x2="420" y2="88" stroke="#122026" stroke-width="2.2" />
+                    <circle cx="76" cy="70" r="14" stroke="#1b5368" stroke-width="1.5" fill="rgba(27,83,104,0.12)" />
+                    <circle cx="404" cy="70" r="14" stroke="#3a6158" stroke-width="1.5" fill="rgba(58,97,88,0.12)" />
+                    <text x="76" y="46" text-anchor="middle" fill="#122026" font-family="ClearMono, monospace" font-size="9">SECURITY</text>
+                    <text x="404" y="46" text-anchor="middle" fill="#122026" font-family="ClearMono, monospace" font-size="9">LIVING &amp; TIME</text>
+                  </g>
+                </svg>
+                <p class="cl-fulcrum__note" data-balance-note aria-live="polite">
+                  Living equilibrium: responsibilities and future shocks are protected while time, energy, and curiosity remain free to participate in life right now.
+                </p>
+              </div>
+            </div>
+
+            <div class="cl-enough__copy">
+              <p>
+                I don't want an arbitrary number to become my only destination. I want to know what the resources are actually for.
+              </p>
+              <p>
+                <strong>Enough isn't a universal amount.</strong> It's a changing balance: when accumulating more may contribute less to genuine security and possibility than the time, attention, freedom, or experiences it costs.
+              </p>
+              <p class="cl-enough__subtle">
+                That doesn't make security optional. My responsibilities, real expenses, and future needs remain part of the answer. I can protect tomorrow without permanently postponing today.
+              </p>
+            </div>
+          </div>
         </div>
       </section>
 
-      <section class="related-framework shell" aria-labelledby="related-framework-title">
-        <p class="section-index">A COMPANION FRAMEWORK / HOW I SEE MORE</p>
-        <div>
-          <h2 id="related-framework-title">Generative<br /><em>Reality.</em></h2>
-          <p>Sometimes I discover an opening that was already there. Sometimes I act and make a new crossing possible. I'm exploring how perception, recognition, simulation, orchestration, transformation, and generativity relate.</p>
-          <a href="/generative-reality.html">Experience the six transitions <span aria-hidden="true">↗</span></a>
+      <!-- ── NON-LINEAR RETURNING PROCESS ────────────────────────────────── -->
+      <section class="cl-process" aria-labelledby="process-title">
+        <div class="ph-shell">
+          <p class="ph-mono cl-index">NO FINAL FORM / ONGOING</p>
+          <h2 class="cl-h2" id="process-title" style="margin-top:16px">
+            A process I can<br /><em>keep returning to.</em>
+          </h2>
+          <div class="cl-cadence" aria-label="An ongoing, non-linear cycle">
+            {clearCadence.map((step, idx) => (
+              <>
+                {idx > 0 && <span class="cl-cadence__arrow" aria-hidden="true">↝</span>}
+                <span class="cl-cadence__step">
+                  <small>{String(idx + 1).padStart(2, '0')}</small>
+                  {step}
+                </span>
+              </>
+            ))}
+            <span class="cl-cadence__arrow" aria-hidden="true">↺</span>
+          </div>
+          <p class="cl-process__copy">
+            Sometimes I follow curiosity into a new skill. Sometimes I build something from it.
+            Sometimes I rest, play, or simply appreciate what is already here. None of that needs to be preparation for a future version of living.
+          </p>
+        </div>
+      </section>
+
+      <!-- ── THIS IS HOW I SEE (#perspective) ────────────────────────────── -->
+      <section class="cl-perspective" id="perspective" aria-labelledby="perspective-title">
+        <div class="ph-shell cl-split">
+          <p class="ph-mono cl-index">THE PERSPECTIVE / STILL EVOLVING</p>
+          <div>
+            <h2 class="cl-h2" id="perspective-title">
+              This is how<br /><em>I see.</em>
+            </h2>
+            <div class="cl-perspective__copy">
+              <p>
+                I'm not here to wake anyone up, tell people what to believe, or hand out a formula for life.
+                I want a place to express what I notice, what I question, what I make, and how my understanding changes.
+              </p>
+              <p>I don't need a final version of myself. I want to remain able to become.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── FIVE WRITTEN MODELS & LENSES ────────────────────────────────── -->
+      <section class="cl-models-band" aria-labelledby="models-band-title">
+        <div class="ph-shell">
+          <p class="ph-mono cl-index">WRITTEN MODELS &amp; LENSES / M-01 — M-05</p>
+          <h2 class="cl-h2" id="models-band-title" style="margin-top:14px">
+            How I check<br /><em>my own perception.</em>
+          </h2>
+          <div class="cl-models-grid">
+            {writtenModels.map((model) => (
+              <a class="cl-model-tile" href={model.href}>
+                <div class="cl-model-tile__top">
+                  <span>{model.idx} · {model.domain}</span>
+                  <span aria-hidden="true">↗</span>
+                </div>
+                <div class="cl-model-tile__glyph">
+                  <ModelGlyph slug={model.slug} accent={model.accent} />
+                </div>
+                <h3>{model.title}</h3>
+                <p>{model.line}</p>
+              </a>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <!-- ── COMPANION PORTAL: GENERATIVE REALITY ────────────────────────── -->
+      <section class="cl-companion" aria-labelledby="companion-title">
+        <div class="ph-shell cl-companion__grid">
+          <div>
+            <p class="ph-mono cl-index" style="color:var(--ph-gold)">COMPANION FRAMEWORK / HOW I SEE MORE</p>
+            <h2 class="cl-h2" id="companion-title" style="margin-top:14px">
+              Generative<br /><em>Reality.</em>
+            </h2>
+            <p class="cl-companion__copy">
+              Sometimes I discover an opening that was already there. Sometimes acting on that discovery builds a crossing and changes what actually becomes possible.
+            </p>
+            <div class="cl-companion__stages" aria-label="Six connected processes">
+              {generativeStages.map((st, idx) => (
+                <span>{idx > 0 ? '→ ' : ''}{st.title}</span>
+              ))}
+            </div>
+            <a class="cl-companion__cta" href="/generative-reality.html">
+              Experience the six 3D transitions <span aria-hidden="true">↗</span>
+            </a>
+          </div>
+
+          <a class="cl-companion__plate" href="/generative-reality.html" aria-label="Enter Generative Reality — six spatial transitions">
+            <svg viewBox="0 0 460 270" fill="none" style="display:block;width:100%;height:auto">
+              <rect width="460" height="270" fill="#071016" />
+              <polygon points="16,204 176,204 176,254 16,254" fill="#17242c" stroke="#537582" stroke-opacity="0.45" />
+              <polygon points="292,190 444,190 444,254 292,254" fill="#1a2c35" stroke="#537582" stroke-opacity="0.45" />
+              <rect x="94" y="88" width="46" height="116" fill="#1f313b" stroke="#7ea5b0" stroke-opacity="0.55" />
+              <rect x="110" y="130" width="16" height="74" fill="#071016" stroke="#e4ba75" stroke-width="1.6" />
+              <polygon points="126,130 228,194 202,212 126,204" fill="rgba(228,186,117,0.22)" />
+              <path d="M176,202 Q234,142 292,190" stroke="#9dcfe4" stroke-width="1.3" stroke-dasharray="4 4" />
+              <polygon points="174,202 294,188 294,198 174,212" fill="#354e59" stroke="#e4ba75" stroke-width="1.5" />
+              <path d="M352,190 Q396,138 446,118" stroke="#a8d5c2" stroke-width="1.8" />
+              <path d="M352,190 Q404,166 446,158" stroke="#e4ba75" stroke-width="1.4" stroke-dasharray="4 3" />
+              <text x="18" y="26" fill="#e4ba75" font-family="ClearMono, monospace" font-size="9" letter-spacing="1.5">ONE WORLD · SIX TRANSITIONS</text>
+              <text x="442" y="26" text-anchor="end" fill="#a8d5c2" font-family="ClearMono, monospace" font-size="9" letter-spacing="1.5">ENTER ↗</text>
+            </svg>
+          </a>
         </div>
       </section>
     </main>
 
-    <footer class="footer">
-      <span>ICY CLEAR / LIFE AS CONTINUOUS DEVELOPMENT</span>
-      <a href="/">RETURN HOME ↑</a>
-      <span>A LIVING FRAMEWORK, NOT A DOCTRINE</span>
-    </footer>
+    <PhilosophyFooter active="clear" />
+
+    <script is:inline type="application/json" data-cl-elements-json set:html={JSON.stringify(clearElements).replace(/</g, '\\u003c')} />
+    <script src="../scripts/clear-essay.ts"></script>
   </body>
 </html>
-
-<style is:global>
-  @font-face { font-family: 'Clear Bodoni'; src: url('/clear/fonts/bodoni.woff2') format('woff2'); font-weight: 400; font-display: swap; }
-  @font-face { font-family: 'Clear Bodoni'; src: url('/clear/fonts/bodoni-italic.woff2') format('woff2'); font-style: italic; font-weight: 400; font-display: swap; }
-  @font-face { font-family: 'Clear Narrow'; src: url('/clear/fonts/barlow.woff2') format('woff2'); font-weight: 400; font-display: swap; }
-  @font-face { font-family: 'Clear Mono'; src: url('/clear/fonts/plex-mono.woff2') format('woff2'); font-weight: 400; font-display: swap; }
-  :root { color-scheme: dark; font-synthesis: none; --bg:#090c0d; --paper:#e4e8df; --quiet:#a4b1af; --accent:#9dcfe4; --line:#9cb3ab30; }
-  *,*::before,*::after { box-sizing:border-box; }
-  html { scroll-behavior:smooth; scroll-padding-top:75px; }
-  body { background:var(--bg); color:var(--paper); margin:0; font:19px/1.55 'Clear Narrow', Arial, sans-serif; -webkit-font-smoothing:antialiased; }
-  ::selection { background:var(--accent); color:var(--bg); }
-  a { color:inherit; text-decoration:none; }
-  a:focus-visible { outline:2px solid var(--accent); outline-offset:5px; }
-  h1,h2,h3,p,blockquote { margin:0; font-weight:400; }
-  h1,h2,h3,blockquote { font-family:'Clear Bodoni', Didot, Georgia, serif; }
-  em { font-weight:400; color:#b8cabe; }
-  .skip { position:absolute; top:-100px; left:16px; z-index:100; background:var(--paper);color:var(--bg);padding:12px 18px; }
-  .skip:focus { top:12px; }
-  .topbar { min-height:74px; display:flex; justify-content:space-between; align-items:center; gap:20px; padding:13px clamp(22px,5vw,75px); border-bottom:1px solid var(--line); position:relative; z-index:2; }
-  .brand,.section-index,.kicker,.hero-side,.quiet-link,.concept-top,.footer,.topbar nav,.sequence { font-family:'Clear Mono', monospace; }
-  .brand { letter-spacing:.05em; font-size:15px; white-space:nowrap; }
-  .brand strong { color:var(--accent); font-weight:400; }
-  .brand span { color:var(--quiet); font-size:10px; }
-  .topbar nav { display:flex; align-items:center; gap:clamp(14px,2.6vw,38px); font-size:11px; color:var(--quiet); }
-  .topbar nav a { padding:12px 0; }
-  .topbar nav a:hover,.footer a:hover,.quiet-link:hover { color:var(--accent); }
-  .shell { max-width:1380px; margin-inline:auto; padding-inline:clamp(22px,6vw,85px); }
-  .hero { min-height:min(790px,90svh); position:relative; isolation:isolate; overflow:hidden; padding:clamp(90px,11vw,165px) clamp(22px,6vw,85px) 105px; display:flex; align-items:center; background:radial-gradient(ellipse at 78% 48%,#29516a25,transparent 51%),radial-gradient(ellipse at 28% 4%,#81977915,transparent 50%); }
-  .hero-copy { position:relative; z-index:1; max-width:940px; }
-  .kicker,.section-index { font-size:11px; line-height:1.5; letter-spacing:.13em; color:var(--accent); }
-  .dot { margin-inline:9px; color:var(--quiet); }
-  .hero h1 { font-size:clamp(62px,9.7vw,151px); line-height:.97; letter-spacing:-.055em; margin:31px 0; }
-  .hero h1 em { color:#bad4cc; }
-  .hero-lede { max-width:650px; font-size:clamp(19px,2.1vw,26px); line-height:1.42; color:var(--quiet); }
-  .hero-lede strong { color:var(--paper); font-weight:400; }
-  .quiet-link { display:inline-flex; gap:20px; align-items:center; font-size:11px; letter-spacing:.07em; margin-top:39px; border-bottom:1px solid var(--line); padding-bottom:10px; }
-  .quiet-link span { font-size:21px; line-height:1; }
-  .hero-side { position:absolute; right:clamp(22px,6vw,85px); bottom:39px; font-size:9px; letter-spacing:.11em; line-height:1.75; color:#82928f; text-align:right; }
-  .orbital { position:absolute; z-index:0; pointer-events:none; border:1px solid #a4c8ca16; border-radius:50%; width:min(68vw,820px); aspect-ratio:1; right:-14%; top:50%; transform:translateY(-50%) rotate(-25deg); }
-  .orbital::after { content:''; position:absolute; inset:11%; border-radius:50%; border:1px dashed #c0d5d21c; }
-  .orbital-two { width:min(45vw,580px); right:-6%; border-color:#bdd6d314; transform:translateY(-50%) rotate(35deg); }
-  .thesis { display:grid; grid-template-columns:minmax(130px,.65fr) minmax(0,2fr); gap:36px; border-top:1px solid var(--line); padding-block:115px 135px; }
-  .thesis h2,.section-heading h2,.enough h2,.process h2,.perspective h2 { font-size:clamp(49px,6.3vw,100px); line-height:1.02; letter-spacing:-.045em; }
-  .thesis p:not(.section-index) { margin-top:34px; max-width:750px; font-size:clamp(20px,2.2vw,28px); line-height:1.4; color:var(--quiet); }
-  .thesis blockquote { font-size:clamp(26px,3.5vw,52px); line-height:1.18; letter-spacing:-.025em; margin-top:78px; border-left:2px solid var(--accent); padding-left:27px; max-width:800px; }
-  .framework { border-top:1px solid var(--line); padding-block:90px 145px; }
-  .section-heading { display:grid; grid-template-columns:minmax(140px,.65fr) minmax(0,2fr); align-items:start; gap:22px 36px; margin-bottom:55px; }
-  .section-heading h2 { grid-column:2; }
-  .section-heading > p:last-child { grid-column:2; max-width:580px; font-size:21px; color:var(--quiet); }
-  .concepts { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); border-top:1px solid var(--line); border-left:1px solid var(--line); }
-  .concept { min-height:310px; padding:25px clamp(22px,3.5vw,50px) 45px; border-bottom:1px solid var(--line); border-right:1px solid var(--line); background:linear-gradient(135deg,#8298920a,transparent 65%); }
-  .concept-top { display:flex; justify-content:space-between; color:var(--accent); font-size:10px; letter-spacing:.08em; text-transform:uppercase; }
-  .concept-top span:last-child { color:#7b9893; font-size:17px; }
-  .concept h3 { font-size:clamp(43px,4.5vw,72px); line-height:1.1; letter-spacing:-.035em; margin:45px 0 16px; }
-  .concept p { color:var(--quiet); font-size:19px; line-height:1.48; max-width:520px; }
-  .enough { padding-block:135px 155px; background:linear-gradient(110deg,#182327,#0d1415 80%); border-top:1px solid var(--line); border-bottom:1px solid var(--line); }
-  .enough-grid { display:grid; grid-template-columns:1fr 1fr; gap:60px; }
-  .enough h2 { margin-top:26px; }
-  .enough-copy { padding-top:28px; max-width:600px; }
-  .enough-copy p { font-size:clamp(21px,2.3vw,29px); line-height:1.42; margin-bottom:28px; }
-  .enough-copy strong { color:var(--accent); font-weight:400; }
-  .enough-copy .subtle { color:var(--quiet); font-size:19px; }
-  .process { padding-block:140px; border-bottom:1px solid var(--line); }
-  .process h2 { margin-top:29px; }
-  .sequence { display:flex; flex-wrap:wrap; gap:13px; margin:65px 0 32px; }
-  .sequence span { display:inline-flex; align-items:center; gap:13px; color:var(--accent); font-size:12px; border:1px solid var(--line); padding:12px 16px; }
-  .sequence span:not(:last-child)::after { content:'↝'; margin-left:12px; color:var(--quiet); }
-  .process > p:last-child { max-width:720px; color:var(--quiet); font-size:23px; }
-  .perspective { display:grid; grid-template-columns:minmax(140px,.65fr) minmax(0,2fr); gap:25px 36px; padding-block:125px 145px; }
-  .perspective h2 { grid-column:2; }
-  .perspective > div { grid-column:2; max-width:750px; }
-  .perspective > div p { font-size:clamp(22px,2.45vw,31px); line-height:1.43; margin-top:26px; }
-  .perspective > div p:last-child { color:var(--accent); }
-  .footer { padding:26px clamp(22px,6vw,85px); border-top:1px solid var(--line); display:flex; justify-content:space-between; align-items:center; gap:25px; flex-wrap:wrap; font-size:10px; line-height:1.5; color:var(--quiet); letter-spacing:.05em; }
-  .footer a { color:var(--paper); }
-  @media (max-width:760px) {
-    .topbar { align-items:flex-start; flex-direction:column; gap:5px; }
-    .topbar nav { gap:24px; }
-    .hero { min-height:660px; padding-top:90px; }
-    .hero h1 { font-size:clamp(56px,12vw,88px); }
-    .orbital { right:-55%; width:115vw; }
-    .hero-side { bottom:20px; }
-    .thesis,.section-heading,.enough-grid,.perspective { display:block; }
-    .thesis,.framework,.enough,.process,.perspective { padding-block:80px; }
-    .thesis h2,.section-heading h2,.enough h2,.process h2,.perspective h2 { margin-top:25px; }
-    .thesis blockquote { margin-top:45px; }
-    .section-heading > p:last-child { margin-top:25px; }
-    .concepts { grid-template-columns:1fr; }
-    .concept { min-height:unset; padding-block:25px 40px; }
-    .concept h3 { margin-top:35px; }
-    .enough-copy { padding-top:35px; }
-    .perspective > div { margin-top:28px; }
-  }
-  @media (prefers-reduced-motion:reduce) { html {scroll-behavior:auto;} }
-
-  .related-framework { padding-block: 115px 150px; border-top: 1px solid var(--line); display: grid; grid-template-columns: minmax(140px,.65fr) minmax(0,2fr); gap: 30px; }
-  .related-framework h2 { font-size: clamp(59px, 7vw, 108px); line-height: .96; letter-spacing: -.045em; margin: 0 0 35px; }
-  .related-framework p:not(.section-index) { max-width: 750px; font-size: clamp(19px,2vw,26px); line-height: 1.45; }
-  .related-framework a { margin-top: 25px; display: inline-block; border-bottom: 1px solid currentColor; padding-bottom: 9px; font-size: 16px; }
-  .related-framework a:hover { color: var(--accent); }
-  @media (max-width: 800px) { .related-framework { display: block; padding-block: 75px 100px; } .related-framework h2 { margin-top: 27px; } }
-</style>

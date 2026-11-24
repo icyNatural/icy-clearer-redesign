@@ -3,6 +3,7 @@ import '../../styles/home-mirror.css';
 import '../../styles/living-home.css';
 import GamingGlyph from '../GamingGlyph.astro';
 import CreationPreview from './CreationPreview.astro';
+import ModelGlyph from '../philosophy/ModelGlyph.astro';
 import { homeMirrorContent } from '../../scripts/home-scene';
 import {
   thresholdData,
@@ -30,6 +31,21 @@ const dabShapes = [
 ];
 const initialCreation = creationsWorld.works[0];
 const initialPerspective = perspectiveWorld.elements[0];
+const initialGenStage = perspectiveWorld.generativeStages[1]; // Start preview at Recognition ("The opening")
+
+// Unique undirected relational chords for the Living Ecology diagram on homepage
+const perspectiveChords: { key: string; a: (typeof perspectiveWorld.elements)[0]; b: (typeof perspectiveWorld.elements)[0] }[] = [];
+const seenChords = new Set<string>();
+for (const el of perspectiveWorld.elements) {
+  for (const targetId of el.supports) {
+    const target = perspectiveWorld.elements.find((item) => item.id === targetId);
+    if (!target) continue;
+    const key = [el.id, target.id].sort().join(':');
+    if (seenChords.has(key)) continue;
+    seenChords.add(key);
+    perspectiveChords.push({ key, a: el, b: target });
+  }
+}
 ---
 
 <a class="living-skip" href="#living-main">Skip to worlds</a>
@@ -571,7 +587,7 @@ const initialPerspective = perspectiveWorld.elements[0];
     </div>
   </section>
 
-  <!-- ── ACT 06 · HOW I SEE IT (CLEAR) ────────────────────────────────── -->
+  <!-- ── ACT 06 · HOW I SEE IT (CONNECTED PERSONAL PHILOSOPHY FAMILY) ─ -->
   <section
     class="world-field world-perspective"
     id="perspective"
@@ -582,71 +598,237 @@ const initialPerspective = perspectiveWorld.elements[0];
     <div class="perspective-rings" aria-hidden="true"></div>
     <div class="world-field__inner">
       <div class="world-field__meta lh-mono">
-        <span>06 / 06 &nbsp;·&nbsp; ICY CLEAR · Personal Perspective</span>
+        <span>06 / 06 &nbsp;·&nbsp; ICY CLEAR · Personal Philosophy</span>
         <span>Still Developing · Not a Doctrine</span>
       </div>
 
-      <h2 class="world-field__title" id="world-perspective-title">HOW I SEE IT</h2>
-      <p class="world-field__intro">{perspectiveWorld.note}</p>
-
-      <div class="perspective-grid">
+      <div class="perspective-opener">
         <div>
-          <blockquote class="perspective-quote">“{perspectiveWorld.quote}”</blockquote>
+          <h2 class="world-field__title" id="world-perspective-title">HOW I SEE IT</h2>
+          <p class="world-field__intro">{perspectiveWorld.note}</p>
+        </div>
+        <blockquote class="perspective-quote">“{perspectiveWorld.quote}”</blockquote>
+      </div>
 
-          <div class="perspective-terms" role="tablist" aria-label="Life as continuous development elements">
-            {perspectiveWorld.elements.map((el, index) => (
+      <!-- TWO DISTINCT COMPANION FRAMEWORKS -->
+      <div class="perspective-frameworks">
+        <!-- 01 · ICY CLEAR — Life as Continuous Development (Non-hierarchical Spatial Ecology) -->
+        <article class="pf-panel pf-panel--clear" aria-labelledby="pf-clear-heading">
+          <div class="pf-panel__head">
+            <span class="pf-kicker">01 · LIFE AS CONTINUOUS DEVELOPMENT</span>
+            <a class="pf-enter" href="/clear.html">Enter ICY CLEAR ↗</a>
+          </div>
+          <h3 class="pf-title" id="pf-clear-heading">
+            Six interacting parts — <em>never a ladder.</em>
+          </h3>
+
+          <div class="pf-clear-stage">
+            <svg
+              class="pf-constellation"
+              viewBox="0 0 420 356"
+              fill="none"
+              role="img"
+              aria-label="Interactive spatial ecology of Resources, Security, Freedom, Creation, Living, and Renewal"
+            >
+              <circle cx="210" cy="170" r="118" stroke="rgba(157,207,228,0.12)" stroke-dasharray="3 5" />
+              <text x="210" y="167" text-anchor="middle" fill="#6f878c" font-family="JetBrains Mono, monospace" font-size="8.5" letter-spacing="1.6">LIVING</text>
+              <text x="210" y="181" text-anchor="middle" fill="#6f878c" font-family="JetBrains Mono, monospace" font-size="8.5" letter-spacing="1.6">ECOLOGY</text>
+
+              {perspectiveChords.map((pair) => (
+                <line
+                  class="pf-chord"
+                  data-pf-chord={pair.key}
+                  x1={pair.a.x}
+                  y1={pair.a.y}
+                  x2={pair.b.x}
+                  y2={pair.b.y}
+                />
+              ))}
+
+              {perspectiveWorld.elements.map((el, index) => (
+                <g
+                  class:list={['pf-node', { 'is-active': index === 0 }]}
+                  data-pf-node={el.id}
+                  data-term-number={el.number}
+                  tabindex="0"
+                  role="button"
+                  aria-pressed={index === 0 ? 'true' : 'false'}
+                  aria-label={`${el.number} ${el.title}: ${el.subtitle}`}
+                >
+                  <circle class="pf-node__ring" cx={el.x} cy={el.y} r="28" />
+                  <circle cx={el.x} cy={el.y} r="3.4" fill={el.accent} />
+                  <text x={el.x} y={el.y > 180 ? el.y + 44 : el.y - 36} text-anchor="middle">{el.number} {el.title}</text>
+                </g>
+              ))}
+            </svg>
+
+            <div class="pf-clear-focus">
+              <div class="pf-selector-strip" role="tablist" aria-label="Explore the six parts of ICY CLEAR">
+                {perspectiveWorld.elements.map((el, index) => (
+                  <button
+                    type="button"
+                    role="tab"
+                    class="pf-term-btn"
+                    data-term-number={el.number}
+                    aria-selected={index === 0 ? 'true' : 'false'}
+                    tabindex={index === 0 ? 0 : -1}
+                  >
+                    <small>{el.number}</small>
+                    <span>{el.title}</span>
+                  </button>
+                ))}
+              </div>
+
+              <div class="perspective-reading" aria-live="polite">
+                <p class="perspective-reading__sub" data-term-subtitle>
+                  {initialPerspective.number} / {initialPerspective.subtitle}
+                </p>
+                <p class="perspective-reading__body" data-term-summary>
+                  {initialPerspective.summary}
+                </p>
+              </div>
+
+              <div class="pf-actions">
+                <a class="lh-path lh-path--primary" data-term-link href={initialPerspective.href}>
+                  Read ICY CLEAR Essay <span class="lh-path__arrow" aria-hidden="true">↗</span>
+                </a>
+                <a class="lh-path" href="/clear.html#enough">
+                  What Is Enough? <span class="lh-path__arrow" aria-hidden="true">↗</span>
+                </a>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <!-- 02 · GENERATIVE REALITY — How I See More (Prominent Companion Spatial Preview) -->
+        <article
+          class="pf-panel pf-panel--generative"
+          data-gen-preview
+          data-gen-stage={initialGenStage.id}
+          aria-labelledby="pf-gen-heading"
+        >
+          <div class="pf-panel__head">
+            <span class="pf-kicker pf-kicker--gold">02 · COMPANION · HOW I SEE MORE</span>
+            <a class="pf-enter pf-enter--gold" href="/generative-reality.html">Experience 3D Essay ↗</a>
+          </div>
+          <h3 class="pf-title" id="pf-gen-heading">
+            Generative <em>Reality.</em>
+          </h3>
+          <p class="pf-gen-lead">
+            Sometimes you expand your resolution of what was already there. Once you act, you begin changing what actually becomes possible.
+          </p>
+
+          <!-- Interactive 6-Stage Mini Architectural Preview -->
+          <a
+            class="pf-gen-viewport"
+            href="/generative-reality.html"
+            aria-label="Enter Generative Reality — six spatial transitions from Perception to Generativity"
+          >
+            <svg viewBox="0 0 460 226" fill="none" aria-hidden="true">
+              <defs>
+                <linearGradient id="hpBeam" x1="0" y1="0" x2="1" y2="0.45">
+                  <stop offset="0%" stop-color="#f2c87e" stop-opacity="0.42" />
+                  <stop offset="100%" stop-color="#f2c87e" stop-opacity="0" />
+                </linearGradient>
+              </defs>
+              <rect width="460" height="226" fill="#070e14" />
+              <!-- Near & far stone terrain -->
+              <polygon points="16,168 176,168 176,214 16,214" fill="#17242c" stroke="#537582" stroke-opacity="0.42" />
+              <polygon points="292,154 444,154 444,214 292,214" fill="#182931" stroke="#537582" stroke-opacity="0.42" />
+              <rect x="224" y="180" width="20" height="34" fill="#121d24" stroke="#537582" stroke-opacity="0.35" />
+              <!-- Monolith with pre-existing opening -->
+              <rect x="92" y="64" width="46" height="104" fill="#1e303a" stroke="#6d95a1" stroke-opacity="0.52" />
+              <rect x="108" y="102" width="16" height="66" fill="#070e14" />
+              <!-- Stage 02 Recognition -->
+              <rect class="pg-seam" x="108" y="102" width="16" height="66" stroke="#f2ca82" stroke-width="1.8" />
+              <polygon class="pg-beam" points="124,102 224,162 200,178 124,168" fill="url(#hpBeam)" />
+              <!-- Stage 03 Simulation -->
+              <g class="pg-ghosts">
+                <path d="M176,166 Q234,114 292,154" stroke="#8ad3ef" stroke-width="1.4" stroke-dasharray="4 4" />
+                <path d="M176,166 L292,154" stroke="#f2ca82" stroke-width="1.7" stroke-dasharray="4 3" />
+                <path d="M176,166 Q238,186 292,154" stroke="#a8d5c2" stroke-width="1.3" stroke-dasharray="4 4" />
+              </g>
+              <!-- Stage 04 Orchestration -->
+              <g class="pg-bridge">
+                <rect x="230" y="162" width="8" height="20" fill="#3a525c" stroke="#e4ba75" />
+                <polygon points="174,166 294,152 294,161 174,175" fill="#354e59" stroke="#e4ba75" stroke-width="1.5" />
+              </g>
+              <!-- Stage 05 Transformation -->
+              <ellipse class="pg-arrival" cx="354" cy="152" rx="44" ry="10" fill="#a8d5c2" fill-opacity="0.28" stroke="#a8d5c2" />
+              <!-- Stage 06 Generativity -->
+              <g class="pg-branches">
+                <path d="M354,152 Q396,104 446,84" stroke="#a9dec7" stroke-width="2" />
+                <path d="M354,152 Q404,132 446,124" stroke="#e6c280" stroke-width="1.7" />
+                <path d="M354,152 Q398,170 444,184" stroke="#9dcfe4" stroke-width="1.5" />
+                <rect x="412" y="54" width="24" height="32" stroke="#a9dec7" stroke-width="1.4" />
+              </g>
+            </svg>
+            <span class="pf-gen-badge" data-gen-badge>{initialGenStage.affordanceBadge}</span>
+          </a>
+
+          <div class="pf-gen-steps" role="tablist" aria-label="Preview the six Generative Reality transitions">
+            {perspectiveWorld.generativeStages.map((stage, idx) => (
               <button
                 type="button"
                 role="tab"
-                class="perspective-term"
-                data-term-number={el.number}
-                aria-selected={index === 0 ? 'true' : 'false'}
-                tabindex={index === 0 ? 0 : -1}
+                class="pf-gen-step"
+                data-gen-pick={stage.id}
+                aria-selected={idx === 1 ? 'true' : 'false'}
+                tabindex={idx === 1 ? 0 : -1}
               >
-                <small>{el.number}</small>
-                {el.title}
+                <small>{stage.number}</small>
+                <span>{stage.title}</span>
               </button>
             ))}
           </div>
 
-          <div class="perspective-reading" aria-live="polite">
-            <p class="perspective-reading__sub" data-term-subtitle>
-              {initialPerspective.number} / {initialPerspective.subtitle}
-            </p>
-            <p class="perspective-reading__body" data-term-summary>
-              {initialPerspective.summary}
+          <p class="pf-gen-note" data-gen-note aria-live="polite">
+            {initialGenStage.stageNote}
+          </p>
+
+          <div class="pf-actions">
+            <a class="lh-path lh-path--primary" href="/generative-reality.html">
+              Enter Generative Reality <span class="lh-path__arrow" aria-hidden="true">↗</span>
+            </a>
+            <a class="lh-path" href="/generative-reality.html#affordances">
+              Perceived vs. Actual <span class="lh-path__arrow" aria-hidden="true">↗</span>
+            </a>
+          </div>
+        </article>
+      </div>
+
+      <!-- CONNECTED BODY OF INQUIRY: FIVE WRITTEN MODELS & LENSES -->
+      <div class="pf-models-block">
+        <div class="pf-models-head">
+          <div>
+            <p class="perspective-models__head">Connected Inquiry · Five Written Models &amp; Lenses</p>
+            <p class="pf-models-sub">
+              From raw contact, to mechanism, to trajectory, to systemic direction, to returning when pressure shifts.
             </p>
           </div>
+          <a class="lh-path" href="/worlds.html">
+            Two Worlds · Clear &amp; Natural <span class="lh-path__arrow" aria-hidden="true">↗</span>
+          </a>
+        </div>
 
-          <div class="perspective-sequence" aria-label="Non-linear ongoing process">
-            {perspectiveWorld.sequence.map((step) => <span>{step}</span>)}
-          </div>
-
-          <nav class="lh-paths" aria-label="How I See It navigation">
-            {perspectiveWorld.paths.map((item) => (
-              <a class:list={['lh-path', { 'lh-path--primary': item.primary }]} href={item.href}>
-                {item.label} <span class="lh-path__arrow" aria-hidden="true">↗</span>
+        <ol class="pf-models-arc">
+          {perspectiveWorld.models.map((model) => (
+            <li>
+              <a class="pf-model-node" href={model.href} style={`--m-accent:${model.accent}`}>
+                <div class="pf-model-node__top">
+                  <span>{model.idx} · {model.domain}</span>
+                  <span aria-hidden="true">↗</span>
+                </div>
+                <div class="pf-model-node__glyph">
+                  <ModelGlyph slug={model.slug} accent={model.accent} />
+                </div>
+                <h4>{model.title}</h4>
+                <p>{model.line}</p>
+                <span class="pf-model-node__chain">{model.chain}</span>
               </a>
-            ))}
-          </nav>
-        </div>
-
-        <div>
-          <p class="perspective-models__head">Written Models &amp; Lenses</p>
-          <ul class="perspective-models">
-            {perspectiveWorld.models.map((model) => (
-              <li>
-                <a href={model.href}>
-                  <strong>
-                    {model.title}
-                    <span>{model.idx} ↗</span>
-                  </strong>
-                  <small>{model.line}</small>
-                </a>
-              </li>
-            ))}
-          </ul>
-        </div>
+            </li>
+          ))}
+        </ol>
       </div>
     </div>
   </section>
@@ -672,6 +854,7 @@ const initialPerspective = perspectiveWorld.elements[0];
             <li><a href="/music.html">Music ↗</a></li>
             <li><a href="/creations.html">Creations Palette ↗</a></li>
             <li><a href="/clear.html">How I See It ↗</a></li>
+            <li><a href="/generative-reality.html">Generative Reality ↗</a></li>
           </ul>
         </div>
 
@@ -727,5 +910,6 @@ const initialPerspective = perspectiveWorld.elements[0];
 <script is:inline type="application/json" data-moments-pool set:html={JSON.stringify(momentsWorld.allPhotos).replace(/</g, '\\u003c')} />
 <script is:inline type="application/json" data-creations-manifest set:html={JSON.stringify(creationsWorld.works).replace(/</g, '\\u003c')} />
 <script is:inline type="application/json" data-perspective-manifest set:html={JSON.stringify(perspectiveWorld.elements).replace(/</g, '\\u003c')} />
+<script is:inline type="application/json" data-generative-manifest set:html={JSON.stringify(perspectiveWorld.generativeStages).replace(/</g, '\\u003c')} />
 <script src="../../scripts/home-mirror.ts"></script>
 <script src="../../scripts/living-home.ts"></script>

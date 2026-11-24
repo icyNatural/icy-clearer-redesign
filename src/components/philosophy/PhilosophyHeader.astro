@@ -1,0 +1,110 @@
+---
+import { writtenModels } from '../../data/philosophy-family';
+
+interface Props {
+  active: 'clear' | 'generative' | 'model';
+  currentModelSlug?: string;
+}
+
+const { active, currentModelSlug = '' } = Astro.props;
+---
+
+<header class="ph-header">
+  <div class="ph-header__inner">
+    <div class="ph-header__brand">
+      <a class="ph-header__home" href="/#perspective" aria-label="Return to How I See It on the homepage">
+        <span aria-hidden="true">←</span> Home
+      </a>
+      <span class="ph-header__sep" aria-hidden="true"></span>
+      <a class="ph-header__mark" href="/clear.html">
+        ICY <strong>CLEAR</strong>
+        <span>/ PERSONAL PHILOSOPHY</span>
+      </a>
+    </div>
+
+    <nav class="ph-header__nav" aria-label="Personal philosophy family">
+      <a class:list={['ph-nav-link', { 'is-active': active === 'clear' }]} href="/clear.html" aria-current={active === 'clear' ? 'page' : undefined}>
+        How I See It
+      </a>
+      <a class:list={['ph-nav-link', { 'is-active': active === 'generative' }]} href="/generative-reality.html" aria-current={active === 'generative' ? 'page' : undefined}>
+        Generative Reality
+      </a>
+      <details class:list={['ph-models-menu', { 'is-active': active === 'model' }]} data-ph-menu>
+        <summary>
+          Models &amp; Lenses <span aria-hidden="true">▾</span>
+        </summary>
+        <div class="ph-models-menu__panel" role="region" aria-label="Five Written Models">
+          <p class="ph-models-menu__kicker">Five Written Models &amp; Lenses</p>
+          {writtenModels.map((model) => (
+            <a
+              class:list={['ph-models-menu__item', { 'is-current': currentModelSlug === model.slug }]}
+              href={model.href}
+              aria-current={currentModelSlug === model.slug ? 'page' : undefined}
+            >
+              <span class="ph-models-menu__idx">{model.idx}</span>
+              <span class="ph-models-menu__title">{model.title}</span>
+              <span class="ph-models-menu__line">{model.line}</span>
+            </a>
+          ))}
+        </div>
+      </details>
+      <a class="ph-nav-link" href="/worlds.html">Two Worlds</a>
+    </nav>
+
+    <details class="ph-mobile-menu" data-ph-menu>
+      <summary aria-label="Open philosophy family navigation">Menu ▾</summary>
+      <div class="ph-mobile-menu__drawer" role="region" aria-label="Philosophy navigation">
+        <div class="ph-mobile-menu__group">
+          <p>Frameworks</p>
+          <a class:list={[{ 'is-active': active === 'clear' }]} href="/clear.html">
+            <span>How I See It · ICY CLEAR</span>
+            <small>01–06</small>
+          </a>
+          <a class:list={[{ 'is-active': active === 'generative' }]} href="/generative-reality.html">
+            <span>Generative Reality</span>
+            <small>6 Transitions</small>
+          </a>
+          <a href="/worlds.html">
+            <span>Two Worlds</span>
+            <small>Clear &amp; Natural</small>
+          </a>
+          <a href="/#perspective">
+            <span>Return to Homepage</span>
+            <small>← Home</small>
+          </a>
+        </div>
+        <div class="ph-mobile-menu__group">
+          <p>Five Written Models</p>
+          {writtenModels.map((model) => (
+            <a class:list={[{ 'is-active': currentModelSlug === model.slug }]} href={model.href}>
+              <span>{model.title}</span>
+              <small>{model.idx}</small>
+            </a>
+          ))}
+        </div>
+      </div>
+    </details>
+  </div>
+</header>
+
+<script is:inline>
+  (() => {
+    const menus = [...document.querySelectorAll('[data-ph-menu]')];
+    if (!menus.length) return;
+    document.addEventListener('click', (e) => {
+      menus.forEach((m) => {
+        if (m.open && !m.contains(e.target)) m.open = false;
+      });
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        menus.forEach((m) => {
+          if (m.open) {
+            m.open = false;
+            m.querySelector('summary')?.focus();
+          }
+        });
+      }
+    });
+  })();
+</script>
