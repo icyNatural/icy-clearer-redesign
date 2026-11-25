@@ -1,0 +1,37 @@
+---
+const branches = [
+["Perceiving","Existence","Perception","Sensing · Observing · Distinguishing","What is present?","Investigate physical phenomena, fields, frequencies and the limits of biological perception."],
+["Exploring","Inquiry","Simulation","Questioning · Investigating · Discovering","What remains undiscovered?","Explore possible realities through inquiry, experiment and simulation."],
+["Gathering","Resources","Acquisition","Collecting · Acquiring · Assimilating","What can be drawn from existence?","Treat resources as instruments for living and development."],
+["Connecting","Relationships","Synthesis","Relating · Integrating · Synthesizing","What relationships are possible?","Discover possibilities unavailable to isolated elements."],
+["Modifying","Agency","Adaptation","Adjusting · Reconfiguring · Transforming","What can take another form?","Participate in the transformation of reality."],
+["Enhancing","Capability","Development","Refining · Amplifying · Augmenting","What capabilities can be expanded?","Develop capabilities and expand the range of possible action."],
+["Generating","Potentiality","Creation","Creating · Constructing · Actualizing","What can be brought into existence?","Bring possibilities into actuality through creative work."],
+["Enabling","Generativity","Orchestration","Cultivating · Stimulating · Catalyzing","What conditions enable further creation?","Create conditions through which capabilities can develop independently."],
+["Transcending","Freedom","Independence","Extending · Surpassing · Evolving","What lies beyond existing limitations?","Explore possibilities beyond existing arrangements."]
+];
+const point=(i:number,r:number,offset=0)=>[200+r*Math.cos(i*2*Math.PI/9-Math.PI/2+offset),200+r*Math.sin(i*2*Math.PI/9-Math.PI/2+offset)];
+---
+<html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><title>Becoming — ICY CLEARER</title><meta name="description" content="An evolving inquiry into existence, transformation and possibility."/></head>
+<body><main><nav><a href="/">← ICY CLEARER</a><span>PHILOSOPHICAL INQUIRIES / 001</span></nav><header><h1>Becoming.</h1><p>What existence can become, rather than merely what existence is.</p></header>
+<section aria-label="Interactive conceptual atlas"><div class="modes" aria-label="Conceptual layers">{["Processes","Foundations","Intelligence"].map((v,i)=><button data-layer={i} aria-pressed={i===0?"true":"false"}>{v}</button>)}</div>
+<svg viewBox="-25 -15 450 430" aria-label="Nine interconnected branches of becoming">
+<circle cx="200" cy="200" r="48" class="core"/><text x="200" y="205" class="center">BECOMING</text>
+{branches.map((b,i)=>{const a=point(i,80,1.9),c=point(i,145,1.1),e=point(i,140),d=point(i,115),l=point(i,166);return <g data-node={i} tabindex="0" role="button" aria-label={b[0]} aria-pressed={i===7?"true":"false"}><path d={`M200 200 C${a.join(" ")} ${c.join(" ")} ${e.join(" ")}`}/><circle cx={d[0]} cy={d[1]} r="5"/><text x={l[0]} y={l[1]+4}>{b[0]}</text></g>})}
+</svg>
+<div id="detail" aria-live="polite"><h2>Enabling</h2><p class="terms">{branches[7][3]}</p><h3>{branches[7][4]}</h3><p>{branches[7][5]}</p></div>
+</section>
+<section class="inquiry"><h2>From actuality to possibility</h2><p>What exists? What is possible? What can be developed? What else becomes possible through that development?</p><p>These branches are modes of participation, not a fixed sequence or a formal linguistic taxonomy.</p>
+<h2>Life as continuous development</h2><p>Existence is what is present. Potentiality concerns what could become present. Agency influences what becomes present. Generativity produces further possibilities. Freedom enables their exploration. Living is the ongoing experience of participating.</p>
+<h2>Generative intelligence</h2><p>Simulation explores possible futures. Orchestration coordinates actual systems. Generative independence investigates conditions in which capabilities and possibilities can develop without their originator.</p>
+<h2>Creative actualization</h2><p>Language, software, music, visual art, movement, nature and independent studies offer different materials and environments for investigating becoming.</p>
+<h2>Continuing inquiry</h2><p>Not merely creating forms, but developing conditions from which further forms may emerge. Not merely acquiring capabilities, but expanding what becomes possible through them.</p><p class="terms">An evolving inquiry · November 2026 · Initial conceptual edition</p></section></main>
+<script is:inline define:vars={{branches}}>
+let layer=0, active=7;
+const nodes=[...document.querySelectorAll('[data-node]')], modes=[...document.querySelectorAll('[data-layer]')];
+function render(){nodes.forEach((n,i)=>{n.querySelector('text').textContent=branches[i][layer];n.setAttribute('aria-label',branches[i][layer]);n.setAttribute('aria-pressed',String(i===active));});modes.forEach((n,i)=>n.setAttribute('aria-pressed',String(i===layer)));const b=branches[active],d=document.querySelector('#detail');d.querySelector('h2').textContent=b[layer];d.querySelector('.terms').textContent=b[3];d.querySelector('h3').textContent=b[4];d.querySelector('p:last-child').textContent=b[5];}
+nodes.forEach((n,i)=>{n.addEventListener('click',()=>{active=i;render()});n.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();active=i;render()}})});modes.forEach((n,i)=>n.addEventListener('click',()=>{layer=i;render()}));render();
+</script>
+<style is:global>
+*{box-sizing:border-box}body{margin:0;background:#f7f5ef;color:#20312f;font-family:system-ui,sans-serif}main{max-width:850px;margin:auto;padding:24px}nav{display:flex;justify-content:space-between;gap:12px;font-size:11px;letter-spacing:.1em}a{color:inherit}header{margin:55px 0 30px}h1{font-family:Georgia,serif;font-size:clamp(48px,9vw,88px);font-weight:400;margin:0}p{line-height:1.7}header p{color:#52615e}.modes{display:flex;justify-content:center;gap:8px;flex-wrap:wrap}button{font:inherit;color:inherit;background:transparent;border:1px solid #a5b9b2;border-radius:30px;padding:9px 15px;cursor:pointer}button[aria-pressed=true]{background:#176e66;color:white}svg{display:block;width:100%;max-width:650px;margin:auto;overflow:visible}svg text{text-anchor:middle;font-size:12px;fill:currentColor}svg path{fill:none;stroke:#6ba9a1;stroke-width:1.5}svg g{cursor:pointer}svg g circle{fill:#168b80}svg g[aria-pressed=true] path{stroke:#087c70;stroke-width:3}svg g[aria-pressed=true] text{font-weight:700;fill:#087c70}svg g:focus-visible{outline:2px solid #087c70}.core{fill:#dcebe5;stroke:#6ba9a1}.center{font-size:12px;pointer-events:none}#detail{border-top:1px solid #b7c8c0;padding:24px 0;min-height:210px}h2{font-family:Georgia,serif;font-weight:400;font-size:32px;margin-bottom:8px}h3{font-weight:500}.terms{color:#52615e;font-size:13px}.inquiry{max-width:650px;margin:50px auto}.inquiry h2{margin-top:48px}@media(max-width:480px){main{padding:16px}nav{font-size:9px}svg text{font-size:12px}}
+</style></body></html>
