@@ -3,7 +3,6 @@ import '../../styles/home-mirror.css';
 import '../../styles/living-home.css';
 import GamingGlyph from '../GamingGlyph.astro';
 import CreationPreview from './CreationPreview.astro';
-import NaturalTimePortal from './NaturalTimePortal.astro';
 import ModelGlyph from '../philosophy/ModelGlyph.astro';
 import { homeMirrorContent } from '../../scripts/home-scene';
 import {
@@ -74,7 +73,6 @@ for (const el of perspectiveWorld.elements) {
       <div class="living-menu__group">
         <p>Connected Environments</p>
         <a href="/natural.html">Natural Field <span>↗</span></a>
-        <a href="/natural-time.html">Natural Time Observatory <span>↗</span></a>
         <a href="/world.html">App World Atlas <span>↗</span></a>
         <a href="/gaming/">Gaming OS <span>↗</span></a>
         <a href="https://music.icyclearer.com" target="_blank" rel="noopener noreferrer">ICY Music Lab <span>↗</span></a>
@@ -160,9 +158,6 @@ for (const el of perspectiveWorld.elements) {
       </nav>
     </div>
   </section>
-
-  <!-- The four natural clocks, surfaced on the homepage without altering existing worlds. -->
-  <NaturalTimePortal />
 
   <!-- ── ACT 01 · GAMING ──────────────────────────────────────────────── -->
   <section class="world-field world-gaming" id="gaming" data-world-climate="dark" aria-labelledby="world-gaming-title">
@@ -867,7 +862,6 @@ for (const el of perspectiveWorld.elements) {
           <h3>Larger Environments</h3>
           <ul>
             <li><a href="/natural.html">Natural Living Field ↗</a></li>
-            <li><a href="/natural-time.html">Natural Time Observatory ↗</a></li>
             <li><a href="/world.html">App World Spatial Atlas ↗</a></li>
             <li><a href="/gaming/">Gaming OS ↗</a></li>
             <li><a href="https://music.icyclearer.com" target="_blank" rel="noopener noreferrer">ICY Music Lab ↗</a></li>
