@@ -1,0 +1,59 @@
+---
+/* Homepage doorway into Natural Time — existing homepage remains intact. */
+---
+<section class="nt-doorway" aria-labelledby="nt-doorway-title" data-world-climate="dark">
+  <div class="nt-doorway__inner">
+    <div class="nt-doorway__intro">
+      <p class="nt-doorway__eyebrow">FIELD NOTE / 001 · LIVING CYCLES</p>
+      <h2 id="nt-doorway-title">You are inside<br/><em>four clocks.</em></h2>
+      <p>The turning day, the changing Moon, the seasonal Sun, and your own biological experience. See them together; investigate each on its own.</p>
+      <a class="nt-doorway__enter" href="/natural-time.html">Enter Natural Time <span aria-hidden="true">↗</span></a>
+    </div>
+    <div class="nt-doorway__field" aria-label="Natural time preview for Wylie, Texas">
+      <div class="nt-doorway__orbit" aria-hidden="true"><span>☉</span><span>☾</span><span>⊕</span><span>◎</span></div>
+      <div class="nt-doorway__cards">
+        <div><span>☉ &nbsp; Daily</span><strong id="nt-portal-sun">Sunrise · calculating…</strong></div>
+        <div><span>☾ &nbsp; Lunar</span><strong id="nt-portal-moon">Phase · calculating…</strong></div>
+        <div><span>⊕ &nbsp; Seasonal</span><strong>Trace the Sun's annual path</strong></div>
+        <div><span>◎ &nbsp; Biological</span><strong>Record your own observations</strong></div>
+      </div>
+      <p class="nt-doorway__location">WYLIE, TEXAS · LIVE ASTRONOMICAL DATA WHEN AVAILABLE</p>
+    </div>
+  </div>
+</section>
+
+<style>
+  .nt-doorway{position:relative;isolation:isolate;background:radial-gradient(ellipse at 68% 35%,rgba(66,118,114,.21),transparent 48%),linear-gradient(120deg,#0b1720,#0d1e22 70%,#14211d);color:#f2eee4;min-height:450px;border-top:1px solid rgba(255,255,255,.12);border-bottom:1px solid rgba(255,255,255,.1);font-family:'EB Garamond',Georgia,serif}
+  .nt-doorway__inner{max-width:1230px;margin:auto;padding:clamp(44px,6vw,94px) clamp(20px,4vw,58px);display:grid;grid-template-columns:1fr 1.07fr;gap:clamp(20px,5vw,70px);align-items:center}
+  .nt-doorway__eyebrow,.nt-doorway__location{font:10px/1.5 'JetBrains Mono',monospace;letter-spacing:.12em;color:#97bfac}
+  .nt-doorway__intro h2{font-size:clamp(43px,6vw,82px);font-weight:400;letter-spacing:-.045em;line-height:.95;margin:17px 0 18px}
+  .nt-doorway__intro h2 em{font-weight:400;color:#f4cb91}
+  .nt-doorway__intro>p:not(.nt-doorway__eyebrow){color:#b8c7c1;font-size:clamp(16px,1.5vw,21px);line-height:1.55;max-width:34ch}
+  .nt-doorway__enter{display:inline-flex;gap:22px;align-items:center;margin-top:12px;text-decoration:none;border:1px solid rgba(243,203,145,.5);color:#f7d8ab;padding:12px 18px;border-radius:99px;font:11px 'JetBrains Mono',monospace;letter-spacing:.06em;transition:background .2s}
+  .nt-doorway__enter:hover,.nt-doorway__enter:focus-visible{background:rgba(243,203,145,.1)}
+  .nt-doorway__field{position:relative;min-width:0}
+  .nt-doorway__orbit{position:absolute;inset:0;pointer-events:none;display:flex;align-items:center;justify-content:space-around;opacity:.06;font-size:clamp(50px,8vw,116px)}
+  .nt-doorway__cards{position:relative;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .nt-doorway__cards>div{min-height:117px;border:1px solid rgba(206,228,218,.16);background:rgba(5,16,19,.58);border-radius:10px;padding:18px;display:flex;flex-direction:column;justify-content:space-between;gap:12px;backdrop-filter:blur(5px)}
+  .nt-doorway__cards span{font:11px 'JetBrains Mono',monospace;color:#b4cabb}
+  .nt-doorway__cards strong{font-size:clamp(15px,1.4vw,20px);font-weight:400;line-height:1.28}
+  .nt-doorway__location{margin:13px 0 0;opacity:.68}
+  @media(max-width:760px){.nt-doorway__inner{grid-template-columns:1fr}.nt-doorway__intro>p:not(.nt-doorway__eyebrow){max-width:60ch}.nt-doorway__cards>div{min-height:98px;padding:14px}}
+  @media(max-width:400px){.nt-doorway__cards{grid-template-columns:1fr 1fr}.nt-doorway__cards strong{font-size:14px}}
+</style>
+
+<script is:inline>
+  (() => {
+    const sun=document.getElementById('nt-portal-sun');
+    const moon=document.getElementById('nt-portal-moon');
+    if(!sun||!moon)return;
+    fetch('https://api.sunrise-sunset.org/v2?lat=33.0151&lng=-96.5389&date=today')
+      .then(r=>{if(!r.ok)throw Error('unavailable');return r.json()})
+      .then(d=>{
+        const fmt=iso=>iso?new Date(iso).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit',timeZone:'America/Chicago'}):'not available';
+        sun.textContent='Sunrise '+fmt(d.sunrise)+' · Sunset '+fmt(d.sunset);
+        moon.textContent=(d.moon_phase||'Moon')+(Number.isFinite(Number(d.moon_illumination))?' · '+Math.round(Number(d.moon_illumination))+'% lit':'');
+      })
+      .catch(()=>{sun.textContent='View daily sunlight';moon.textContent='View lunar phases'});
+  })();
+</script>
