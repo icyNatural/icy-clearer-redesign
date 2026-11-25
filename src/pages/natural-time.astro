@@ -1,0 +1,326 @@
+---
+/* Natural Time — standalone, browser-first observatory for Icy Clearer.
+   No new dependency, no server-side personal data, no changes to existing tools. */
+---
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#091218" />
+  <meta name="description" content="Four natural clocks, one living field: sunlight, lunar phases, seasons, and personal observations." />
+  <title>Natural Time · Icy Clearer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&display=swap" rel="stylesheet" />
+  <style is:global>
+    :root{color-scheme:dark;--nt-bg:#091218;--nt-ink:#f1efe6;--nt-muted:#9cacac;--nt-line:rgba(206,227,218,.13);--nt-sun:#efbb70;--nt-moon:#b7c5ef;--nt-earth:#90c9b4;--nt-body:#deafd0}
+    *{box-sizing:border-box}html{background:var(--nt-bg);scroll-behavior:smooth}body{margin:0;background:radial-gradient(ellipse at 70% -5%,rgba(64,110,103,.28),transparent 38%),radial-gradient(ellipse at 0 58%,rgba(169,111,66,.1),transparent 39%),var(--nt-bg);color:var(--nt-ink);font:16px/1.5 'DM Sans',sans-serif}a{color:inherit}button,input,textarea,select{font:inherit}button{cursor:pointer}button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid #eac38a;outline-offset:3px}
+    .nt-shell{width:min(1180px,calc(100% - 36px));margin:auto}.nt-nav{border-bottom:1px solid var(--nt-line);display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:72px}.nt-mark{font:500 14px 'Newsreader',serif;letter-spacing:.13em;text-decoration:none}.nt-nav-right{display:flex;gap:16px;font-size:12px;color:var(--nt-muted);flex-wrap:wrap}.nt-nav-right a{text-decoration:none}.nt-nav-right a:hover{color:var(--nt-ink)}
+    .nt-kicker{font:11px 'JetBrains Mono',monospace;color:var(--nt-earth);letter-spacing:.16em;text-transform:uppercase}.nt-hero{padding:clamp(46px,7vw,92px) 0 30px;display:grid;grid-template-columns:minmax(0,1.4fr) minmax(230px,.6fr);align-items:end;gap:30px}.nt-hero h1{font:400 clamp(58px,9vw,122px)/.86 'Newsreader',serif;letter-spacing:-.045em;margin:20px 0}.nt-hero p{max-width:58ch;color:#c0cbc7;line-height:1.7}.nt-hero-aside{border-left:1px solid var(--nt-line);padding-left:28px;color:var(--nt-muted);font:12px/1.8 'JetBrains Mono',monospace}
+    .nt-toolbar{display:flex;flex-wrap:wrap;gap:12px;align-items:center;padding:19px 0 24px;border-top:1px solid var(--nt-line)}.nt-toolbar label{font:11px 'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:.07em;color:var(--nt-muted)}.nt-toolbar input{background:#121f25;border:1px solid var(--nt-line);padding:9px 12px;border-radius:7px;color:var(--nt-ink);color-scheme:dark}.nt-toolbar button,.nt-btn{background:#172a30;border:1px solid rgba(147,196,171,.28);border-radius:7px;color:#e6f3ea;padding:10px 14px;font-size:13px}.nt-toolbar button:hover,.nt-btn:hover{background:#254048}.nt-status{font:12px 'JetBrains Mono',monospace;color:#bdd3bf;margin-left:auto}
+    .nt-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-bottom:34px}.nt-panel{border:1px solid var(--nt-line);background:linear-gradient(135deg,rgba(26,48,51,.72),rgba(13,24,31,.84));border-radius:16px;padding:clamp(20px,3vw,30px);min-height:290px;position:relative;overflow:hidden}.nt-panel:before{content:'';position:absolute;inset:0 auto auto 0;width:100%;height:2px;background:var(--nt-accent);opacity:.8}.nt-panel:nth-child(1){--nt-accent:var(--nt-sun)}.nt-panel:nth-child(2){--nt-accent:var(--nt-moon)}.nt-panel:nth-child(3){--nt-accent:var(--nt-earth)}.nt-panel:nth-child(4){--nt-accent:var(--nt-body)}.nt-panel-head{display:flex;align-items:center;justify-content:space-between;gap:10px}.nt-index{font:11px 'JetBrains Mono',monospace;color:var(--nt-accent);letter-spacing:.11em}.nt-glyph{font:30px 'Newsreader',serif;color:var(--nt-accent)}.nt-panel h2{font:400 clamp(32px,4vw,46px)/1.04 'Newsreader',serif;margin:12px 0 14px}.nt-panel p{font-size:13px;line-height:1.7;color:#b6c5c0;max-width:48ch}.nt-reading{display:flex;align-items:center;gap:20px;margin:22px 0}.nt-ring{width:112px;height:112px;flex:none;border-radius:50%;background:conic-gradient(var(--nt-accent) calc(var(--nt-progress,0)*1%),rgba(174,199,194,.12) 0);display:grid;place-items:center}.nt-ring-inner{background:#112025;border-radius:50%;width:90px;height:90px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}.nt-big{font:400 28px 'Newsreader',serif;white-space:nowrap}.nt-ring-inner span:last-child{font:10px 'JetBrains Mono',monospace;color:var(--nt-muted)}.nt-reading-detail{min-width:0}.nt-reading-detail strong{display:block;font-size:16px;font-weight:500}.nt-reading-detail small{display:block;font-size:11px;color:var(--nt-muted);margin-top:7px}.nt-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:12px}.nt-stat{border-top:1px solid var(--nt-line);padding-top:12px}.nt-stat span{font:10px/1.4 'JetBrains Mono',monospace;color:var(--nt-muted);display:block}.nt-stat strong{font:500 15px 'DM Sans',sans-serif;display:block;margin-top:4px;word-break:normal}.nt-note{font-size:11px;color:var(--nt-muted);margin-top:16px}.nt-pill{font:10px 'JetBrains Mono',monospace;letter-spacing:.03em;color:var(--nt-accent);border:1px solid var(--nt-line);border-radius:99px;padding:5px 9px}
+    .nt-chart-section{border:1px solid var(--nt-line);border-radius:16px;padding:clamp(18px,3vw,30px);margin-bottom:18px;background:#0d1b22}.nt-section-head{display:flex;justify-content:space-between;align-items:end;gap:18px;flex-wrap:wrap}.nt-section-head h2{font:400 clamp(29px,4vw,47px) 'Newsreader',serif;margin:5px 0 12px}.nt-chart{width:100%;height:auto;display:block;margin:18px 0 0;overflow:visible}.nt-chart .nt-guide{stroke:#607879;stroke-width:.7;opacity:.3}.nt-chart .nt-curve{fill:none;stroke:var(--nt-earth);stroke-width:3;stroke-linejoin:round;stroke-linecap:round}.nt-chart circle{fill:#f2c68e;stroke:#091218;stroke-width:3}.nt-chart text{font:11px 'JetBrains Mono',monospace;fill:#8a9e9d}.nt-season-input{width:100%;accent-color:var(--nt-earth);cursor:pointer}.nt-row-between{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap}.nt-season-meta{font:12px 'JetBrains Mono',monospace;color:var(--nt-muted)}
+    .nt-experiment{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:24px;margin:24px 0 65px}.nt-experiment-intro{padding:18px 0}.nt-experiment-intro h2{font:400 clamp(42px,6vw,68px)/.95 'Newsreader',serif;margin:14px 0}.nt-experiment-intro p{color:#b6c5c0;line-height:1.75}.nt-progress{height:8px;background:#23333a;border-radius:99px;overflow:hidden;margin:22px 0 9px}.nt-progress>div{height:100%;background:linear-gradient(90deg,#d5aa70,#93cbb4);width:0;transition:width .4s}.nt-form{border:1px solid var(--nt-line);background:#122129;border-radius:16px;padding:22px}.nt-form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}.nt-field{display:flex;flex-direction:column;gap:7px}.nt-field label{color:#b6c5c0;font:11px 'JetBrains Mono',monospace}.nt-field input,.nt-field textarea,.nt-field select{background:#09171d;border:1px solid #304349;border-radius:7px;padding:10px;color:var(--nt-ink);width:100%;font-size:13px}.nt-field textarea{min-height:72px;resize:vertical}.nt-field.full{grid-column:1/-1}.nt-form-actions{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;margin-top:16px;gap:12px}.nt-form-actions span{font:11px 'JetBrains Mono',monospace;color:var(--nt-muted)}.nt-footer{border-top:1px solid var(--nt-line);padding:22px 0 44px;display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;font-size:12px;color:var(--nt-muted)}.nt-footer a{color:#b9cfc6}
+    @media(max-width:800px){.nt-hero,.nt-experiment{grid-template-columns:1fr}.nt-hero-aside{border-left:0;border-top:1px solid var(--nt-line);padding:18px 0}.nt-hero{gap:10px}.nt-grid{grid-template-columns:1fr}.nt-toolbar .nt-status{flex-basis:100%;margin-left:0}}
+    @media(max-width:430px){.nt-nav-right{gap:8px}.nt-shell{width:min(100% - 26px,1180px)}.nt-form-grid{grid-template-columns:1fr}.nt-field.full{grid-column:auto}.nt-panel{padding:20px}.nt-reading{gap:13px}.nt-ring{width:96px;height:96px}.nt-ring-inner{width:76px;height:76px}.nt-big{font-size:24px}.nt-stat strong{font-size:13px}}
+    @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+  </style>
+</head>
+<body>
+  <header class="nt-shell nt-nav">
+    <a class="nt-mark" href="/">✦ ICY CLEARER</a>
+    <nav class="nt-nav-right" aria-label="Site navigation">
+      <a href="/natural.html">Natural Field</a>
+      <a href="/world.html">App World</a>
+      <a href="/">Home</a>
+    </nav>
+  </header>
+  <main class="nt-shell" id="main">
+    <header class="nt-hero">
+      <div>
+        <div class="nt-kicker">◌ Field instrument 001 / natural cycles</div>
+        <h1>Natural<br/>Time.</h1>
+        <p>Not four separate calendars. Four overlapping ways the world changes — the turning day, the orbiting Moon, the seasonal Sun, and the patterns of a living observer.</p>
+      </div>
+      <aside class="nt-hero-aside">
+        <div>☉ Geometry, not guesswork</div>
+        <div>☾ Phases, not perfect 28-day months</div>
+        <div>⊕ Seasons, not a fixed rectangle</div>
+        <div>◎ Experience, recorded without assumptions</div>
+      </aside>
+    </header>
+    <div class="nt-toolbar">
+      <label for="nt-date">Observation date</label>
+      <input type="date" id="nt-date" aria-label="Observation date"/>
+      <span class="nt-pill" id="nt-location">Wylie · TX</span>
+      <button type="button" id="nt-use-location">Use my location</button>
+      <button type="button" id="nt-reset-location">Wylie default</button>
+      <span id="nt-status" class="nt-status" role="status" aria-live="polite">Loading astronomical observations…</span>
+    </div>
+    <section class="nt-grid" aria-label="Four natural clocks">
+      <article class="nt-panel">
+        <div class="nt-panel-head"><span class="nt-index">01 / DAILY CYCLE</span><span class="nt-glyph" aria-hidden="true">☉</span></div>
+        <h2>Light &amp; shadow</h2>
+        <p>Earth turns. Your horizon moves through sunlight, twilight, and night. The Sun's observed height controls the direction and length of shadows.</p>
+        <div class="nt-reading">
+          <div class="nt-ring" id="nt-sun-ring" style="--nt-progress:0"><div class="nt-ring-inner"><span class="nt-big" id="nt-daylight">—</span><span>daylight</span></div></div>
+          <div class="nt-reading-detail"><strong id="nt-sun-detail">Calculating…</strong><small id="nt-sun-extra">Sunrise and sunset from Wylie</small></div>
+        </div>
+        <div class="nt-stats">
+          <div class="nt-stat"><span>Sunrise</span><strong id="nt-sunrise">—</strong></div>
+          <div class="nt-stat"><span>Solar noon</span><strong id="nt-solar-noon">—</strong></div>
+          <div class="nt-stat"><span>Sunset</span><strong id="nt-sunset">—</strong></div>
+        </div>
+        <div class="nt-note" id="nt-civil">Civil dawn: — · direction: —</div>
+      </article>
+      <article class="nt-panel">
+        <div class="nt-panel-head"><span class="nt-index">02 / LUNAR CYCLE</span><span class="nt-glyph" aria-hidden="true">☾</span></div>
+        <h2>What you can see</h2>
+        <p>The Sun illuminates approximately half of the Moon. As it orbits Earth, our view of that illuminated half changes over a ~29.53-day cycle.</p>
+        <div class="nt-reading">
+          <div class="nt-ring" id="nt-moon-ring" style="--nt-progress:0"><div class="nt-ring-inner"><span class="nt-big" id="nt-moon-percent">—</span><span>lit to us</span></div></div>
+          <div class="nt-reading-detail"><strong id="nt-phase">Calculating…</strong><small>Illuminated portion visible from Earth</small></div>
+        </div>
+        <div class="nt-stats">
+          <div class="nt-stat"><span>Moonrise*</span><strong id="nt-moonrise">—</strong></div>
+          <div class="nt-stat"><span>Moonset*</span><strong id="nt-moonset">—</strong></div>
+          <div class="nt-stat"><span>Mean cycle</span><strong>29.53 d</strong></div>
+        </div>
+        <div class="nt-note">*Events occurring on the selected calendar date. Phase is not caused by Earth's shadow.</div>
+      </article>
+      <article class="nt-panel">
+        <div class="nt-panel-head"><span class="nt-index">03 / SEASONAL CYCLE</span><span class="nt-glyph" aria-hidden="true">⊕</span></div>
+        <h2>The changing Sun</h2>
+        <p>Earth's tilted axis changes the Sun's apparent daily path as our planet orbits it. Compare noon altitude and daylight from one date to the next.</p>
+        <div class="nt-reading">
+          <div class="nt-ring" id="nt-season-ring" style="--nt-progress:0"><div class="nt-ring-inner"><span class="nt-big" id="nt-noon-angle">—</span><span>noon height</span></div></div>
+          <div class="nt-reading-detail"><strong id="nt-season-detail">Calculating…</strong><small id="nt-day-trend">Compared with the previous day</small></div>
+        </div>
+        <div class="nt-stats">
+          <div class="nt-stat"><span>Rise azimuth</span><strong id="nt-rise-az">—</strong></div>
+          <div class="nt-stat"><span>Set azimuth</span><strong id="nt-set-az">—</strong></div>
+          <div class="nt-stat"><span>Solar noon alt.</span><strong id="nt-altitude">—</strong></div>
+        </div>
+        <div class="nt-note">Compass direction: north = 0°, east = 90°, south = 180°, west = 270°.</div>
+      </article>
+      <article class="nt-panel">
+        <div class="nt-panel-head"><span class="nt-index">04 / BIOLOGICAL CYCLE</span><span class="nt-glyph" aria-hidden="true">◎</span></div>
+        <h2>The observing body</h2>
+        <p>Observe sleep, energy, concentration, and movement alongside environmental cycles. Your notes are evidence; correlations are questions, not conclusions.</p>
+        <div class="nt-reading">
+          <div class="nt-ring" id="nt-body-ring" style="--nt-progress:0"><div class="nt-ring-inner"><span class="nt-big" id="nt-body-score">—</span><span>energy / 5</span></div></div>
+          <div class="nt-reading-detail"><strong id="nt-body-detail">No observation yet</strong><small>Personal log · stored only in this browser</small></div>
+        </div>
+        <div class="nt-stats">
+          <div class="nt-stat"><span>Sleep</span><strong id="nt-body-sleep">—</strong></div>
+          <div class="nt-stat"><span>Attention</span><strong id="nt-body-attention">—</strong></div>
+          <div class="nt-stat"><span>Movement</span><strong id="nt-body-movement">—</strong></div>
+        </div>
+        <div class="nt-note">No biological pattern is inferred from Moon phases.</div>
+      </article>
+    </section>
+
+    <section class="nt-chart-section" aria-label="Annual solar geometry">
+      <div class="nt-section-head">
+        <div><span class="nt-kicker">Observe across a year</span><h2>One year of noon Sun angles</h2></div>
+        <p class="nt-season-meta" id="nt-year-label">Select a date to explore the solar arc.</p>
+      </div>
+      <svg class="nt-chart" id="nt-year-chart" viewBox="0 0 700 200" role="img" aria-label="Yearly solar-noon altitude angle curve, calculated for the selected location">
+        <line class="nt-guide" x1="24" y1="166" x2="682" y2="166"></line>
+        <line class="nt-guide" x1="24" y1="90" x2="682" y2="90"></line>
+        <path class="nt-curve" id="nt-chart-curve" d=""></path>
+        <circle id="nt-chart-dot" cx="24" cy="166" r="6"></circle>
+        <text x="24" y="187">JAN</text><text x="185" y="187">APR</text><text x="350" y="187">JUL</text><text x="515" y="187">OCT</text><text x="682" y="187" text-anchor="end">DEC</text>
+      </svg>
+      <label class="nt-kicker" for="nt-season-slider">Scrub the calendar — see the changing solar path</label>
+      <input class="nt-season-input" type="range" min="0" max="364" value="0" id="nt-season-slider" aria-label="Select day of year"/>
+      <div class="nt-row-between">
+        <span class="nt-season-meta" id="nt-season-date">—</span>
+        <span class="nt-season-meta" id="nt-season-summary">Solar noon altitude: —</span>
+      </div>
+    </section>
+
+    <section class="nt-experiment" aria-label="Natural time experiment">
+      <div class="nt-experiment-intro">
+        <span class="nt-kicker">29-day field inquiry / personal</span>
+        <h2>Observe.<br/>Return.<br/>Compare.</h2>
+        <p>Choose a start date and follow a full lunar-phase cycle while recording four different kinds of evidence. This is an observation practice, not a claim that biology follows the Moon.</p>
+        <button class="nt-btn" id="nt-start" type="button">Start 29-day observation</button>
+        <div class="nt-progress" role="progressbar" aria-label="29-day experiment progress" aria-valuemin="0" aria-valuemax="29" aria-valuenow="0" id="nt-progress"><div id="nt-progress-fill"></div></div>
+        <div class="nt-season-meta" id="nt-progress-label">No experiment started.</div>
+        <p class="nt-note">Entries stay in this browser unless you export them. Clearing browser storage can erase them.</p>
+      </div>
+      <form class="nt-form" id="nt-log-form">
+        <span class="nt-kicker" id="nt-log-title">Observation journal · selected date</span>
+        <div class="nt-form-grid" style="margin-top:17px">
+          <div class="nt-field"><label for="nt-sleep">Sleep (hours, optional)</label><input type="number" min="0" max="24" step=".25" id="nt-sleep" placeholder="e.g. 7.5"/></div>
+          <div class="nt-field"><label for="nt-energy">Energy / 5</label><select id="nt-energy"><option value="">Not rated</option><option value="1">1 — Very low</option><option value="2">2 — Low</option><option value="3">3 — Moderate</option><option value="4">4 — High</option><option value="5">5 — Very high</option></select></div>
+          <div class="nt-field"><label for="nt-attention">Attention / 5</label><select id="nt-attention"><option value="">Not rated</option><option value="1">1 — Very low</option><option value="2">2 — Low</option><option value="3">3 — Moderate</option><option value="4">4 — High</option><option value="5">5 — Very high</option></select></div>
+          <div class="nt-field"><label for="nt-movement">Movement (minutes)</label><input type="number" min="0" max="1440" step="1" id="nt-movement" placeholder="Optional"/></div>
+          <div class="nt-field full"><label for="nt-daily-note">☉ Daily · What happened to the light and shadows?</label><textarea id="nt-daily-note" placeholder="Color, brightness, clouds, shadow angle…"></textarea></div>
+          <div class="nt-field full"><label for="nt-lunar-note">☾ Lunar · What did you actually see of the Moon?</label><textarea id="nt-lunar-note" placeholder="Phase, position, visibility, time…"></textarea></div>
+          <div class="nt-field full"><label for="nt-season-note">⊕ Seasonal · What has changed outside?</label><textarea id="nt-season-note" placeholder="Sun path, temperature, trees, daylight…"></textarea></div>
+          <div class="nt-field full"><label for="nt-body-note">◎ Biological · What did you notice in yourself?</label><textarea id="nt-body-note" placeholder="Attention, rest, movement, energy…"></textarea></div>
+        </div>
+        <div class="nt-form-actions">
+          <span id="nt-save-status" aria-live="polite">Nothing saved for this day.</span>
+          <div><button type="submit" class="nt-btn">Save locally</button> <button type="button" class="nt-btn" id="nt-export">Export JSON</button></div>
+        </div>
+      </form>
+    </section>
+  </main>
+  <footer class="nt-shell nt-footer">
+    <span>Solar &amp; lunar data by <a href="https://sunrise-sunset.org/api" target="_blank" rel="noopener">Sunrise-Sunset.org</a>. Astronomical predictions, not local weather observations.</span>
+    <span><a href="/natural.html">Natural Field</a> · <a href="/world.html">App World</a> · <a href="/">ICY CLEARER</a></span>
+  </footer>
+  <script is:inline>
+    (() => {
+      const $ = id => document.getElementById(id);
+      const initial = {lat:33.0151,lng:-96.5389,label:'Wylie · TX'};
+      let place = {...initial}, zone='America/Chicago', rows=[], active='', run=0;
+      const cache = new Map();
+      const STORE='icy-natural-time-v1';
+      const MS_DAY=86400000;
+      function getStorage(){ try {return JSON.parse(localStorage.getItem(STORE)||'{}')}catch(e){return {}} }
+      function setStorage(data){try {localStorage.setItem(STORE,JSON.stringify(data));return true}catch(e){$('nt-save-status').textContent='Browser storage unavailable. Export to preserve entries.';return false}}
+      function setText(id,t){$(id).textContent=t}
+      function addDays(date,days){const d=new Date(date+'T12:00:00Z');d.setUTCDate(d.getUTCDate()+days);return d.toISOString().slice(0,10)}
+      function dateAtZone(d,tz){const parts=new Intl.DateTimeFormat('en-US',{timeZone:tz,year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(d);const get=x=>parts.find(p=>p.type===x).value;return get('year')+'-'+get('month')+'-'+get('day')}
+      function time(iso){return iso?new Date(iso).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit',timeZone:zone}):'Not this day'}
+      function duration(s){if(!Number.isFinite(s))return '—';return Math.floor(s/3600)+'h '+Math.round(s%3600/60)+'m'}
+      function degree(v){return Number.isFinite(Number(v))?Number(v).toFixed(1)+'°':'—'}
+      function status(t){setText('nt-status',t)}
+      function setRing(id,percentage){$(id).style.setProperty('--nt-progress',Math.max(0,Math.min(100,percentage)))}
+      async function getYear(year){
+        const key=[place.lat.toFixed(4),place.lng.toFixed(4),year].join(':');
+        if(cache.has(key))return cache.get(key);
+        const first=year+'-01-01',last=year+'-12-31';
+        const url='https://api.sunrise-sunset.org/v2?lat='+encodeURIComponent(place.lat)+'&lng='+encodeURIComponent(place.lng)+'&date_start='+first+'&date_end='+last;
+        const response=await fetch(url);
+        if(!response.ok)throw Error('Astronomy service returned '+response.status);
+        const data=await response.json();
+        if(!Array.isArray(data.days))throw Error('No astronomy days in service response');
+        cache.set(key,data);
+        return data;
+      }
+      function renderYear(){
+        const valid=rows.filter(r=>Number.isFinite(r.solar_position?.solar_noon_altitude));
+        if(valid.length<2){$('nt-chart-curve').setAttribute('d','');return}
+        const min=Math.min(...valid.map(r=>r.solar_position.solar_noon_altitude))-3;
+        const max=Math.max(...valid.map(r=>r.solar_position.solar_noon_altitude))+3;
+        const coords=rows.map((r,i)=>{
+          const alt=r.solar_position?.solar_noon_altitude;
+          if(!Number.isFinite(alt))return null;
+          return [24+(i/Math.max(1,rows.length-1))*658,160-(alt-min)/(max-min)*135];
+        });
+        const path=coords.map((p,i)=>p?(i===0?'M':'L')+p[0].toFixed(2)+' '+p[1].toFixed(2):'').join(' ');
+        $('nt-chart-curve').setAttribute('d',path);
+        const selected=rows.findIndex(r=>r.date===active);
+        if(coords[selected]){$('nt-chart-dot').setAttribute('cx',coords[selected][0]);$('nt-chart-dot').setAttribute('cy',coords[selected][1])}
+        $('nt-season-slider').max=String(Math.max(0,rows.length-1));
+        $('nt-season-slider').value=String(Math.max(0,selected));
+      }
+      function renderData(){
+        const record=rows.find(r=>r.date===active);if(!record){status('No astronomical data for selected date.');return}
+        const i=rows.indexOf(record), prev=rows[i-1], s=record.solar_position||{};
+        const day=record.day_length;
+        zone=record.tzid||zone;
+        setRing('nt-sun-ring',Number.isFinite(day)?day/864:0);
+        setText('nt-daylight',duration(day));
+        setText('nt-sun-detail','Sun above the horizon ~'+Math.round(day/864)+'% of the day');
+        setText('nt-sun-extra','Geometric solar cycle · '+zone);
+        setText('nt-sunrise',time(record.sunrise));
+        setText('nt-solar-noon',time(record.solar_noon));
+        setText('nt-sunset',time(record.sunset));
+        setText('nt-civil','Civil dawn '+time(record.civil_twilight_begin)+' · sunrise bearing '+degree(s.sunrise_azimuth));
+        const illum=Number(record.moon_illumination);
+        setRing('nt-moon-ring',Number.isFinite(illum)?illum:0);
+        setText('nt-moon-percent',Number.isFinite(illum)?Math.round(illum)+'%':'—');
+        setText('nt-phase',record.moon_phase||'Phase unavailable');
+        setText('nt-moonrise',time(record.moonrise));
+        setText('nt-moonset',time(record.moonset));
+        const noonAlt=Number(s.solar_noon_altitude);
+        setRing('nt-season-ring',Number.isFinite(noonAlt)?noonAlt/90*100:0);
+        setText('nt-noon-angle',degree(noonAlt));
+        setText('nt-season-detail',active.slice(0,4)+' solar position');
+        const delta=prev?Number(day)-Number(prev.day_length):NaN;
+        const sign=delta>0?'+':'';
+        setText('nt-day-trend',Number.isFinite(delta)?sign+Math.round(delta)+' seconds of daylight vs yesterday':'Select a date after Jan 1 for daily change');
+        setText('nt-rise-az',degree(s.sunrise_azimuth));
+        setText('nt-set-az',degree(s.sunset_azimuth));
+        setText('nt-altitude',degree(noonAlt));
+        setText('nt-year-label',place.label+' · '+active.slice(0,4)+' · Solar-noon altitude by date');
+        setText('nt-season-date',new Date(active+'T12:00:00Z').toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric',timeZone:'UTC'}));
+        setText('nt-season-summary','Day length '+duration(day)+' · Noon altitude '+degree(noonAlt));
+        renderYear();
+        readJournal();
+        status('Calculated · '+place.label+' · '+zone);
+      }
+      async function selectDate(date){
+        if(!/^\d{4}-\d{2}-\d{2}$/.test(date))return;
+        active=date; $('nt-date').value=date;const thisRun=++run;
+        const year=Number(date.slice(0,4));status('Calculating astronomical cycles…');
+        try {
+          const result=await getYear(year);
+          if(thisRun!==run)return;
+          zone=result.tzid||zone;
+          rows=result.days;
+          renderData();
+        }catch(error){
+          if(thisRun!==run)return;
+          rows=[];status('Astronomical data unavailable · check connection and retry date.');
+          $('nt-chart-curve').setAttribute('d','');
+          console.warn('Natural Time astronomy:',error);
+          readJournal();
+        }
+      }
+      function journalFields(){return {sleep:$('nt-sleep').value,energy:$('nt-energy').value,attention:$('nt-attention').value,movement:$('nt-movement').value,daily:$('nt-daily-note').value,lunar:$('nt-lunar-note').value,season:$('nt-season-note').value,body:$('nt-body-note').value}}
+      function readJournal(){
+        const data=getStorage(),entry=(data.entries||{})[active]||{};
+        ['sleep','energy','attention','movement','daily','lunar','season','body'].forEach(k=>{const id=['daily','lunar','season','body'].includes(k)?'nt-'+k+'-note':'nt-'+k;$(id).value=entry[k]||''});
+        const en=Number(entry.energy);
+        setRing('nt-body-ring',en/5*100||0);
+        setText('nt-body-score',en?String(en):'—');
+        setText('nt-body-detail',entry.savedAt?'Observation recorded':'No observation yet');
+        setText('nt-body-sleep',entry.sleep?entry.sleep+' h':'—');
+        setText('nt-body-attention',entry.attention?entry.attention+'/5':'—');
+        setText('nt-body-movement',entry.movement?entry.movement+' min':'—');
+        setText('nt-log-title','Observation journal · '+active);
+        setText('nt-save-status',entry.savedAt?'Saved on this device':'Nothing saved for this day.');
+        const start=data.start;
+        const elapsed=start?Math.round((Date.parse(active+'T12:00:00Z')-Date.parse(start+'T12:00:00Z'))/MS_DAY):0;
+        const progress=start?Math.max(0,Math.min(29,elapsed+1)):0;
+        $('nt-progress').setAttribute('aria-valuenow',String(progress));
+        $('nt-progress-fill').style.width=(progress/29*100)+'%';
+        setText('nt-progress-label',start?(elapsed>=0&&elapsed<29?'Day '+(elapsed+1)+' of 29 · Started '+start:'Experiment started '+start+' · date outside 29-day window'):'No experiment started.');
+      }
+      $('nt-date').addEventListener('change',e=>selectDate(e.target.value));
+      $('nt-season-slider').addEventListener('input',e=>{
+        const r=rows[Number(e.target.value)];
+        if(r){active=r.date;$('nt-date').value=active;renderData()}
+      });
+      $('nt-reset-location').addEventListener('click',()=>{place={...initial};zone='America/Chicago';setText('nt-location',place.label);selectDate(active)});
+      $('nt-use-location').addEventListener('click',()=>{
+        if(!navigator.geolocation){status('Location not supported by this browser.');return}
+        status('Waiting for location permission…');
+        navigator.geolocation.getCurrentPosition(p=>{
+          place={lat:p.coords.latitude,lng:p.coords.longitude,label:'My location (approx.)'};
+          setText('nt-location',place.label);
+          selectDate(active);
+        },()=>status('Location permission unavailable; Wylie remains an option.'),{timeout:10000,maximumAge:300000,enableHighAccuracy:false});
+      });
+      $('nt-log-form').addEventListener('submit',e=>{
+        e.preventDefault();const data=getStorage();data.entries=data.entries||{};
+        data.entries[active]={...journalFields(),savedAt:new Date().toISOString()};
+        if(setStorage(data))readJournal();
+      });
+      $('nt-start').addEventListener('click',()=>{const data=getStorage();data.start=active;if(setStorage(data))readJournal()});
+      $('nt-export').addEventListener('click',()=>{
+        const data=getStorage();const blob=new Blob([JSON.stringify({schema:'icy-natural-time-v1',exportedAt:new Date().toISOString(),...data},null,2)],{type:'application/json'});
+        const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='icy-natural-time-observations.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
+      });
+      const today=dateAtZone(new Date(),zone);selectDate(today);
+    })();
+  </script>
+</body>
+</html>
