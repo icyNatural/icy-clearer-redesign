@@ -9,7 +9,8 @@ body { min-height: 100svh; margin: 0; overflow-x: hidden; color: var(--ink); bac
 button, a { -webkit-tap-highlight-color: transparent; }
 button { font: inherit; }
 
-.environment { position: fixed; inset: 0; z-index: -2; overflow: hidden; background: #06090f; }
+.environment { position: fixed; inset: 0; z-index: 0; overflow: hidden; background: #06090f; pointer-events: none; }
+.world { position: relative; z-index: 2; min-height: 100svh; }
 .environment::before { content: ""; position: absolute; inset: 0; background: radial-gradient(circle at 50% 45%, color-mix(in srgb, var(--active-accent) 8%, transparent), transparent 24%), linear-gradient(180deg, rgba(8,16,29,.96), rgba(5,8,14,1)); transition: background 1s ease; }
 .environment__light { position: absolute; border-radius: 50%; filter: blur(110px); opacity: .2; mix-blend-mode: screen; transition: background 1.2s ease, transform 2s ease; }
 .environment__light--a { width: 55vw; height: 55vw; left: -22vw; top: -24vw; background: #347db2; transform: translate(calc(var(--pointer-x) * 25px), calc(var(--pointer-y) * 18px)); }
@@ -182,4 +183,26 @@ html:not(.js) .dossier { display: none; }
 }
 @media (prefers-contrast: more) {
   .world-node__label, .territory-heading > p:last-child, .object__copy > p:not(.object__meta) { color: #fff; }.atlas-line { stroke: rgba(207,231,255,.34); }
+}
+
+/* Creative Computing Renaissance — 3D Astrolabe Stage & Workstation Reticles */
+.world-3d-stage { position: absolute; inset: 0; z-index: 4; pointer-events: none; }
+.world-3d-canvas { display: block; width: 100%; height: 100%; opacity: 1; }
+.world-corner { position: absolute; width: 18px; height: 18px; border-color: rgba(160, 214, 255, .36); border-style: solid; pointer-events: none; z-index: 5; }
+.world-corner--tl { top: calc(var(--head-h) + 8px); left: 18px; border-width: 1px 0 0 1px; }
+.world-corner--tr { top: calc(var(--head-h) + 8px); right: 18px; border-width: 1px 1px 0 0; }
+.world-corner--bl { bottom: calc(var(--dock-h) + 12px); left: 18px; border-width: 0 0 1px 1px; }
+.world-corner--br { bottom: calc(var(--dock-h) + 12px); right: 18px; border-width: 0 1px 1px 0; }
+.world-field-controls { display: inline-flex; border: 1px solid rgba(160, 214, 255, .22); background: rgba(6, 11, 20, .72); backdrop-filter: blur(8px); }
+.world-field-controls button { padding: 6px 10px; border: 0; border-right: 1px solid rgba(160, 214, 255, .14); background: transparent; color: rgba(207, 231, 255, .58); font-family: "JetBrains Mono", monospace; font-size: .54rem; letter-spacing: .14em; cursor: pointer; transition: color .2s ease, background .2s ease; }
+.world-field-controls button:last-child { border-right: 0; }
+.world-field-controls button:hover { color: #fff; background: rgba(160, 214, 255, .09); }
+.world-field-controls button[aria-pressed="true"] { color: #e8f5ff; background: rgba(94, 181, 247, .2); box-shadow: inset 0 -2px 0 var(--active-accent); }
+.atlas-line { stroke: rgba(164, 214, 255, .22); stroke-width: .9; stroke-dasharray: 3 6; }
+.world-node__halo { border-color: color-mix(in srgb, var(--accent) 48%, transparent); background: radial-gradient(circle, color-mix(in srgb, var(--accent) 22%, transparent), transparent 68%); }
+.world-node__label { text-shadow: 0 2px 12px rgba(4, 8, 16, .92); color: rgba(242, 238, 229, .92); }
+.world-node__state { opacity: .62; color: color-mix(in srgb, var(--accent) 72%, #fff 20%); }
+@media (max-width: 800px) {
+  .world-field-controls { display: none; }
+  .world-corner { width: 12px; height: 12px; }
 }

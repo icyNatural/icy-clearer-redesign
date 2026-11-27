@@ -109,21 +109,32 @@ const dayLabel = today.toLocaleDateString("en-US", { month: "short", day: "2-dig
 <a class="skip-link" href="#main">Skip to content</a>
 
 <div class="environment" aria-hidden="true">
+  <div id="world-3d-stage" class="world-3d-stage"></div>
   <div class="environment__light environment__light--a"></div>
   <div class="environment__light environment__light--b"></div>
   <div class="environment__horizon"></div>
   <div class="environment__grid"></div>
   <div class="environment__grain"></div>
+  <span class="world-corner world-corner--tl"></span>
+  <span class="world-corner world-corner--tr"></span>
+  <span class="world-corner world-corner--bl"></span>
+  <span class="world-corner world-corner--br"></span>
 </div>
 
 <header class="world-head">
   <a class="identity" href="/" aria-label="Icy Clearer home">
-    <span class="identity__mark" aria-hidden="true">✦</span>
-    <span><strong>Icy Clearer</strong><small>App World</small></span>
+    <span class="identity__mark" aria-hidden="true">◈</span>
+    <span><strong>Icy Clearer</strong><small>App World · Spatial Atlas</small></span>
   </a>
-  <div class="world-state" aria-label="Current state">
+  <div class="world-field-controls" role="group" aria-label="3D spatial field mode">
+    <button type="button" data-world-field-mode="orbit" aria-pressed="true">ORBIT 3D</button>
+    <button type="button" data-world-field-mode="wireframe" aria-pressed="false">WIREFRAME</button>
+    <button type="button" data-world-field-mode="still" aria-pressed="false">STILL</button>
+  </div>
+  <div class="world-state" aria-label="Current spatial coordinates">
     <span class="world-state__pulse" aria-hidden="true"></span>
-    <span>Field build {dayLabel}</span><span class="world-state__mode">App World online</span>
+    <span data-world-coords>AZ 180.0° · EL +00.0° · 3D ATLAS</span>
+    <span class="world-state__mode">{dayLabel}</span>
   </div>
 </header>
 
@@ -271,12 +282,14 @@ const dayLabel = today.toLocaleDateString("en-US", { month: "short", day: "2-dig
       dossier.querySelector('[data-link-mark]').textContent = external ? '↗' : '→';
       dossier.classList.add('is-visible'); dossier.classList.remove('is-expanded'); dossier.removeAttribute('inert'); dossier.setAttribute('aria-hidden', 'false');
       dossier.querySelector('[data-more]').setAttribute('aria-expanded', 'false');
+      window.dispatchEvent(new CustomEvent('icy-world-focus', { detail: { accent: node.dataset.accent, x: Number(node.dataset.x || 50), y: Number(node.dataset.y || 50) } }));
     }
     function clearFocus() {
       activeId = ''; root.dataset.atmosphere = 'void';
       nodeButtons.forEach(function (node) { node.classList.remove('is-active', 'is-related', 'is-muted'); node.setAttribute('aria-pressed', 'false'); });
       lines.forEach(function (line) { line.classList.remove('is-active'); });
       if (dossier) { dossier.classList.remove('is-visible', 'is-expanded'); dossier.setAttribute('inert', ''); dossier.setAttribute('aria-hidden', 'true'); dossier.querySelector('[data-more]').setAttribute('aria-expanded', 'false'); }
+      window.dispatchEvent(new CustomEvent('icy-world-focus', { detail: {} }));
     }
     nodeButtons.forEach(function (node, index) {
       node.addEventListener('click', function () { focusNode(node); });
@@ -336,3 +349,4 @@ const dayLabel = today.toLocaleDateString("en-US", { month: "short", day: "2-dig
     }
   })();
 </script>
+<script src="../../scripts/world-field.ts"></script>

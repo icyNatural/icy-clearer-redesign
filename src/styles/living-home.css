@@ -2921,3 +2921,80 @@ html:has(.living-home) astro-dev-toolbar {
     display: none;
   }
 }
+
+/* Creative Computing Renaissance — Poetic Optical Horizon & Atlas Gateway */
+.threshold__optics {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+  pointer-events: none;
+  transition: opacity .35s ease;
+}
+
+.threshold__stage,
+.threshold__trail {
+  position: relative;
+  z-index: 4;
+}
+
+.threshold__instrument-strip {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 8px 20px;
+}
+
+.threshold__coord {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: .16em;
+  color: rgba(24, 45, 40, .55);
+  padding: 2px 8px;
+  border-left: 1px solid rgba(24, 45, 40, .24);
+  white-space: nowrap;
+}
+
+.threshold__trail-left {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 20px;
+}
+
+.threshold__atlas-link,
+.threshold__optics-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10.5px;
+  letter-spacing: .13em;
+  text-transform: uppercase;
+  color: #182d28;
+  padding: 6px 11px;
+  border: 1px solid rgba(24, 45, 40, .24);
+  background: rgba(242, 235, 222, .56);
+  cursor: pointer;
+  transition: background .22s ease, border-color .22s ease, transform .22s ease;
+}
+
+.threshold__atlas-link:hover,
+.threshold__optics-btn:hover {
+  background: rgba(24, 45, 40, .92);
+  color: #f4ecdd;
+  border-color: #182d28;
+  transform: translateY(-1px);
+}
+
+.threshold__optics-btn[aria-pressed="false"] {
+  opacity: .6;
+}
+
+@media (max-width: 720px) {
+  .threshold__coord,
+  .threshold__optics-btn {
+    display: none;
+  }
+}
